@@ -292,7 +292,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const ST = {
   dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false},
   o:{ tv:{on:false}, radio:{on:false}, plant:{grow:1}, fridge:{open:false}, stove:{on:false}, kitchen_sink:{on:false}, coffee:{on:false},
-      toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
+      cushion:{on:true}, toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
 };
 const on=id=>ST.o[id]&&ST.o[id].on;
 
@@ -306,6 +306,7 @@ const ROOMS = {
 /* x = where the tenant stands to use it (beside it, so they don't hide it); sy = standing depth; seat/lie = hip position */
 const OBJ = {
   sofa:{room:'living',x:100,seat:{x:100,y:200,legs:{lL:18,kL:-10,lR:-18,kR:10}},lie:{x:126,y:189,bend:90},desc:'blue sofa (sit / lie)'},
+  cushion:{room:'living',x:70,fx:{x:64,y:181},desc:'yellow cushion on the sofa (state off = take it off the sofa, it lands on the floor; on = put it back). To remove it: goto sofa, act pose hold, then set cushion off — do NOT sit'},
   bookshelf:{room:'living',x:100,fx:{x:100,y:80},desc:'wall shelf full of books'},
   window:{room:'living',x:230,fx:{x:230,y:75},sill:{x:230,y:112},desc:'window to the garden (leap through it)'},
   plant:{room:'living',x:228,fx:{x:198,y:195},desc:'potted plant (state grow)'},
@@ -358,7 +359,7 @@ function drawRoom(r){
     <rect x="34" y="160" width="132" height="52" rx="12" fill="url(#gSofa)"/><rect x="40" y="196" width="120" height="36" rx="8" fill="#3f6677"/>
     <rect x="43" y="197" width="56" height="15" rx="6" fill="#5a8597"/><rect x="101" y="197" width="56" height="15" rx="6" fill="#5a8597"/>
     <rect x="24" y="178" width="22" height="56" rx="9" fill="#3a5f6f"/><rect x="154" y="178" width="22" height="56" rx="9" fill="#3a5f6f"/>
-    <rect x="52" y="170" width="24" height="22" rx="6" fill="#e9c46a" transform="rotate(-8 64 181)"/>
+    ${ST.o.cushion.on?'<rect x="52" y="170" width="24" height="22" rx="6" fill="#e9c46a" transform="rotate(-8 64 181)"/>':'<rect x="188" y="250" width="26" height="12" rx="5" fill="#e9c46a" transform="rotate(6 201 256)"/><rect x="188" y="250" width="26" height="4" rx="2" fill="#000" opacity=".08"/>'}
     <g transform="translate(200 240) scale(${g}) translate(-200 -240)"><path d="M199 216 C184 198 180 176 192 182 C188 166 198 162 201 180 C204 160 216 164 209 184 C220 176 220 196 201 216 Z" fill="url(#gLeaf)"/><path d="M190 212 L210 212 L207 240 L193 240 Z" fill="url(#gPot)"/><rect x="188" y="209" width="24" height="5" rx="1.5" fill="#d38550"/></g>
     ${on('tv')&&!dark?`<ellipse cx="330" cy="172" rx="60" ry="42" fill="url(#gBlueGlow)" opacity=".6"/>`:''}
     <rect x="290" y="204" width="80" height="36" rx="2" fill="url(#gWood)"/><line x1="330" y1="207" x2="330" y2="237" stroke="#000" stroke-opacity=".25"/><circle cx="324" cy="222" r="1.4" fill="#d9b77a"/><circle cx="336" cy="222" r="1.4" fill="#d9b77a"/>
@@ -1255,6 +1256,7 @@ RULES
 - Output ONLY JSON: {"steps":[...]} with up to 22 steps and roughly 6-25 seconds in total. Prefer a little story: go somewhere, set up, do it, a payoff, a deadpan line.
 - Use the house realistically (shower = goto shower, costume shower, set shower on, act shower at shower, set shower off, costume pajamas…). Everyday activities should use real objects.
 - When asked to dress up / disguise / become something, ALWAYS change costume (preset or custom SVG). For a named copyrighted or trademarked character, make a cheap generic homemade costume of the same category (e.g. "a superhero", "a space knight") with no logos, signature symbols or names, and let ${H.name} joke about it being a knock-off.
+- Do EXACTLY the verb asked. "Remove/take/move X from Y" means handle X (goto Y, act hold, then set X off, or despawn/spawn it) — NEVER sit or lie on Y. Only sit when asked to sit. If an object has no state for it, spawn a small SVG of it being carried or placed.
 - NEVER cheat: do not walk off camera and merely claim something happened. Physical stunts must be shown: jump out of the window = goto window, leap at the window (fx glass), then appear in the garden from the top, dizzy, and a deadpan line. Flying = pose fly/superfly with a leap upward; climbing = leap onto things; teleporting = vanish + appear.
 - Combine custom poses, spawned objects and fx to fake anything that isn't built in (riding a horse = spawn a horse, act custom sitting pose on it, move with carry). Never answer "I can't".
 - Lines: short (max 70 chars), deadpan, in ${LANG==='it'?'ITALIAN':'ENGLISH'} (the viewer chose this language; write every line in it). 1-3 lines per script.
@@ -1323,11 +1325,11 @@ async function askBrain(cmd){
 /* ================= COMMAND CACHE: commands the AI already solved are replayed for free ================= */
 const cacheKey = c => String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim() + '|' + (typeof LANG!=='undefined'?LANG:'en');
 let SCRIPT_CACHE = {};
-try { SCRIPT_CACHE = JSON.parse(localStorage.getItem('subservientCache')||'{}') || {}; } catch(e){}
+try { SCRIPT_CACHE = JSON.parse(localStorage.getItem('subservientCache2')||'{}') || {}; } catch(e){}
 function saveCache(){
   const keys=Object.keys(SCRIPT_CACHE);
   if (keys.length>400) keys.sort((a,b)=>SCRIPT_CACHE[a].t-SCRIPT_CACHE[b].t).slice(0,keys.length-400).forEach(k=>delete SCRIPT_CACHE[k]);
-  try { localStorage.setItem('subservientCache', JSON.stringify(SCRIPT_CACHE)); } catch(e){}
+  try { localStorage.setItem('subservientCache2', JSON.stringify(SCRIPT_CACHE)); } catch(e){}
 }
 /* ================= OFFLINE FALLBACK ================= */
 /* Offline commands: whole words only (so "visit" doesn't trigger "sit"), Italian + English. */
@@ -1365,6 +1367,12 @@ const RULES = [
   [W('arrabb','incazz','angry'), ()=>[{do:'act',pose:'angry',ms:2400}]],
   [W('canta','cantare','sing\\b'), ()=>[{do:'act',pose:'sing',prop:'mic',ms:3000}]],
   [W('scoregg','peto','fart'), ()=>[{do:'act',pose:'fart',ms:2000,say:LANG==='it'?'Scusate.':'Excuse me.'}]],
+  [/(cuscin|cushion|pillow)/i, (c)=>/(rimett|metti (su|sul)|put (it )?back|back on)/i.test(c)
+      ? [{do:'goto',object:'sofa'},{do:'act',pose:'hold',ms:900},{do:'set',object:'cushion',state:'on'},{do:'act',pose:'present',ms:1500,say:LANG==='it'?'Di nuovo al suo posto.':'Back where it belongs.'}]
+      : /(togli|leva|sposta|prendi|lancia|butta|tira|remove|take|move|throw|get)/i.test(c)
+      ? [{do:'goto',object:'sofa'},{do:'act',pose:'hold',ms:900},{do:'set',object:'cushion',state:'off'},{do:'act',pose:'present',ms:1500,say:LANG==='it'?'Cuscino tolto.':'Cushion removed.'}]
+      : [{do:'goto',object:'sofa'},{do:'act',pose:'hug',ms:2500,say:LANG==='it'?'Morbidissimo.':'So soft.'}]],
+  [/(togli|leva|sposta|spingi|remove|move|push).*(divano|sofa|couch)/i, ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'strain',ms:2500,say:LANG==='it'?'Pesa una tonnellata. Resta lì.':'Weighs a ton. It stays.'}]],
   [W('siediti','sederti','divano','sit\\b','sofa','couch'), ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'sit',at:'sofa',ms:3000}]],
   [W('sdraiati','stenditi','lie down'), ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'lie',at:'sofa',ms:3500}]],
   [W('palestra','allenati','flession','squat','exercise','workout'), ()=>[{do:'act',pose:'squat',ms:3200}]],
@@ -1412,7 +1420,7 @@ function offlineCostume(cmd){
 function offline(cmd){
   window.__lastCmd=cmd;
   const t=cmd.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  for (const [re,fn] of RULES) if (re.test(t)) return fn();
+  for (const [re,fn] of RULES) if (re.test(t)) return fn(t);
   return [{do:'act',pose:'shrug',fx:'question',ms:2400,say:LANG==='it'?'Non ho capito. (IA non collegata: capisco solo comandi semplici)':'Didn\'t get it. (AI not connected: simple commands only)'}];
 }
 
