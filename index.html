@@ -1302,6 +1302,15 @@ async function askBrain(cmd){
   setAI(false); return null;
 }
 
+/* ================= COMMAND CACHE: commands the AI already solved are replayed for free ================= */
+const cacheKey = c => String(c).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim() + '|' + (typeof LANG!=='undefined'?LANG:'en');
+let SCRIPT_CACHE = {};
+try { SCRIPT_CACHE = JSON.parse(localStorage.getItem('subservientCache')||'{}') || {}; } catch(e){}
+function saveCache(){
+  const keys=Object.keys(SCRIPT_CACHE);
+  if (keys.length>400) keys.sort((a,b)=>SCRIPT_CACHE[a].t-SCRIPT_CACHE[b].t).slice(0,keys.length-400).forEach(k=>delete SCRIPT_CACHE[k]);
+  try { localStorage.setItem('subservientCache', JSON.stringify(SCRIPT_CACHE)); } catch(e){}
+}
 /* ================= OFFLINE FALLBACK ================= */
 /* Offline commands: whole words only (so "visit" doesn't trigger "sit"), Italian + English. */
 const W = (...words) => new RegExp('(^|[^a-z])(' + words.join('|') + ')', 'i');
@@ -1474,7 +1483,11 @@ $('f').addEventListener('submit', async e=>{
   if (H.zoom!==1) H.zoom=1;
   if (RUDE.test(cmd.toLowerCase())) return runScript([{do:'refuse',say:tr('refuse')}], id);
   if (!H.lying && !H.seat) setPose('think'); say('…', 15000);
-  let steps = await askBrain(cmd);
+  // already done before? replay it without asking the AI
+  const ck = cacheKey(cmd);
+  let steps = SCRIPT_CACHE[ck] ? JSON.parse(JSON.stringify(SCRIPT_CACHE[ck].s)) : null;
+  if (steps){ SCRIPT_CACHE[ck].t=Date.now(); saveCache(); }
+  else { steps = await askBrain(cmd); if (steps) { SCRIPT_CACHE[ck]={s:steps,t:Date.now()}; saveCache(); } }
   if (!alive(id)) return;
   bubble.classList.remove('show');
   if (!steps) steps = offline(cmd);
