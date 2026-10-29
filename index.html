@@ -34,6 +34,7 @@
   h1 span { color:var(--accent); }
   header.top { display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:8px; }
   header.top h1 { margin:0; }
+  .newbtn { position:absolute; left:0; background:var(--panel); border:1px solid var(--line); color:var(--fg); font-size:16px; padding:3px 10px; border-radius:999px; z-index:60; }
   .lang { position:absolute; right:0; display:flex; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:2px; z-index:60; }
   .lang button { background:none; color:var(--muted); font-size:12px; padding:4px 9px; border-radius:999px; }
   .lang button.on { background:var(--accent); color:#1a1a1a; }
@@ -161,10 +162,11 @@
       <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="Holgen" aria-label="Name">
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
+      <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
     </div>
   </div>
 
-  <header class="top"><h1 id="title">Subservient <span>Holgen</span></h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
+  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><h1 id="title">Subservient <span>Holgen</span></h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
   <div class="cam" id="cam">
     <svg class="scene" id="scene" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -229,6 +231,8 @@
    (restrict it to your site's address in Google Cloud > Credentials).
    Leave '' to use only the free Pollinations service + built-in commands. */
 const CONFIG = {
+  /* POLLINATIONS_KEY: free "publishable" key (starts with pk_) from https://enter.pollinations.ai — sign in with GitHub, create a Publishable key, paste it here. */
+  POLLINATIONS_KEY: '',
   GEMINI_KEY: '',
   GEMINI_MODEL: 'gemini-flash-latest',
   PREFER_GEMINI: false,
@@ -250,6 +254,7 @@ if (cfg && cfg.apiKey){
   const rows = snap => snap.docs.map(d=>({id:d.id, ...d.data()}));
   window.FB = {
     signIn: () => au.signInAnonymously(auth),
+    signOut: () => au.signOut(auth),
     get: p => fs.getDoc(ref(p)),
     set: (p, data, merge) => fs.setDoc(ref(p), data, merge?{merge:true}:{}),
     update: (p, data) => fs.updateDoc(ref(p), data),
@@ -617,6 +622,7 @@ const PROPS = {
   hairdryer:{up:1,s:`<rect x="-1.5" y="-10" width="3" height="10" fill="#e05a8a"/><rect x="-4" y="-16" width="16" height="7" rx="3.5" fill="#e05a8a"/>`},
   spatula:{up:0,s:`<rect x="-1" y="0" width="2" height="18" fill="#7a5434"/><rect x="-3.6" y="18" width="7.2" height="8" rx="1.4" fill="#9aa6b1"/>`},
   broom:{up:0,s:`<line x1="0" y1="-12" x2="0" y2="46" stroke="#8b5a2b" stroke-width="3" stroke-linecap="round"/><path d="M-8 44 L8 44 L13 62 L-13 62 Z" fill="#dbb460"/><rect x="-9" y="42" width="18" height="4" rx="1" fill="#b23b2e"/>`},
+  bindle:{up:0,s:`<line x1="0" y1="-4" x2="0" y2="40" stroke="#7a5434" stroke-width="2.4" stroke-linecap="round"/><circle cx="0" cy="44" r="8" fill="#c0392b"/><g fill="#fff"><circle cx="-3" cy="42" r="1"/><circle cx="3" cy="46" r="1"/><circle cx="2" cy="40" r="1"/></g>`},
   sword:{up:0,s:`<rect x="-1.2" y="-4" width="2.4" height="8" fill="#5a3a1e"/><rect x="-5" y="3" width="10" height="2.4" fill="#d9b25f"/><path d="M-2 5 L2 5 L1.4 40 L0 44 L-1.4 40 Z" fill="#cfd8df"/>`},
   wand:{up:0,s:`<rect x="-1" y="0" width="2" height="22" fill="#2b2b2b"/><rect x="-1" y="18" width="2" height="4" fill="#fff"/>`},
   stick:{up:0,s:`<path d="M0 -6 L1 30 L-1 52" stroke="#7a5434" stroke-width="2.6" fill="none" stroke-linecap="round"/>`},
@@ -687,6 +693,19 @@ const COST = {
     face:`<path d="M-15 -11 Q-15 12 0 18 Q15 12 15 -11 Q8 -5 0 -6 Q-8 -5 -15 -11 Z" fill="#fff"/><path class="ln" stroke="#6b3020" stroke-width="1.3" d="M-3 -7 Q0 -5 3 -7"/>`, torso:`<rect x="-17" y="-8" width="34" height="5" fill="#222"/><rect x="-3" y="-8.5" width="6" height="6" fill="none" stroke="#ffd84a" stroke-width="1.4"/>` },
   royal:{ outfit:'#8a4fc8', pants:'#5b3fa6', hat:`<path d="M-12 -38 L-12 -50 L-6 -44 L0 -53 L6 -44 L12 -50 L12 -38 Z" fill="#ffd84a"/><circle cx="0" cy="-45" r="1.6" fill="#e33"/>`,
     back:`<path d="M-16 -42 L16 -42 L26 10 Q0 16 -26 10 Z" fill="#c0392b"/><path d="M-16 -42 L16 -42 L18 -36 L-18 -36 Z" fill="#fff"/>` },
+  zombie:{ outfit:'#5a6b4a', pants:'#4a4038', skin:'#a9c79a', face:`<path d="M-11 -24 L-3 -22 M11 -24 L3 -22" stroke="#4a5a3a" stroke-width="1.6"/><path d="M6 -6 l2 3 l2 -3" stroke="#7a2e2e" stroke-width="1" fill="none"/><circle cx="-10" cy="-8" r="1.6" fill="#7a9a6a"/>`,
+    torso:`<path d="M-16 2 L-12 -4 L-8 2 L-4 -5 L0 2 L4 -4 L8 2 L12 -5 L16 2 Z" fill="#131519"/><path d="M-10 -28 l6 4 M6 -20 l5 -3" stroke="#3a4a2a" stroke-width="1.4"/><circle cx="8" cy="-30" r="2.4" fill="#6b1f1f" opacity=".6"/>` },
+  skeleton:{ outfit:'#1d1f24', pants:'#1d1f24', skin:'#f2f0e6', face:`<ellipse cx="-6.6" cy="-17" rx="5" ry="4.6" fill="#1d1f24"/><ellipse cx="6.6" cy="-17" rx="5" ry="4.6" fill="#1d1f24"/><path d="M-1.5 -11 L0 -13.5 L1.5 -11 Z" fill="#1d1f24"/><path d="M-6 -6 H6 M-4 -8 V-4 M0 -8 V-4 M4 -8 V-4" stroke="#1d1f24" stroke-width="1"/>`,
+    torso:`<g stroke="#f2f0e6" stroke-width="2.2" stroke-linecap="round"><line x1="0" y1="-40" x2="0" y2="0"/><path d="M-12 -32 Q0 -28 12 -32 M-13 -24 Q0 -20 13 -24 M-12 -16 Q0 -12 12 -16"/></g>` },
+  police:{ outfit:'#2b3f6b', pants:'#1d2a48', hat:`<path d="M-17 -30 L-15 -42 L15 -42 L17 -30 Z" fill="#1d2a48"/><rect x="-19" y="-31" width="38" height="5" rx="2" fill="#111"/><circle cx="0" cy="-37" r="3" fill="#ffd84a"/>`,
+    torso:`<path d="M-11 -32 l3 0 l1 5 l-4 0 z" fill="#ffd84a"/><rect x="-17" y="-6" width="34" height="4" fill="#111"/>` },
+  firefighter:{ outfit:'#c0392b', pants:'#c0392b', hat:`<path d="M-22 -28 Q-18 -48 0 -48 Q18 -48 22 -28 Q0 -24 -22 -28 Z" fill="#ffd84a"/><rect x="-4" y="-46" width="8" height="12" rx="2" fill="#c0392b"/>`,
+    torso:`<rect x="-17" y="-20" width="34" height="3" fill="#ffd84a"/><rect x="-17" y="-8" width="34" height="3" fill="#ffd84a"/>` },
+  bride:{ outfit:'#f7f7f2', pants:'#f7f7f2', hat:`<path d="M-17 -34 Q0 -44 17 -34 L22 10 Q0 4 -22 10 Z" fill="#fff" opacity=".55"/><g fill="#ff9fb8"><circle cx="-8" cy="-38" r="3"/><circle cx="0" cy="-41" r="3"/><circle cx="8" cy="-38" r="3"/></g>` },
+  football:{ outfit:'#2f8a3e', pants:'#f4f4f4', torso:`<text x="0" y="-16" font-size="16" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Fredoka">10</text>` },
+  hobo:{ outfit:'#7a6a52', pants:'#5a5048', hat:`<path d="M-17 -27 Q-17 -45 0 -45 Q17 -45 17 -27 Z" fill="#8a3c3c"/><rect x="-18" y="-30" width="36" height="6" rx="3" fill="#6e2f2f"/><circle cx="0" cy="-47" r="4" fill="#d9c9a8"/>`,
+    face:`<g fill="#7a5a44" opacity=".55">${Array.from({length:18},(_,i)=>`<circle cx="${-10+(i%6)*4}" cy="${-6+Math.floor(i/6)*2.4}" r=".7"/>`).join('')}</g>`,
+    torso:`<rect x="-14" y="-30" width="8" height="8" fill="#5b7fbf" transform="rotate(-8 -10 -26)"/><rect x="5" y="-14" width="9" height="7" fill="#b5473a" transform="rotate(10 9 -10)"/><path d="M-12 -26 h4 M-12 -24 h4 M7 -12 h5" stroke="#ddd" stroke-width=".6"/><path d="M-16 -2 L-12 3 L-8 -2 L-4 3 L0 -2 L4 3 L8 -2 L12 3 L16 -2" fill="none" stroke="#5a4a36" stroke-width="1.2"/>` },
   banana:{ outfit:'#ffd84a', pants:'#ffd84a', hideHair:1, hat:`<path d="M-19 -6 Q-22 -46 0 -46 Q22 -46 19 -6 L16 -6 Q16 -33 0 -34 Q-16 -33 -16 -6 Z" fill="#ffd84a" stroke="#c9a21c"/><path d="M-2 -46 L-1 -56 L3 -56 L3 -46 Z" fill="#6b4a2a"/>`,
     torso:`<path d="M-6 -40 Q-10 -18 -4 2" stroke="#c9a21c" stroke-width="1.4" fill="none"/>` }
 };
@@ -1243,14 +1262,17 @@ function parseSteps(text){
 /* ================= AI BRAIN: Pollinations (free, no key) → Gemini (your free key) → built-in commands ================= */
 function withTimeout(signal, ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); if (signal) signal.addEventListener('abort',()=>c.abort()); c.signal.addEventListener('abort',()=>clearTimeout(t)); return c.signal; }
 async function askPollinations(prompt, signal){
-  const body={ model:'openai', messages:[{role:'system',content:'You are an animation director. Reply with JSON only.'},{role:'user',content:prompt}], response_format:{type:'json_object'}, referrer:'subservient-holgen', private:true };
-  try {
-    const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:withTimeout(signal,30000)});
+  const messages=[{role:'system',content:'You are an animation director. Reply with JSON only.'},{role:'user',content:prompt}];
+  if (CONFIG.POLLINATIONS_KEY){
+    const r=await fetch('https://gen.pollinations.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CONFIG.POLLINATIONS_KEY},body:JSON.stringify({model:'openai',messages,response_format:{type:'json_object'}}),signal:withTimeout(signal,35000)});
     if (r.ok){ const j=await r.json(); const t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content; const st=parseSteps(t); if (st) return st; }
+  }
+  // old anonymous endpoint (may no longer work)
+  try {
+    const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages,referrer:'subservient-holgen',private:true}),signal:withTimeout(signal,20000)});
+    if (r.ok){ const j=await r.json(); const t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content; return parseSteps(t); }
   } catch(e){ if (signal&&signal.aborted) throw e; }
-  const r2=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',jsonMode:true,private:true,referrer:'subservient-holgen',messages:body.messages}),signal:withTimeout(signal,30000)});
-  if (!r2.ok) return null;
-  return parseSteps(await r2.text());
+  return null;
 }
 async function askGemini(prompt, signal){
   if (!CONFIG.GEMINI_KEY) return null;
@@ -1260,7 +1282,8 @@ async function askGemini(prompt, signal){
   const j=await r.json(); const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts&&j.candidates[0].content.parts.map(p=>p.text||'').join('');
   return parseSteps(t);
 }
-let ctrl=null;
+let ctrl=null, aiOK=null;
+function setAI(v){ aiOK=v; if (typeof showNumber==='function' && H.code) showNumber(); }
 async function askBrain(cmd){
   if (ctrl) ctrl.abort(); ctrl=new AbortController(); const sig=ctrl.signal;
   const prompt=buildPrompt(cmd);
@@ -1269,9 +1292,9 @@ async function askBrain(cmd){
     try { const s=await window.claude.use('sample'); if (s){ const r=await s(prompt,{modelTier:'default',cache:false,signal:sig}); const st=parseSteps(r&&r.text); if (st) return st; } } catch(e){}
   }
   for (const fn of (CONFIG.PREFER_GEMINI ? [askGemini, askPollinations] : [askPollinations, askGemini])){
-    try { const st=await fn(prompt, sig); if (st) return st; } catch(e){ if (sig.aborted) return null; console.warn(fn.name,'failed',e); }
+    try { const st=await fn(prompt, sig); if (st){ setAI(true); return st; } } catch(e){ if (sig.aborted) return null; console.warn(fn.name,'failed',e); }
   }
-  return null;
+  setAI(false); return null;
 }
 
 /* ================= OFFLINE FALLBACK ================= */
@@ -1291,7 +1314,7 @@ const RULES = [
   [/pirate|pirata/, ()=>[{do:'costume',preset:'pirate'},{do:'act',pose:'fencing',prop:'sword',ms:2600,say:'Arr. Whatever.'}]],
   [/dino/, ()=>[{do:'costume',preset:'dinosaur'},{do:'act',pose:'stomp',ms:2600,say:'Rawr.'}]],
   [/ghost|fantasma/, ()=>[{do:'costume',preset:'ghost'},{do:'act',pose:'zombie',ms:2600,say:'Boo.'}]],
-  [/dress|costume|vesti|travest|disguise|maschera/, ()=>{ const k=['pirate','astronaut','dinosaur','wizard','clown','bee','viking','robot','knight','chicken'][Math.floor(Math.random()*10)]; return [{do:'costume',preset:k},{do:'act',pose:'flex',ms:2200,say:'Nailed it.'}]; }],
+  [/dress|costume|vesti|travest|disguise|maschera|diventa|become|fai il |fai la /, ()=>offlineCostume(window.__lastCmd||'')],
   [/dance|balla/, ()=>[{do:'act',pose:'dance',ms:3500}]],
   [/jump|salta/, ()=>[{do:'act',pose:'jump',ms:2400}]],
   [/flip/, ()=>[{do:'act',pose:'flip',ms:1600}]],
@@ -1320,7 +1343,37 @@ const RULES = [
   [/bedroom|camera/, ()=>[{do:'goto',room:'bedroom',x:240}]],
   [/living|soggiorno|salotto/, ()=>[{do:'goto',room:'living',x:240}]]
 ];
+const COSTUME_WORDS = [
+  [/barbon|vagabond|senzatett|hobo|tramp|homeless|clochard|mendic/, 'hobo', ['Spiccioli? No? Ok.','Spare change? No? Fine.']],
+  [/zombi|non ?morto|undead|walking dead/, 'zombie', ['Cervellooo…','Braaains…']], [/schelet|skelet|teschio|skull/, 'skeleton', ['Tutto pelle e ossa.','All skin and bones.']],
+  [/poliz|carabinier|vigile|police|cop\b|sbirr/, 'police', ['Favorisca i documenti.','License and registration.']], [/pompier|firefight|fireman/, 'firefighter', ['Dov\'è l\'incendio?','Where\'s the fire?']],
+  [/sposa|bride|abito bianco/, 'bride', ['Lo voglio. Il divano.','I do. The sofa.']], [/calci|football|soccer|pallone|giocatore/, 'football', ['Gol! Credo.','Goal! I think.']],
+  [/batman|superman|spider|iron ?man|hulk|capitan|captain|wonder|flash|thor|supereroe|superhero|eroe|hero/, 'hero', ['Versione tarocca. Costava meno.','Knock-off version. It was cheaper.']],
+  [/pirat/, 'pirate', ['Arr. Più o meno.','Arr. Sort of.']], [/astronaut|spazio|space/, 'astronaut', ['Houston, abbiamo un pigiama.','Houston, we have pyjamas.']],
+  [/fantasm|ghost/, 'ghost', ['Bu.','Boo.']], [/dino|t-?rex|drago|dragon/, 'dinosaur', ['Rawr.','Rawr.']], [/pollo|gallin|chicken/, 'chicken', ['Coccodè.','Bawk.']],
+  [/mago|maga|strega|witch|wizard|merlin/, 'wizard', ['Abracadabra. Credo.','Abracadabra. I think.']], [/cowboy|sceriffo|sheriff/, 'cowboy', ['Yee-haw. Stancamente.','Yee-haw. Tiredly.']],
+  [/clown|pagliacc/, 'clown', ['Ridete, vi prego.','Laugh. Please.']], [/cavalier|knight|armatura|armor/, 'knight', ['Per l\'onore. E il divano.','For honour. And the sofa.']],
+  [/mummi|mummy/, 'mummy', ['Mmmh.','Mmmh.']], [/\bape\b|\bbee\b|vespa/, 'bee', ['Bzz.','Bzz.']], [/vichingo|viking/, 'viking', ['Saccheggio il frigo.','Raiding the fridge.']],
+  [/ninja/, 'ninja', ['Non mi vedete.','You can\'t see me.']], [/alien|marzian|extraterr/, 'alien', ['Portatemi dal vostro capo.','Take me to your leader.']],
+  [/vampir|dracula/, 'vampire', ['Voglio succhiare… il caffè.','I want to suck… coffee.']], [/gatt|\bcat\b|micio/, 'cat', ['Miao. Fine.','Meow. Done.']],
+  [/elegant|completo|suit|sposo|groom|business|cravatta/, 'suit', ['Elegantissimo.','Very fancy.']], [/dottor|medic|doctor|infermier|nurse/, 'doctor', ['Dica trentatré.','Say ahh.']],
+  [/robot|androide|cyborg/, 'robot', ['Bip. Bop.','Beep. Boop.']], [/babbo|santa|natale|christmas/, 'santa', ['Oh oh oh.','Ho ho ho.']],
+  [/\bre\b|regina|principe|principess|king|queen|prince|princess|corona/, 'royal', ['Inchinatevi.','Bow down.']], [/banana/, 'banana', ['Sono una banana.','I am a banana.']],
+  [/cuoc|chef/, 'chef', ['Oui chef.','Oui chef.']], [/bagno|mare|spiaggia|swim|beach|bikini/, 'swimsuit', ['Al mare!','Beach time!']], [/pigiam|pajama|normale|normal/, 'pajamas', ['Ah, comodo.','Ah, comfy.']]
+];
+function offlineCostume(cmd){
+  const t=String(cmd).toLowerCase();
+  for (const [re,preset,lines] of COSTUME_WORDS) if (re.test(t)) {
+    const st=[{do:'costume',preset},{do:'act',pose:'flex',ms:2400,say:lines[LANG==='it'?0:1]}];
+    if (preset==='hobo') st[1]={do:'act',pose:'shrug',prop:'bindle',ms:2600,say:lines[LANG==='it'?0:1]};
+    if (preset==='zombie') st[1]={do:'act',pose:'zombie',face:'dead',ms:3000,say:lines[LANG==='it'?0:1]};
+    if (preset==='skeleton'||preset==='football') st[1]={do:'act',pose:preset==='football'?'cheer':'robot',ms:2600,say:lines[LANG==='it'?0:1]};
+    return st;
+  }
+  return [{do:'act',pose:'shrug',fx:'question',ms:2200,say:LANG==='it'?'Quel costume non ce l\'ho. (IA non collegata)':'I don\'t have that costume. (AI not connected)'}];
+}
 function offline(cmd){
+  window.__lastCmd=cmd;
   const t=cmd.toLowerCase();
   for (const [re,fn] of RULES) if (re.test(t)) return fn();
   return [{do:'act',pose:'shrug',fx:'question',ms:1800,say:tr('huh')}];
@@ -1332,7 +1385,7 @@ let peer=null, call=null, conn=null, peerReady=false;
 const keyOf = n => String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'').slice(0,18);
 const peerId = (name, code) => `subservient-v1-${keyOf(name)}-${code}`;
 function presenceUpdate(){}
-function showNumber(){ $('mynum').innerHTML = `📞 ${tr('yournum')}: <b>${esc(H.name)} ${esc(H.code)}</b> · <span class="muted">${esc(tr('howcall',H.name+' '+H.code))}</span>`; }
+function showNumber(){ $('mynum').innerHTML = `📞 ${tr('yournum')}: <b>${esc(H.name)} ${esc(H.code)}</b> · <span class="muted">${esc(tr('howcall',H.name+' '+H.code))}</span>${aiOK===false?`<br><span class="muted">🧠 ${esc(tr('aioff'))}</span>`:aiOK?`<br><span class="muted">🧠 ${esc(tr('aion'))}</span>`:''}`; }
 function initPeer(){
   if (typeof Peer==='undefined'){ peerReady=false; return; }
   try { if (peer) peer.destroy(); } catch(e){}
@@ -1408,6 +1461,7 @@ $('f').addEventListener('submit', async e=>{
   if (/\b(propose|proposta|chiedi(le|gli)? (la mano|di sposar)|anello)\b/.test(lc)){ socialAction('propose'); return; }
   if (/\b(wedding|marry|matrimonio|sposiamoci|organizza.*nozze|nozze)\b/.test(lc)){ socialAction('wedding'); return; }
   if (/\b(break ?up|divorce|lascia(lo|la)?|divorzi|rompi)\b/.test(lc)){ socialAction('breakup'); return; }
+  if (/^\s*(restart|start over|new (character|tenant)|ricomincia|riavvia|cambia personaggio|nuovo personaggio)\b/i.test(cmd)){ openSetup(); return; }
   const callM = cmd.match(/^(?:call|phone|ring|chiama|telefona(?:\s+a)?)\s+(.{1,20}?)(?:\s+(\d{1,4}))?\s*$/i);
   if (callM){ startCall(callM[1].trim(), callM[2]||''); return; }
   const id=++runId; stopFx(); bubble.classList.remove('show'); clearSpawns(false);
@@ -1446,7 +1500,7 @@ function moveIn(kind, name, code){
   applyKind(); applyCostume('pajamas'); setProp('mug');
   $('setup').classList.add('hide');
   showNumber(); initPeer();
-  if (window.FB) communityStart(); else { renderSocial(); window.addEventListener('fb-ready', communityStart, {once:true}); }
+  if (C.ready) updateIdentity(); else if (window.FB) communityStart(); else { renderSocial(); window.addEventListener('fb-ready', communityStart, {once:true}); }
   say(tr('hello'), 2500);
 }
 $('btnStart').onclick=()=>{ moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
@@ -1536,6 +1590,19 @@ async function communityStart(){
     F.queryContains('requests','guests',C.uid, list=>{ C.guestOf=list; checkWeddings(); renderSocial(); });
     setInterval(checkWeddings, 15000);
   } catch(e){ console.warn('community', e); renderSocial(tr('c_offline')); }
+}
+async function updateIdentity(){
+  const F=window.FB, key=numKey(H.name,H.code);
+  try {
+    if (key!==C.myKey){
+      const snap=await F.get(['numbers',key]);
+      if (snap.exists() && snap.data().uid!==C.uid){ say(tr('taken'),4000); return; }
+      if (!snap.exists()) await F.set(['numbers',key], {uid:C.uid, name:H.name, code:H.code});
+      if (C.myKey) { try { await F.del(['numbers',C.myKey]); } catch(e){} }
+      C.myKey=key;
+    }
+    await F.set(['players',C.uid], {name:H.name, code:H.code, kind:H.kind, number:key}, true);
+  } catch(e){ console.warn(e); }
 }
 async function lookup(numberText){
   const m=String(numberText||'').trim().match(/^(.+?)\s*[-\s]\s*(\d{3})$/); if(!m) return null;
@@ -1747,12 +1814,32 @@ async function partnerStep(s, id){
   n.busy=false;
 }
 
+
+/* ================= CHANGE TENANT / START OVER ================= */
+function openSetup(){
+  pick = H.kind || 'm';
+  document.querySelectorAll('.pick button').forEach(x=>x.classList.toggle('on', x.dataset.k===pick));
+  $('nameIn').value = H.name || (pick==='f'?'Holga':'Holgen');
+  if ($('codeIn') && H.code) $('codeIn').value = H.code;
+  $('setupMore').style.display = $('setup').classList.contains('hide') ? 'block' : 'none';
+  const r=$('btnReset'); r.dataset.sure=''; r.textContent=tr('restartAll');
+  $('setup').classList.remove('hide');
+}
+$('btnNew').onclick=openSetup;
+$('btnCancelSetup').onclick=()=>{ $('setup').classList.add('hide'); if (window.focusCmd) focusCmd(); };
+$('btnReset').onclick=async()=>{
+  const r=$('btnReset'); if (!r.dataset.sure){ r.dataset.sure='1'; r.textContent=tr('restartSure'); return; }
+  try { ['subservient','subservientSeen'].forEach(k=>localStorage.removeItem(k)); } catch(e){}
+  try { if (typeof C!=='undefined' && C.ready && window.FB){ if (C.myKey) await window.FB.del(['numbers',C.myKey]); if (window.FB.signOut) await window.FB.signOut(); } } catch(e){}
+  location.reload();
+};
+
 /* ================= LANGUAGE ================= */
 const I18N = {
   en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Hang up', saysth:'Say something…', send:'Send',
        start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`📞 ${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
        ring:'Ring ring!', ring2:'Ring… ring…', self:'Calling myself? Bold.', nosignal:'No signal right now. Try again in a moment.', already:'Already on the phone.', nobody:n=>`Nobody called ${n} is home right now.`,
-       hello:'Oh. A camera. Great.', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
+       hello:'Oh. A camera. Great.', aioff:'AI not connected: basic commands only', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
        c_single:'Single', c_dating:n=>`Dating ${n}`, c_engaged:n=>`Engaged to ${n}`, c_married:n=>`Married to ${n}`, c_weddingon:d=>`wedding ${d}`, c_rel:'Relationships',
        c_askhint:'Ask someone out with their number (name + code).', c_numph:'e.g. Marco 123', c_ask:'Ask out', c_propose:'Propose', c_plan:'Plan the wedding', c_breakup:'Break up', c_divorce:'Divorce', c_close:'Close', c_sure:'Sure? Tap again',
        c_when:'Date and time', c_guests:'Guests (numbers, comma separated)', c_planhint:n=>`${n} will get the invitation to confirm. Guests get an invite and can watch the ceremony.`, c_sendinv:'Send invitations', c_invsent:'Invitations sent!', c_missing:n=>`(not found: ${n})`,
@@ -1762,7 +1849,7 @@ const I18N = {
   it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Riaggancia', saysth:'Scrivi qualcosa…', send:'Invia',
        start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`📞 Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
        ring:'Driiin driiin!', ring2:'Tuu… tuu…', self:'Chiamare me stesso? Audace.', nosignal:'Niente campo adesso. Riprova tra poco.', already:'Sono già al telefono.', nobody:n=>`Nessuno di nome ${n} è in casa adesso.`,
-       hello:'Ah. Una telecamera. Fantastico.', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
+       hello:'Ah. Una telecamera. Fantastico.', aioff:'IA non collegata: solo comandi base', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
        c_single:'Single', c_dating:n=>`Fidanzato/a con ${n}`, c_engaged:n=>`Promesso/a a ${n}`, c_married:n=>`Sposato/a con ${n}`, c_weddingon:d=>`nozze ${d}`, c_rel:'Relazioni',
        c_askhint:'Chiedi di uscire a qualcuno col suo numero (nome + codice).', c_numph:'es. Marco 123', c_ask:'Chiedi di uscire', c_propose:'Fai la proposta', c_plan:'Organizza il matrimonio', c_breakup:'Lascia', c_divorce:'Divorzia', c_close:'Chiudi', c_sure:'Sicuro? Tocca di nuovo',
        c_when:'Data e ora', c_guests:'Invitati (numeri separati da virgola)', c_planhint:n=>`${n} riceverà l'invito da confermare. Gli invitati ricevono l'invito e possono assistere alla cerimonia.`, c_sendinv:'Manda gli inviti', c_invsent:'Inviti spediti!', c_missing:n=>`(non trovati: ${n})`,
