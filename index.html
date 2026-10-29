@@ -235,7 +235,7 @@
 const CONFIG = {
   /* POLLINATIONS_KEY: free "publishable" key (starts with pk_) from https://enter.pollinations.ai — sign in with GitHub, create a Publishable key, paste it here. */
   POLLINATIONS_KEY: '',
-  GEMINI_KEY: '',
+  GEMINI_KEY: 'AQ.Ab8RN6L_EiJcr47MbmBNzk3XG8R39FLOgCALow5uB7IxPQg7kw',
   GEMINI_MODEL: 'gemini-flash-latest',
   PREFER_GEMINI: true,
   AI_PER_HOUR: 300,  // max AI commands per phone per hour (Google's own free limits still apply)
@@ -1281,8 +1281,11 @@ function myGeminiKey(){ try { return localStorage.getItem('subservientGemini')||
 async function askGemini(prompt, signal){
   const key = myGeminiKey() || CONFIG.GEMINI_KEY;
   if (!key) return null;
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CONFIG.GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(key)}`;
-  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0.9}}),signal:withTimeout(signal,30000)});
+  const base=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CONFIG.GEMINI_MODEL)}:generateContent`;
+  const body=JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0.9}});
+  // key in the header (works for both classic AIza… keys and the newer AQ.… keys); fall back to ?key= if refused
+  let r=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body,signal:withTimeout(signal,30000)});
+  if (r.status===401||r.status===403||r.status===400) r=await fetch(base+'?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body,signal:withTimeout(signal,30000)});
   if (!r.ok) return null;
   const j=await r.json(); const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts&&j.candidates[0].content.parts.map(p=>p.text||'').join('');
   return parseSteps(t);
