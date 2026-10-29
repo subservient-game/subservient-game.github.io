@@ -224,6 +224,7 @@
   </form>
   <button type="button" class="mynum" id="mynum"></button>
   <div class="social" id="social"></div>
+  <div id="ver" style="font-size:12px;opacity:.45;padding:2px 4px">versione</div>
   <div class="sheet" id="sheet"><div class="sheetBody card" id="sheetBody"></div></div>
   <div class="callbox" id="callbox">
     <div class="callhead"><span id="callTitle">📞 Call</span><button class="red" id="btnHang" type="button" data-i="hangup">Hang up</button></div>
@@ -2073,7 +2074,8 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='b10';
+const BUILD='11';
+try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
     if (m && m[1]!==BUILD){ const busy=()=>document.activeElement&&/^(cmd|chatIn)$/.test(document.activeElement.id)&&document.activeElement.value; if (!busy()) location.reload(); else setTimeout(checkUpdate,20000); } } catch(e){}
