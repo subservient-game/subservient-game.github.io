@@ -1297,50 +1297,55 @@ async function askBrain(cmd){
 }
 
 /* ================= OFFLINE FALLBACK ================= */
+/* Offline commands: whole words only (so "visit" doesn't trigger "sit"), Italian + English. */
+const W = (...words) => new RegExp('(^|[^a-z])(' + words.join('|') + ')', 'i');
 const RULES = [
-  [/window|finestra/, ()=>{ const w={living:'window',bedroom:'bedroom_window',bathroom:'bathroom_window'}[H.room]||'window'; return [{do:'goto',object:w},{do:'leap',object:w,fx:'glass',say:'Geronimo.'},{do:'appear',room:'garden',x:300,from:'top',say:'…worth it.'}]; }],
-  [/poo|poop|dump|cacca|toilet|crap|number two/, ()=>[{do:'goto',object:'toilet'},{do:'act',pose:'strain',at:'toilet',prop:'newspaper',fx:'stink',ms:3200,say:'Privacy, please.'},{do:'act',pose:'sit',at:'toilet',face:'relief',ms:900},{do:'set',object:'toilet',state:'flush'}]],
-  [/pee|piss|pipi|wee/, ()=>[{do:'goto',object:'toilet'},{do:'act',pose:'strain',at:'toilet',face:'relief',ms:2200,say:'Ahh…'},{do:'set',object:'toilet',state:'flush'}]],
-  [/shower|doccia|wash|bath/, ()=>[{do:'goto',object:'shower'},{do:'costume',preset:'shower'},{do:'set',object:'shower',state:'on'},{do:'act',pose:'shower',at:'shower',ms:3800,say:'La la laaa…'},{do:'set',object:'shower',state:'off'},{do:'goto',object:'towel'},{do:'costume',preset:'pajamas'}]],
-  [/brush|teeth|denti/, ()=>[{do:'goto',object:'bathroom_sink'},{do:'act',pose:'brush',prop:'toothbrush',ms:2600}]],
-  [/sleep|dormi|nap|bed/, ()=>[{do:'goto',object:'bed'},{do:'act',pose:'sleep',at:'bed',ms:4500}]],
-  [/coffee|caff/, ()=>[{do:'goto',object:'coffee'},{do:'set',object:'coffee',state:'on'},{do:'act',pose:'drink',prop:'mug',ms:2400,say:'Liquid motivation.'}]],
-  [/cook|cucina|egg|pancake/, ()=>[{do:'goto',object:'stove'},{do:'costume',preset:'chef'},{do:'set',object:'stove',state:'on'},{do:'act',pose:'cook',prop:'pan',ms:3200},{do:'set',object:'stove',state:'off'}]],
-  [/eat|mangia|hungry|fame|sandwich/, ()=>[{do:'goto',object:'fridge'},{do:'set',object:'fridge',state:'open'},{do:'act',pose:'eat',prop:'sandwich',ms:2800},{do:'set',object:'fridge',state:'closed'}]],
-  [/tv|telly|watch/, ()=>[{do:'goto',object:'tv'},{do:'set',object:'tv',state:'on'},{do:'act',pose:'sit',at:'sofa',prop:'remote',ms:3500}]],
-  [/music|radio/, ()=>[{do:'goto',object:'radio'},{do:'set',object:'radio',state:'on'},{do:'act',pose:'dance',ms:3500}]],
-  [/guitar|chitarra/, ()=>[{do:'goto',object:'guitar'},{do:'act',pose:'guitar',prop:'guitar',ms:3500}]],
-  [/pirate|pirata/, ()=>[{do:'costume',preset:'pirate'},{do:'act',pose:'fencing',prop:'sword',ms:2600,say:'Arr. Whatever.'}]],
-  [/dino/, ()=>[{do:'costume',preset:'dinosaur'},{do:'act',pose:'stomp',ms:2600,say:'Rawr.'}]],
-  [/ghost|fantasma/, ()=>[{do:'costume',preset:'ghost'},{do:'act',pose:'zombie',ms:2600,say:'Boo.'}]],
-  [/dress|costume|vesti|travest|disguise|maschera|diventa|become|fai il |fai la /, ()=>offlineCostume(window.__lastCmd||'')],
-  [/dance|balla/, ()=>[{do:'act',pose:'dance',ms:3500}]],
-  [/jump|salta/, ()=>[{do:'act',pose:'jump',ms:2400}]],
-  [/flip/, ()=>[{do:'act',pose:'flip',ms:1600}]],
-  [/wave|hello|\bhi\b|ciao/, ()=>[{do:'act',pose:'wave',ms:2000,say:'Hey.'}]],
-  [/computer|work|lavora|type/, ()=>[{do:'goto',object:'computer'},{do:'set',object:'computer',state:'on'},{do:'act',pose:'type',at:'computer',ms:3500}]],
-  [/game|gioca/, ()=>[{do:'act',pose:'play',at:'sofa',prop:'controller',ms:3500}]],
-  [/garden|outside|fuori/, ()=>[{do:'goto',room:'garden',x:240},{do:'act',pose:'yawn',ms:1500}]],
-  [/grill|bbq|barbecue/, ()=>[{do:'goto',object:'grill'},{do:'set',object:'grill',state:'on'},{do:'act',pose:'cook',prop:'spatula',ms:3200}]],
-  [/hammock|relax/, ()=>[{do:'goto',object:'hammock'},{do:'act',pose:'swing',at:'hammock',ms:4000}]],
-  [/climb|tree|albero/, ()=>[{do:'goto',object:'tree'},{do:'act',pose:'sit',at:'tree',ms:3000,say:'Nice view.'}]],
-  [/water|annaff|innaff|plant|flower/, ()=>[{do:'goto',object:'plant'},{do:'act',pose:'water',prop:'can',ms:2400},{do:'set',object:'plant',state:'grow'}]],
-  [/read|book|leggi/, ()=>[{do:'act',pose:'read',at:'sofa',prop:'bigbook',ms:3500}]],
-  [/light|luce|dark|buio/, ()=>[{do:'lights',on:false},{do:'wait',ms:1500},{do:'lights',on:true}]],
-  [/cry|piang|sad/, ()=>[{do:'act',pose:'cry',ms:2800}]],
-  [/laugh|ridi/, ()=>[{do:'act',pose:'laugh',ms:2400}]],
-  [/angry|arrabb/, ()=>[{do:'act',pose:'angry',ms:2400}]],
-  [/sing|canta/, ()=>[{do:'act',pose:'sing',prop:'mic',ms:3000}]],
-  [/fart|scorreg|peto/, ()=>[{do:'act',pose:'fart',ms:2000,say:'Excuse me.'}]],
-  [/sit|siedi/, ()=>[{do:'act',pose:'sit',at:'sofa',ms:3000}]],
-  [/exercise|workout|squat/, ()=>[{do:'act',pose:'squat',ms:3200}]],
-  [/yoga|meditat/, ()=>[{do:'act',pose:'meditate',ms:3500}]],
-  [/selfie|photo|foto/, ()=>[{do:'act',pose:'selfie',prop:'phone',ms:1800},{do:'flash'}]],
-  [/hide|nascond/, ()=>[{do:'goto',room:H.room,x:-70},{do:'wait',ms:1500},{do:'goto',room:H.room,x:20}]],
-  [/kitchen/, ()=>[{do:'goto',room:'kitchen',x:240}]],
-  [/bathroom|bagno/, ()=>[{do:'goto',room:'bathroom',x:240}]],
-  [/bedroom|camera/, ()=>[{do:'goto',room:'bedroom',x:240}]],
-  [/living|soggiorno|salotto/, ()=>[{do:'goto',room:'living',x:240}]]
+  [W('finestr','window'), ()=>{ const w={living:'window',bedroom:'bedroom_window',bathroom:'bathroom_window'}[H.room]||'window'; return [{do:'goto',object:w},{do:'leap',object:w,fx:'glass',say:LANG==='it'?'Geronimo.':'Geronimo.'},{do:'appear',room:'garden',x:300,from:'top',say:LANG==='it'?'…ne valeva la pena.':'…worth it.'}]; }],
+  [W('annaff','innaff','pianta','fiori','water the','plant','flower'), ()=>[{do:'goto',object:'plant'},{do:'act',pose:'water',prop:'can',ms:2400},{do:'set',object:'plant',state:'grow'}]],
+  [/(vai|va'|andiamo|andare|entra|visita|go to|go into|walk to)\b.*\b(cucina|bagno|camera|giardino|soggiorno|salotto|kitchen|bathroom|bedroom|garden|living)/, ()=>{ const m=(window.__lastCmd||'').toLowerCase().match(/(cucina|bagno|camera|giardino|soggiorno|salotto|kitchen|bathroom|bedroom|garden|living)/); const r={cucina:'kitchen',kitchen:'kitchen',bagno:'bathroom',bathroom:'bathroom',camera:'bedroom',bedroom:'bedroom',giardino:'garden',garden:'garden',soggiorno:'living',salotto:'living',living:'living'}[m[1]]; return [{do:'goto',room:r,x:240}]; }],
+  [W('cacca','cagare','poop','dump','crap','gabinetto','water\\b','wc\\b','toilet'), ()=>[{do:'goto',object:'toilet'},{do:'act',pose:'strain',at:'toilet',prop:'newspaper',fx:'stink',ms:3200,say:LANG==='it'?'Un po\' di privacy.':'Privacy, please.'},{do:'act',pose:'sit',at:'toilet',face:'relief',ms:900},{do:'set',object:'toilet',state:'flush'}]],
+  [W('pipi','pisci','pee\\b','piss','wee\\b'), ()=>[{do:'goto',object:'toilet'},{do:'act',pose:'strain',at:'toilet',face:'relief',ms:2200,say:'Ahh…'},{do:'set',object:'toilet',state:'flush'}]],
+  [W('travest','vestiti da','vestirsi da','maschera','costume','dress','disguise','diventa','become'), ()=>offlineCostume(window.__lastCmd||'')],
+  [W('doccia','lavati','lavarti','shower','wash'), ()=>[{do:'goto',object:'shower'},{do:'costume',preset:'shower'},{do:'set',object:'shower',state:'on'},{do:'act',pose:'shower',at:'shower',ms:3800,say:'La la laaa…'},{do:'set',object:'shower',state:'off'},{do:'goto',object:'towel'},{do:'costume',preset:'pajamas'}]],
+  [W('denti','teeth','brush'), ()=>[{do:'goto',object:'bathroom_sink'},{do:'act',pose:'brush',prop:'toothbrush',ms:2600}]],
+  [W('dormi','dormire','nanna','pisolino','letto','sleep','nap\\b','bed\\b'), ()=>[{do:'goto',object:'bed'},{do:'act',pose:'sleep',at:'bed',ms:4500}]],
+  [W('caff','coffee','espresso'), ()=>[{do:'goto',object:'coffee'},{do:'set',object:'coffee',state:'on'},{do:'act',pose:'drink',prop:'mug',ms:2400,say:LANG==='it'?'Motivazione liquida.':'Liquid motivation.'}]],
+  [W('cucinare','cuoci','cucina (un|una|qualcosa|la cena|il pranzo)','prepara (la cena|il pranzo|da mangiare)','frittat','pancake','uova','cook','fry'), ()=>[{do:'goto',object:'stove'},{do:'costume',preset:'chef'},{do:'set',object:'stove',state:'on'},{do:'act',pose:'cook',prop:'pan',ms:3200},{do:'set',object:'stove',state:'off'},{do:'costume',preset:'pajamas'}]],
+  [W('mangia','mangiare','fame','panino','pizza','gelato','eat\\b','hungry','sandwich'), ()=>[{do:'goto',object:'fridge'},{do:'set',object:'fridge',state:'open'},{do:'act',pose:'eat',prop:/pizza/i.test(window.__lastCmd)?'pizza':/gelat|ice/i.test(window.__lastCmd)?'icecream':'sandwich',ms:2800},{do:'set',object:'fridge',state:'closed'}]],
+  [W('bevi','bere','birra','drink','beer'), ()=>[{do:'goto',object:'fridge'},{do:'act',pose:'drink',prop:'bottle',ms:2600,say:LANG==='it'?'Salute.':'Cheers.'}]],
+  [W('tv\\b','tele','televis','watch','guarda la','film'), ()=>[{do:'goto',object:'tv'},{do:'set',object:'tv',state:'on'},{do:'act',pose:'sit',at:'sofa',prop:'remote',ms:3500}]],
+  [W('radio','musica','music'), ()=>[{do:'goto',object:'radio'},{do:'set',object:'radio',state:'on'},{do:'act',pose:'dance',ms:3500}]],
+  [W('chitarr','guitar','suona'), ()=>[{do:'goto',object:'guitar'},{do:'act',pose:'guitar',prop:'guitar',ms:3500}]],
+  [W('balla','ballare','danza','dance'), ()=>[{do:'act',pose:'dance',ms:3500}]],
+  [W('salta','saltare','jump'), ()=>[{do:'act',pose:'jump',ms:2400}]],
+  [W('capriol','flip'), ()=>[{do:'act',pose:'flip',ms:1600}]],
+  [W('saluta','ciao','hello','hi\\b','wave'), ()=>[{do:'act',pose:'wave',ms:2000,say:LANG==='it'?'Ehi.':'Hey.'}]],
+  [W('computer','pc\\b','lavora','scrivania','work','type'), ()=>[{do:'goto',object:'computer'},{do:'set',object:'computer',state:'on'},{do:'act',pose:'type',at:'computer',ms:3500}]],
+  [W('videogioc','gioca','play'), ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'play',at:'sofa',prop:'controller',ms:3500}]],
+  [W('barbecue','grigliat','griglia','bbq','grill'), ()=>[{do:'goto',object:'grill'},{do:'set',object:'grill',state:'on'},{do:'act',pose:'cook',prop:'spatula',ms:3200}]],
+  [W('amaca','hammock','rilassa','relax'), ()=>[{do:'goto',object:'hammock'},{do:'act',pose:'swing',at:'hammock',ms:4000}]],
+  [W('albero','arrampic','climb','tree'), ()=>[{do:'goto',object:'tree'},{do:'act',pose:'sit',at:'tree',ms:3000,say:LANG==='it'?'Bella vista.':'Nice view.'}]],
+  [W('leggi','leggere','libro','read','book'), ()=>[{do:'goto',object:'bookshelf'},{do:'act',pose:'read',at:'sofa',prop:'bigbook',ms:3500}]],
+  [W('spegni','luce','luci','buio','light','dark'), ()=>[{do:'lights',on:!/spegn|buio|off|dark/i.test(window.__lastCmd)}]],
+  [W('piang','triste','cry','sad\\b'), ()=>[{do:'act',pose:'cry',ms:2800}]],
+  [W('ridi','ridere','risata','laugh'), ()=>[{do:'act',pose:'laugh',ms:2400}]],
+  [W('arrabb','incazz','angry'), ()=>[{do:'act',pose:'angry',ms:2400}]],
+  [W('canta','cantare','sing\\b'), ()=>[{do:'act',pose:'sing',prop:'mic',ms:3000}]],
+  [W('scoregg','peto','fart'), ()=>[{do:'act',pose:'fart',ms:2000,say:LANG==='it'?'Scusate.':'Excuse me.'}]],
+  [W('siediti','sederti','divano','sit\\b','sofa','couch'), ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'sit',at:'sofa',ms:3000}]],
+  [W('sdraiati','stenditi','lie down'), ()=>[{do:'goto',object:'sofa'},{do:'act',pose:'lie',at:'sofa',ms:3500}]],
+  [W('palestra','allenati','flession','squat','exercise','workout'), ()=>[{do:'act',pose:'squat',ms:3200}]],
+  [W('yoga','medita'), ()=>[{do:'act',pose:'meditate',ms:3500}]],
+  [W('selfie','foto','photo'), ()=>[{do:'act',pose:'selfie',prop:'phone',ms:1800},{do:'flash'}]],
+  [W('nascondi','hide'), ()=>[{do:'goto',room:H.room,x:-70},{do:'wait',ms:1500},{do:'goto',room:H.room,x:20}]],
+  [W('vola','volare','fly\\b'), ()=>[{do:'leap',x:H.X,y:120,height:40,hide:false},{do:'act',pose:'fly',ms:2500},{do:'leap',x:H.X,y:258,height:0}]],
+  [W('svieni','muori','morto','faint','die\\b','dead'), ()=>[{do:'act',pose:'faint',ms:2500}]],
+  [W('bacio','bacia','kiss','cuore','love','amore'), ()=>[{do:'act',pose:'kiss',ms:2500}]],
+  [W('giardino','fuori','garden','outside'), ()=>[{do:'goto',room:'garden',x:240}]],
+  [W('cucina','kitchen'), ()=>[{do:'goto',room:'kitchen',x:240}]],
+  [W('bagno','bathroom'), ()=>[{do:'goto',room:'bathroom',x:240}]],
+  [W('camera','bedroom'), ()=>[{do:'goto',room:'bedroom',x:240}]],
+  [W('soggiorno','salotto','living'), ()=>[{do:'goto',room:'living',x:240}]]
 ];
 const COSTUME_WORDS = [
   [/barbon|vagabond|senzatett|hobo|tramp|homeless|clochard|mendic/, 'hobo', ['Spiccioli? No? Ok.','Spare change? No? Fine.']],
@@ -1373,9 +1378,9 @@ function offlineCostume(cmd){
 }
 function offline(cmd){
   window.__lastCmd=cmd;
-  const t=cmd.toLowerCase();
+  const t=cmd.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   for (const [re,fn] of RULES) if (re.test(t)) return fn();
-  return [{do:'act',pose:'shrug',fx:'question',ms:1800,say:tr('huh')}];
+  return [{do:'act',pose:'shrug',fx:'question',ms:2400,say:LANG==='it'?'Non ho capito. (IA non collegata: capisco solo comandi semplici)':'Didn\'t get it. (AI not connected: simple commands only)'}];
 }
 
 /* ================= PHONE (relay through ntfy.sh: free, no accounts, works on any network) =================
