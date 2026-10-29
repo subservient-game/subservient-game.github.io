@@ -237,7 +237,8 @@ const CONFIG = {
   /* POLLINATIONS_KEY: free "publishable" key (starts with pk_) from https://enter.pollinations.ai — sign in with GitHub, create a Publishable key, paste it here. */
   POLLINATIONS_KEY: '',
   GEMINI_KEY: 'AQ.Ab8RN6L_EiJcr47MbmBNzk3XG8R39FLOgCALow5uB7IxPQg7kw',
-  GEMINI_MODEL: 'gemini-flash-latest',
+  GEMINI_MODEL: 'gemini-flash-lite-latest',   // the Lite model has the most generous free quota
+  GEMINI_FALLBACK_MODEL: 'gemini-flash-latest',
   PREFER_GEMINI: true,
   AI_PER_HOUR: 300,  // max AI commands per phone per hour (Google's own free limits still apply)
   /* FIREBASE: paste here the config of your free Firebase project (see the guide). Leave {} to play without the community. */
@@ -1287,7 +1288,9 @@ async function askGemini(prompt, signal){
   // key in the header (works for both classic AIza… keys and the newer AQ.… keys); fall back to ?key= if refused
   let r=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body,signal:withTimeout(signal,30000)});
   if (r.status===401||r.status===403||r.status===400) r=await fetch(base+'?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body,signal:withTimeout(signal,30000)});
-  if (!r.ok) return null;
+  if (r.status===429 && CONFIG.GEMINI_FALLBACK_MODEL && !askGemini._fb){ askGemini._fb=1; try { const alt=base.replace(encodeURIComponent(CONFIG.GEMINI_MODEL), encodeURIComponent(CONFIG.GEMINI_FALLBACK_MODEL)); r=await fetch(alt,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body,signal:withTimeout(signal,30000)}); } finally { askGemini._fb=0; } }
+  if (r.status===429){ window.__aiPauseUntil=Date.now()+60000; }
+  if (!r.ok){ try { console.warn('Gemini', r.status, (await r.text()).slice(0,300)); } catch(e){} return null; }
   const j=await r.json(); const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts&&j.candidates[0].content.parts.map(p=>p.text||'').join('');
   return parseSteps(t);
 }
@@ -1299,7 +1302,7 @@ function aiAllowed(){
 }
 async function askBrain(cmd){
   if (ctrl) ctrl.abort(); ctrl=new AbortController(); const sig=ctrl.signal;
-  if (!aiAllowed()){ setAI(false); return null; }
+  if (!aiAllowed() || (window.__aiPauseUntil||0)>Date.now()){ setAI(false); return null; }
   const prompt=buildPrompt(cmd);
   // inside Claude (artifact) use Claude; on the open web use the free services
   if (window.claude && typeof window.claude.use==='function'){
