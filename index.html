@@ -105,7 +105,8 @@
   .req { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); font-size:.92rem; }
   .req small { color:var(--muted); } .req .btns { display:flex; gap:6px; } .req .btns button { padding:6px 12px; font-size:14px; }
   .callbox { display:none; flex:0 0 auto; margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px; }
-  .callbox.show { display:block; }
+  .callbox.show { display:flex; flex-direction:column; position:fixed; left:8px; right:8px; bottom:var(--kbd,8px); z-index:65; max-height:min(60vh, calc(var(--vvh,100vh) - 24px)); box-shadow:0 -8px 30px rgba(0,0,0,.55); max-width:744px; margin:0 auto; }
+  .callbox.show .log { flex:1 1 auto; max-height:none; min-height:60px; }
   .callhead { display:flex; justify-content:space-between; align-items:center; font-weight:600; margin-bottom:8px; }
   .callhead button { padding:6px 12px; font-size:14px; }
   .log { max-height:22vh; overflow-y:auto; display:flex; flex-direction:column; gap:5px; margin-bottom:8px; font-size:.92rem; }
@@ -1922,6 +1923,14 @@ applyLang();
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault(); focusCmd(); });
 })();
 
+
+/* keep the chat panel right above the on-screen keyboard (Android + iPhone) */
+(function(){
+  const vv=window.visualViewport; if(!vv) return;
+  const place=()=>{ const kb=Math.max(0, window.innerHeight - vv.height - vv.offsetTop); document.documentElement.style.setProperty('--kbd', (kb+8)+'px'); document.documentElement.style.setProperty('--vvh', vv.height+'px'); const l=$('log'); if(l) l.scrollTop=1e6; };
+  vv.addEventListener('resize',place); vv.addEventListener('scroll',place); place();
+  $('chatIn').addEventListener('focus',()=>setTimeout(place,250));
+})();
 /* ================= BOOT ================= */
 function tick(){ const d=new Date(); $('clock').textContent=d.toLocaleDateString('en-GB')+' '+d.toLocaleTimeString('en-GB'); }
 tick(); setInterval(tick,1000);
