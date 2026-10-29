@@ -2071,6 +2071,14 @@ try { const s=JSON.parse(localStorage.getItem('subservient')||'null'); if (s && 
 let idleSince=performance.now();
 setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='idle' && H.prop==='mug' && !H.seat && !H.lying && !call){ setPose('drink'); setTimeout(()=>{ if(H.pose==='drink' && !caption.textContent.startsWith('>')) setPose('idle'); },1600); } }, 9000);
 requestAnimationFrame(frame);
+
+/* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
+const BUILD='b10';
+async function checkUpdate(){
+  try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
+    if (m && m[1]!==BUILD){ const busy=()=>document.activeElement&&/^(cmd|chatIn)$/.test(document.activeElement.id)&&document.activeElement.value; if (!busy()) location.reload(); else setTimeout(checkUpdate,20000); } } catch(e){}
+}
+if (location.protocol.startsWith('http')){ document.addEventListener('visibilitychange',()=>{ if(!document.hidden) checkUpdate(); }); setInterval(checkUpdate, 5*60000); setTimeout(checkUpdate, 3000); }
 </script>
 </body>
 </html>
