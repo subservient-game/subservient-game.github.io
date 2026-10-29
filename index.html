@@ -224,7 +224,6 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 /* ======================= SETTINGS (edit me) =======================
    GEMINI_KEY: optional free key from https://aistudio.google.com/apikey
@@ -1379,45 +1378,44 @@ function offline(cmd){
   return [{do:'act',pose:'shrug',fx:'question',ms:1800,say:tr('huh')}];
 }
 
-/* ================= PHONE (direct browser-to-browser, no accounts) =================
+/* ================= PHONE (relay through ntfy.sh: free, no accounts, works on any network) =================
    Your number = name + 3-digit code. Friends call you with "call <name> <code>". */
-let peer=null, call=null, conn=null, peerReady=false;
+const NTFY='https://ntfy.sh';
+let es=null, call=null, peerReady=false;
 const keyOf = n => String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'').slice(0,18);
-const peerId = (name, code) => `subservient-v1-${keyOf(name)}-${code}`;
+const topicOf = (name, code) => `subservient-game-v2-${keyOf(name)}-${code}`;
 function presenceUpdate(){}
+function showNumberSafe(){ if (typeof showNumber==='function') showNumber(); }
 function showNumber(){ $('mynum').innerHTML = `📞 ${tr('yournum')}: <b>${esc(H.name)} ${esc(H.code)}</b> · <span class="muted">${esc(tr('howcall',H.name+' '+H.code))}</span>${aiOK===false?`<br><span class="muted">🧠 ${esc(tr('aioff'))}</span>`:aiOK?`<br><span class="muted">🧠 ${esc(tr('aion'))}</span>`:''}`; }
 function initPeer(){
-  if (typeof Peer==='undefined'){ peerReady=false; return; }
-  try { if (peer) peer.destroy(); } catch(e){}
+  try { if (es) es.close(); } catch(e){}
   peerReady=false;
-  peer = new Peer(peerId(H.name, H.code), {debug:0});
-  peer.on('open', ()=>{ peerReady=true; });
-  peer.on('disconnected', ()=>{ peerReady=false; setTimeout(()=>{ try{ peer.reconnect(); }catch(e){} }, 1500); });
-  peer.on('error', e=>{
-    if (e.type==='unavailable-id'){ say(tr('taken'), 4000); }
-    else if (e.type==='peer-unavailable'){ if (call && call.state==='ringing') endCall(tr('nobody', call.peerName)); }
-    else if (e.type==='network' || e.type==='server-error' || e.type==='socket-error'){ peerReady=false; }
-  });
-  peer.on('connection', c=>{
-    c.on('data', d=>onPhoneData(c, d));
-    c.on('close', ()=>{ if (call && conn===c) endCall(tr('hungup', call.peerName)); });
-  });
+  if (typeof EventSource==='undefined') return;
+  const startedAt=Math.floor(Date.now()/1000)-5;
+  es = new EventSource(`${NTFY}/${topicOf(H.name,H.code)}/sse`);
+  es.onopen = ()=>{ peerReady=true; };
+  es.onerror = ()=>{ peerReady=false; };   // EventSource reconnects by itself
+  es.onmessage = ev=>{
+    let m; try { m=JSON.parse(ev.data); } catch(e){ return; }
+    if (m.event!=='message' || (m.time||0)<startedAt) return;
+    let d; try { d=JSON.parse(m.message); } catch(e){ return; }
+    onPhoneData(d);
+  };
 }
-function send(msg){ try { if (conn && conn.open) conn.send(msg); } catch(e){} }
-function onPhoneData(c, d){
-  if (!d || typeof d!=='object') return;
-  if (d.t==='ring'){
-    if (call){ try{ c.send({t:'busy'}); }catch(e){} setTimeout(()=>{ try{c.close();}catch(e){} },500); return; }
-    conn=c; call={peerName:String(d.from||'?').slice(0,18), state:'incoming'};
-    $('incomingTxt').textContent=tr('calling', call.peerName+' '+String(d.code||'').slice(0,3)); $('incoming').classList.add('show');
-    ringAnim(); return;
-  }
-  if (!call || c!==conn) return;
-  if (d.t==='answer'){ call.state='active'; openCallBox(); log('sys',tr('pickedup',call.peerName)); say(tr('pickedup',call.peerName),2000,true); setProp('phone'); setPose('phone'); }
-  else if (d.t==='chat'){ const t=String(d.text||'').slice(0,200); log('them',t); say(`${call.peerName}: ${t}`, null, true); }
-  else if (d.t==='busy') endCall(tr('busy',call.peerName));
-  else if (d.t==='decline') endCall(tr('declined',call.peerName));
-  else if (d.t==='hang') endCall(tr('hungup',call.peerName));
+async function sendTo(topic, msg){
+  try { await fetch(`${NTFY}/${topic}`, {method:'POST', body: JSON.stringify({...msg, from:H.name, fromTopic:topicOf(H.name,H.code)})}); return true; }
+  catch(e){ return false; }
+}
+function send(msg){ if (call && call.topic) sendTo(call.topic, msg); }
+function openChatWith(topic, name){
+  if (!call || call.topic!==topic){ call={topic, peerName:String(name||'?').slice(0,18), state:'active'}; openCallBox(); }
+  else if (!$('callbox').classList.contains('show')) openCallBox();
+}
+function onPhoneData(d){
+  if (!d || typeof d!=='object' || !d.fromTopic) return;
+  if (d.t==='ring'){ openChatWith(d.fromTopic, d.from); log('sys', tr('chatopened', call.peerName+' '+String(d.code||''))); ringAnim(); return; }
+  if (d.t==='chat'){ const isNew = !call || call.topic!==d.fromTopic; openChatWith(d.fromTopic, d.from); if (isNew) ringAnim(); const t=String(d.text||'').slice(0,200); log('them',t); say(`${call.peerName}: ${t}`, null, true); return; }
+  if (d.t==='hang' && call && call.topic===d.fromTopic){ log('sys', tr('chatclosed', call.peerName)); }
 }
 function ringAnim(){ const id=++runId; stopFx(); (async()=>{ await standUp(id); setProp('phone'); setPose('scared'); say(tr('ring'),2500,true); await sleep(1200); if(alive(id)&&call&&call.state==='incoming') setPose('phone'); })(); }
 function openCallBox(){ $('callTitle').textContent=`📞 ${call.peerName}`; $('callbox').classList.add('show'); $('log').innerHTML=''; }
@@ -1425,7 +1423,7 @@ function log(who, t){ const d=document.createElement('div'); d.className=who; d.
 function endCall(msg){
   if(!call) return; $('incoming').classList.remove('show');
   if (msg){ log('sys',msg); say(msg,2500,true); }
-  const c=conn; call=null; conn=null; setTimeout(()=>{ try{ c&&c.close(); }catch(e){} },400);
+  call=null;
   setTimeout(()=>{ if(!call) $('callbox').classList.remove('show'); },1800); setProp('mug'); setPose('idle');
 }
 async function startCall(name, code){
@@ -1434,19 +1432,14 @@ async function startCall(name, code){
   if (code.length!==3){ say(tr('needcode'),3500); return; }
   if (key===keyOf(H.name) && code===H.code){ say(tr('self'),2500); return; }
   await standUp(id); setProp('phone'); setPose('phone'); caption.textContent='> '+tr('callingOut')+' '+name+' '+code;
-  if (!peer || !peerReady){ say(tr('nosignal'),3500,true); return; }
-  if (call){ say(tr('already'),2000); return; }
-  call={peerName:String(name).slice(0,18), state:'ringing'};
-  openCallBox(); log('sys',tr('callingOut')+' '+call.peerName+' '+code+'…'); say(tr('ring2'),3000,true);
-  const c = peer.connect(peerId(name, code), {reliable:true}); conn=c;
-  c.on('open', ()=>{ c.send({t:'ring', from:H.name, code:H.code}); });
-  c.on('data', d=>onPhoneData(c, d));
-  c.on('close', ()=>{ if (call && conn===c) endCall(call.state==='ringing'?tr('noanswer'):tr('hungup',call.peerName)); });
-  const ref=call; setTimeout(()=>{ if (call===ref && call.state==='ringing'){ send({t:'hang'}); endCall(tr('noanswer')); } }, 25000);
+  call={topic:topicOf(name,code), peerName:String(name).slice(0,18), state:'active'}; openCallBox();
+  log('sys', tr('chatwith', call.peerName+' '+code));
+  const ok = await sendTo(call.topic, {t:'ring', code:H.code});
+  if (!ok) log('sys', tr('nosignal'));
+  setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(e){} }, 50);
 }
-$('btnAnswer').onclick=()=>{ if(!call||call.state!=='incoming') return; call.state='active'; $('incoming').classList.remove('show'); openCallBox(); log('sys',tr('talking',call.peerName)); send({t:'answer'}); setProp('phone'); setPose('phone'); say(tr('pronto'),1800,true); };
-$('btnDecline').onclick=()=>{ if(!call) return; send({t:'decline'}); $('incoming').classList.remove('show'); const c=conn; call=null; conn=null; setTimeout(()=>{ try{c&&c.close();}catch(e){} },400); setProp('mug'); setPose('idle'); };
-$('btnHang').onclick=()=>{ if(!call) return; send({t:'hang'}); endCall(tr('ended')); };
+$('btnAnswer').onclick=()=>{}; $('btnDecline').onclick=()=>{ $('incoming').classList.remove('show'); };
+$('btnHang').onclick=()=>{ if(!call) return; send({t:'hang'}); call=null; $('callbox').classList.remove('show'); setProp('mug'); setPose('idle'); if (window.focusCmd) focusCmd(); };
 $('chatF').addEventListener('submit',e=>{ e.preventDefault(); const i=$('chatIn'), t=i.value.trim(); try{ i.focus({preventScroll:true}); }catch(_){ i.focus(); } if(!t||!call||call.state!=='active') return; i.value=''; log('me',t); say(t); setPose('phone'); send({t:'chat', text:t.slice(0,200)}); });
 
 /* ================= INPUT ================= */
@@ -1836,26 +1829,26 @@ $('btnReset').onclick=async()=>{
 
 /* ================= LANGUAGE ================= */
 const I18N = {
-  en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Hang up', saysth:'Say something…', send:'Send',
+  en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Close', saysth:'Say something…', send:'Send',
        start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`📞 ${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
        ring:'Ring ring!', ring2:'Ring… ring…', self:'Calling myself? Bold.', nosignal:'No signal right now. Try again in a moment.', already:'Already on the phone.', nobody:n=>`Nobody called ${n} is home right now.`,
-       hello:'Oh. A camera. Great.', aioff:'AI not connected: basic commands only', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
+       hello:'Oh. A camera. Great.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI not connected: basic commands only', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
        c_single:'Single', c_dating:n=>`Dating ${n}`, c_engaged:n=>`Engaged to ${n}`, c_married:n=>`Married to ${n}`, c_weddingon:d=>`wedding ${d}`, c_rel:'Relationships',
        c_askhint:'Ask someone out with their number (name + code).', c_numph:'e.g. Marco 123', c_ask:'Ask out', c_propose:'Propose', c_plan:'Plan the wedding', c_breakup:'Break up', c_divorce:'Divorce', c_close:'Close', c_sure:'Sure? Tap again',
        c_when:'Date and time', c_guests:'Guests (numbers, comma separated)', c_planhint:n=>`${n} will get the invitation to confirm. Guests get an invite and can watch the ceremony.`, c_sendinv:'Send invitations', c_invsent:'Invitations sent!', c_missing:n=>`(not found: ${n})`,
        c_inbox:'Inbox', c_empty:'Nothing new.', c_guestlist:'guests', c_invite:n=>`You're invited to the wedding of ${n}`, c_declinedby:n=>`${n} said no.`,
        c_req_date:n=>`❤️ ${n} asks you out`, c_req_propose:n=>`💎 ${n} wants to marry you!`, c_req_wedding:n=>`💒 ${n} has planned your wedding`, c_req_breakup:n=>`💔 ${n} broke up with you`,
-       c_nopartner:'I\'m single, there\'s nobody to leave.', c_brokeup:n=>`It's over with ${n}.`, c_proposed:n=>`Ring sent to ${n}. Fingers crossed.`, c_needdating:'I need to be dating someone first.', c_needengaged:'We need to be engaged first.', c_taken:'I\'m already taken.', c_nonumber:'No one with that number.', c_asked:n=>`Asked ${n} out. Waiting…`, c_weddingof:n=>`Wedding of ${n}`, yourcode:'Your 3-digit code', yournum:'Your number', howcall:n=>`friends type “call ${n}”`, needcode:'I need the 3-digit code too: “call Marco 123”.', taken:'That number is taken. Tap your number below to pick another code.', callingOut:'Calling', noanswer:'No answer.', ended:'Call ended.', talking:n=>`Talking to ${n}`, pronto:'Hello?', huh:'Huh?', refuse:'Not that kind of website.' },
-  it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Riaggancia', saysth:'Scrivi qualcosa…', send:'Invia',
+       c_nopartner:'I\'m single, there\'s nobody to leave.', c_brokeup:n=>`It's over with ${n}.`, c_proposed:n=>`Ring sent to ${n}. Fingers crossed.`, c_needdating:'I need to be dating someone first.', c_needengaged:'We need to be engaged first.', c_taken:'I\'m already taken.', c_nonumber:'No one with that number.', c_asked:n=>`Asked ${n} out. Waiting…`, c_weddingof:n=>`Wedding of ${n}`, yourcode:'Your 3-digit code', yournum:'Your number', howcall:n=>`friends chat with you by typing “call ${n}”`, needcode:'I need the 3-digit code too: “call Marco 123”.', taken:'That number is taken. Tap your number below to pick another code.', callingOut:'Calling', noanswer:'No answer. (Is their game open?)', ended:'Call ended.', talking:n=>`Talking to ${n}`, pronto:'Hello?', huh:'Huh?', refuse:'Not that kind of website.' },
+  it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Chiudi', saysth:'Scrivi qualcosa…', send:'Invia',
        start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`📞 Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
        ring:'Driiin driiin!', ring2:'Tuu… tuu…', self:'Chiamare me stesso? Audace.', nosignal:'Niente campo adesso. Riprova tra poco.', already:'Sono già al telefono.', nobody:n=>`Nessuno di nome ${n} è in casa adesso.`,
-       hello:'Ah. Una telecamera. Fantastico.', aioff:'IA non collegata: solo comandi base', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
+       hello:'Ah. Una telecamera. Fantastico.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA non collegata: solo comandi base', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
        c_single:'Single', c_dating:n=>`Fidanzato/a con ${n}`, c_engaged:n=>`Promesso/a a ${n}`, c_married:n=>`Sposato/a con ${n}`, c_weddingon:d=>`nozze ${d}`, c_rel:'Relazioni',
        c_askhint:'Chiedi di uscire a qualcuno col suo numero (nome + codice).', c_numph:'es. Marco 123', c_ask:'Chiedi di uscire', c_propose:'Fai la proposta', c_plan:'Organizza il matrimonio', c_breakup:'Lascia', c_divorce:'Divorzia', c_close:'Chiudi', c_sure:'Sicuro? Tocca di nuovo',
        c_when:'Data e ora', c_guests:'Invitati (numeri separati da virgola)', c_planhint:n=>`${n} riceverà l'invito da confermare. Gli invitati ricevono l'invito e possono assistere alla cerimonia.`, c_sendinv:'Manda gli inviti', c_invsent:'Inviti spediti!', c_missing:n=>`(non trovati: ${n})`,
        c_inbox:'Posta', c_empty:'Niente di nuovo.', c_guestlist:'invitati', c_invite:n=>`Sei invitato al matrimonio di ${n}`, c_declinedby:n=>`${n} ha detto di no.`,
        c_req_date:n=>`❤️ ${n} ti chiede di uscire`, c_req_propose:n=>`💎 ${n} ti chiede di sposarlo/a!`, c_req_wedding:n=>`💒 ${n} ha organizzato il vostro matrimonio`, c_req_breakup:n=>`💔 ${n} ti ha lasciato`,
-       c_nopartner:'Sono single, non c\'è nessuno da lasciare.', c_brokeup:n=>`È finita con ${n}.`, c_proposed:n=>`Anello inviato a ${n}. Incrociamo le dita.`, c_needdating:'Prima devo essere fidanzato con qualcuno.', c_needengaged:'Prima dobbiamo essere promessi.', c_taken:'Sono già impegnato.', c_nonumber:'Nessuno con quel numero.', c_asked:n=>`Ho chiesto a ${n} di uscire. Aspetto…`, c_weddingof:n=>`Matrimonio di ${n}`, yourcode:'Il tuo codice (3 cifre)', yournum:'Il tuo numero', howcall:n=>`gli amici scrivono “chiama ${n}”`, needcode:'Mi serve anche il codice di 3 cifre: “chiama Marco 123”.', taken:'Numero già occupato. Tocca il tuo numero qui sotto e scegli un altro codice.', callingOut:'Chiamo', noanswer:'Nessuna risposta.', ended:'Chiamata terminata.', talking:n=>`In linea con ${n}`, pronto:'Pronto?', huh:'Eh?', refuse:'Non è quel tipo di sito.' }
+       c_nopartner:'Sono single, non c\'è nessuno da lasciare.', c_brokeup:n=>`È finita con ${n}.`, c_proposed:n=>`Anello inviato a ${n}. Incrociamo le dita.`, c_needdating:'Prima devo essere fidanzato con qualcuno.', c_needengaged:'Prima dobbiamo essere promessi.', c_taken:'Sono già impegnato.', c_nonumber:'Nessuno con quel numero.', c_asked:n=>`Ho chiesto a ${n} di uscire. Aspetto…`, c_weddingof:n=>`Matrimonio di ${n}`, yourcode:'Il tuo codice (3 cifre)', yournum:'Il tuo numero', howcall:n=>`gli amici ti scrivono con “chiama ${n}”`, needcode:'Mi serve anche il codice di 3 cifre: “chiama Marco 123”.', taken:'Numero già occupato. Tocca il tuo numero qui sotto e scegli un altro codice.', callingOut:'Chiamo', noanswer:'Nessuna risposta. (Ha il gioco aperto?)', ended:'Chiamata terminata.', talking:n=>`In linea con ${n}`, pronto:'Pronto?', huh:'Eh?', refuse:'Non è quel tipo di sito.' }
 };
 let LANG='en';
 try { const l=localStorage.getItem('subservientLang'); if (l==='it'||l==='en') LANG=l; } catch(e){}
