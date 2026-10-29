@@ -163,7 +163,6 @@
         <button type="button" data-k="f"><svg viewBox="-28 -104 56 108" id="pvF"></svg>Holga</button>
       </div>
       <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="Holgen" aria-label="Name">
-      <label class="keyl"><span data-i="yourkey">🧠 Your Gemini key (optional)</span><input id="keyIn" type="password" autocomplete="off" placeholder="AIza…" aria-label="Gemini key"><small data-i="keyhelp">Free at aistudio.google.com/apikey — it stays only on this phone.</small></label>
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
       <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
@@ -238,7 +237,8 @@ const CONFIG = {
   POLLINATIONS_KEY: '',
   GEMINI_KEY: '',
   GEMINI_MODEL: 'gemini-flash-latest',
-  PREFER_GEMINI: false,
+  PREFER_GEMINI: true,
+  AI_PER_HOUR: 300,  // max AI commands per phone per hour (Google's own free limits still apply)
   /* FIREBASE: paste here the config of your free Firebase project (see the guide). Leave {} to play without the community. */
   FIREBASE: {}
 };
@@ -1289,8 +1289,13 @@ async function askGemini(prompt, signal){
 }
 let ctrl=null, aiOK=null;
 function setAI(v){ aiOK=v; if (typeof showNumber==='function' && H.code) showNumber(); }
+function aiAllowed(){
+  try { const now=Date.now(); let h=JSON.parse(localStorage.getItem('subservientAIuse')||'[]').filter(t=>now-t<3600000);
+    if (h.length>=(CONFIG.AI_PER_HOUR||30)) return false; h.push(now); localStorage.setItem('subservientAIuse', JSON.stringify(h)); return true; } catch(e){ return true; }
+}
 async function askBrain(cmd){
   if (ctrl) ctrl.abort(); ctrl=new AbortController(); const sig=ctrl.signal;
+  if (!aiAllowed()){ setAI(false); return null; }
   const prompt=buildPrompt(cmd);
   // inside Claude (artifact) use Claude; on the open web use the free services
   if (window.claude && typeof window.claude.use==='function'){
@@ -1509,7 +1514,6 @@ document.querySelectorAll('.pick button').forEach(b=>b.onclick=()=>{
   const n=$('nameIn'); if (!n.value || n.value==='Holgen' || n.value==='Holga') n.value = pick==='f'?'Holga':'Holgen';
 });
 function moveIn(kind, name, code){
-  try { const k=($('keyIn')&&$('keyIn').value||'').trim(); if (k) localStorage.setItem('subservientGemini', k); else localStorage.removeItem('subservientGemini'); } catch(e){}
   aiOK=null;
   H.kind=kind; H.name=(name||'').trim().slice(0,18) || (kind==='f'?'Holga':'Holgen');
   code=String(code||'').replace(/\D/g,''); H.code = code.length===3 ? code : String(Math.floor(100+Math.random()*900));
@@ -1525,7 +1529,6 @@ function moveIn(kind, name, code){
 $('btnStart').onclick=()=>{ moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
 $('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); moveIn(pick, $('nameIn').value, $('codeIn').value); } });
 $('codeIn').value=String(Math.floor(100+Math.random()*900));
-try { $('keyIn').value = localStorage.getItem('subservientGemini')||''; } catch(e){}
 $('mynum').onclick=()=>{ $('nameIn').value=H.name; $('codeIn').value=H.code; $('setup').classList.remove('hide'); };
 
 /* ================= NPC CHARACTERS (partner, wedding couple, guests) ================= */
@@ -1859,7 +1862,7 @@ const I18N = {
   en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Close', saysth:'Say something…', send:'Send',
        start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`📞 ${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
        ring:'Ring ring!', ring2:'Ring… ring…', self:'Calling myself? Bold.', nosignal:'No signal right now. Try again in a moment.', already:'Already on the phone.', nobody:n=>`Nobody called ${n} is home right now.`,
-       hello:'Oh. A camera. Great.', yourkey:'🧠 Your Gemini key (optional)', keyhelp:'Free at aistudio.google.com/apikey — it stays only on this phone.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI not connected: basic commands only. Tap ⟳ to add your Gemini key', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
+       hello:'Oh. A camera. Great.', yourkey:'🧠 Your Gemini key (optional)', keyhelp:'Free at aistudio.google.com/apikey — it stays only on this phone.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI paused: basic commands for now', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
        c_single:'Single', c_dating:n=>`Dating ${n}`, c_engaged:n=>`Engaged to ${n}`, c_married:n=>`Married to ${n}`, c_weddingon:d=>`wedding ${d}`, c_rel:'Relationships',
        c_askhint:'Ask someone out with their number (name + code).', c_numph:'e.g. Marco 123', c_ask:'Ask out', c_propose:'Propose', c_plan:'Plan the wedding', c_breakup:'Break up', c_divorce:'Divorce', c_close:'Close', c_sure:'Sure? Tap again',
        c_when:'Date and time', c_guests:'Guests (numbers, comma separated)', c_planhint:n=>`${n} will get the invitation to confirm. Guests get an invite and can watch the ceremony.`, c_sendinv:'Send invitations', c_invsent:'Invitations sent!', c_missing:n=>`(not found: ${n})`,
@@ -1869,7 +1872,7 @@ const I18N = {
   it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Chiudi', saysth:'Scrivi qualcosa…', send:'Invia',
        start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`📞 Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
        ring:'Driiin driiin!', ring2:'Tuu… tuu…', self:'Chiamare me stesso? Audace.', nosignal:'Niente campo adesso. Riprova tra poco.', already:'Sono già al telefono.', nobody:n=>`Nessuno di nome ${n} è in casa adesso.`,
-       hello:'Ah. Una telecamera. Fantastico.', yourkey:'🧠 La tua chiave Gemini (facoltativa)', keyhelp:'Gratis su aistudio.google.com/apikey — resta solo su questo telefono.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA non collegata: solo comandi base. Tocca ⟳ per inserire la tua chiave Gemini', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
+       hello:'Ah. Una telecamera. Fantastico.', yourkey:'🧠 La tua chiave Gemini (facoltativa)', keyhelp:'Gratis su aistudio.google.com/apikey — resta solo su questo telefono.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA in pausa: per ora solo comandi base', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
        c_single:'Single', c_dating:n=>`Fidanzato/a con ${n}`, c_engaged:n=>`Promesso/a a ${n}`, c_married:n=>`Sposato/a con ${n}`, c_weddingon:d=>`nozze ${d}`, c_rel:'Relazioni',
        c_askhint:'Chiedi di uscire a qualcuno col suo numero (nome + codice).', c_numph:'es. Marco 123', c_ask:'Chiedi di uscire', c_propose:'Fai la proposta', c_plan:'Organizza il matrimonio', c_breakup:'Lascia', c_divorce:'Divorzia', c_close:'Chiudi', c_sure:'Sicuro? Tocca di nuovo',
        c_when:'Data e ora', c_guests:'Invitati (numeri separati da virgola)', c_planhint:n=>`${n} riceverà l'invito da confermare. Gli invitati ricevono l'invito e possono assistere alla cerimonia.`, c_sendinv:'Manda gli inviti', c_invsent:'Inviti spediti!', c_missing:n=>`(non trovati: ${n})`,
