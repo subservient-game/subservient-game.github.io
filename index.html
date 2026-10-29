@@ -83,6 +83,9 @@
   .incoming.show { display:flex; animation:shake .5s infinite; }
   @keyframes shake { 0%,100%{transform:translateX(-50%)} 25%{transform:translateX(calc(-50% - 2px))} 75%{transform:translateX(calc(-50% + 2px))} }
   .incoming button { padding:7px 12px; font-size:14px; }
+  .keyl { display:flex; flex-direction:column; gap:4px; text-align:left; color:var(--muted); font-size:.85rem; margin:-4px 0 12px; }
+  .keyl input { margin:0; padding:10px 12px; font-size:15px; }
+  .keyl small { font-size:.75rem; }
   .codel { display:flex; align-items:center; gap:10px; margin:-4px 0 12px; color:var(--muted); font-size:.9rem; text-align:left; }
   .codel input { width:90px; margin:0; text-align:center; letter-spacing:.3em; font-weight:600; }
   .mynum { margin-top:8px; background:none; border:0; padding:4px 2px; color:var(--fg); font-size:.85rem; text-align:left; font-weight:500; }
@@ -160,6 +163,7 @@
         <button type="button" data-k="f"><svg viewBox="-28 -104 56 108" id="pvF"></svg>Holga</button>
       </div>
       <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="Holgen" aria-label="Name">
+      <label class="keyl"><span data-i="yourkey">🧠 Your Gemini key (optional)</span><input id="keyIn" type="password" autocomplete="off" placeholder="AIza…" aria-label="Gemini key"><small data-i="keyhelp">Free at aistudio.google.com/apikey — it stays only on this phone.</small></label>
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
       <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
@@ -1273,9 +1277,11 @@ async function askPollinations(prompt, signal){
   } catch(e){ if (signal&&signal.aborted) throw e; }
   return null;
 }
+function myGeminiKey(){ try { return localStorage.getItem('subservientGemini')||''; } catch(e){ return ''; } }
 async function askGemini(prompt, signal){
-  if (!CONFIG.GEMINI_KEY) return null;
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CONFIG.GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(CONFIG.GEMINI_KEY)}`;
+  const key = myGeminiKey() || CONFIG.GEMINI_KEY;
+  if (!key) return null;
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CONFIG.GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(key)}`;
   const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0.9}}),signal:withTimeout(signal,30000)});
   if (!r.ok) return null;
   const j=await r.json(); const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts&&j.candidates[0].content.parts.map(p=>p.text||'').join('');
@@ -1290,7 +1296,7 @@ async function askBrain(cmd){
   if (window.claude && typeof window.claude.use==='function'){
     try { const s=await window.claude.use('sample'); if (s){ const r=await s(prompt,{modelTier:'default',cache:false,signal:sig}); const st=parseSteps(r&&r.text); if (st) return st; } } catch(e){}
   }
-  for (const fn of (CONFIG.PREFER_GEMINI ? [askGemini, askPollinations] : [askPollinations, askGemini])){
+  for (const fn of ((CONFIG.PREFER_GEMINI || myGeminiKey()) ? [askGemini, askPollinations] : [askPollinations, askGemini])){
     try { const st=await fn(prompt, sig); if (st){ setAI(true); return st; } } catch(e){ if (sig.aborted) return null; console.warn(fn.name,'failed',e); }
   }
   setAI(false); return null;
@@ -1490,6 +1496,8 @@ document.querySelectorAll('.pick button').forEach(b=>b.onclick=()=>{
   const n=$('nameIn'); if (!n.value || n.value==='Holgen' || n.value==='Holga') n.value = pick==='f'?'Holga':'Holgen';
 });
 function moveIn(kind, name, code){
+  try { const k=($('keyIn')&&$('keyIn').value||'').trim(); if (k) localStorage.setItem('subservientGemini', k); else localStorage.removeItem('subservientGemini'); } catch(e){}
+  aiOK=null;
   H.kind=kind; H.name=(name||'').trim().slice(0,18) || (kind==='f'?'Holga':'Holgen');
   code=String(code||'').replace(/\D/g,''); H.code = code.length===3 ? code : String(Math.floor(100+Math.random()*900));
   try { localStorage.setItem('subservient', JSON.stringify({kind:H.kind, name:H.name, code:H.code})); } catch(e){}
@@ -1504,6 +1512,7 @@ function moveIn(kind, name, code){
 $('btnStart').onclick=()=>{ moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
 $('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); moveIn(pick, $('nameIn').value, $('codeIn').value); } });
 $('codeIn').value=String(Math.floor(100+Math.random()*900));
+try { $('keyIn').value = localStorage.getItem('subservientGemini')||''; } catch(e){}
 $('mynum').onclick=()=>{ $('nameIn').value=H.name; $('codeIn').value=H.code; $('setup').classList.remove('hide'); };
 
 /* ================= NPC CHARACTERS (partner, wedding couple, guests) ================= */
@@ -1837,7 +1846,7 @@ const I18N = {
   en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Close', saysth:'Say something…', send:'Send',
        start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`📞 ${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
        ring:'Ring ring!', ring2:'Ring… ring…', self:'Calling myself? Bold.', nosignal:'No signal right now. Try again in a moment.', already:'Already on the phone.', nobody:n=>`Nobody called ${n} is home right now.`,
-       hello:'Oh. A camera. Great.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI not connected: basic commands only', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
+       hello:'Oh. A camera. Great.', yourkey:'🧠 Your Gemini key (optional)', keyhelp:'Free at aistudio.google.com/apikey — it stays only on this phone.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI not connected: basic commands only. Tap ⟳ to add your Gemini key', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
        c_single:'Single', c_dating:n=>`Dating ${n}`, c_engaged:n=>`Engaged to ${n}`, c_married:n=>`Married to ${n}`, c_weddingon:d=>`wedding ${d}`, c_rel:'Relationships',
        c_askhint:'Ask someone out with their number (name + code).', c_numph:'e.g. Marco 123', c_ask:'Ask out', c_propose:'Propose', c_plan:'Plan the wedding', c_breakup:'Break up', c_divorce:'Divorce', c_close:'Close', c_sure:'Sure? Tap again',
        c_when:'Date and time', c_guests:'Guests (numbers, comma separated)', c_planhint:n=>`${n} will get the invitation to confirm. Guests get an invite and can watch the ceremony.`, c_sendinv:'Send invitations', c_invsent:'Invitations sent!', c_missing:n=>`(not found: ${n})`,
@@ -1847,7 +1856,7 @@ const I18N = {
   it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Chiudi', saysth:'Scrivi qualcosa…', send:'Invia',
        start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`📞 Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
        ring:'Driiin driiin!', ring2:'Tuu… tuu…', self:'Chiamare me stesso? Audace.', nosignal:'Niente campo adesso. Riprova tra poco.', already:'Sono già al telefono.', nobody:n=>`Nessuno di nome ${n} è in casa adesso.`,
-       hello:'Ah. Una telecamera. Fantastico.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA non collegata: solo comandi base', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
+       hello:'Ah. Una telecamera. Fantastico.', yourkey:'🧠 La tua chiave Gemini (facoltativa)', keyhelp:'Gratis su aistudio.google.com/apikey — resta solo su questo telefono.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA non collegata: solo comandi base. Tocca ⟳ per inserire la tua chiave Gemini', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
        c_single:'Single', c_dating:n=>`Fidanzato/a con ${n}`, c_engaged:n=>`Promesso/a a ${n}`, c_married:n=>`Sposato/a con ${n}`, c_weddingon:d=>`nozze ${d}`, c_rel:'Relazioni',
        c_askhint:'Chiedi di uscire a qualcuno col suo numero (nome + codice).', c_numph:'es. Marco 123', c_ask:'Chiedi di uscire', c_propose:'Fai la proposta', c_plan:'Organizza il matrimonio', c_breakup:'Lascia', c_divorce:'Divorzia', c_close:'Chiudi', c_sure:'Sicuro? Tocca di nuovo',
        c_when:'Data e ora', c_guests:'Invitati (numeri separati da virgola)', c_planhint:n=>`${n} riceverà l'invito da confermare. Gli invitati ricevono l'invito e possono assistere alla cerimonia.`, c_sendinv:'Manda gli inviti', c_invsent:'Inviti spediti!', c_missing:n=>`(non trovati: ${n})`,
