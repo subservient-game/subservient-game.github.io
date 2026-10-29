@@ -1290,7 +1290,7 @@ async function askGemini(prompt, signal){
   const j=await r.json(); const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts&&j.candidates[0].content.parts.map(p=>p.text||'').join('');
   return parseSteps(t);
 }
-let ctrl=null, aiOK=null;
+let ctrl=null, aiOK=(CONFIG.GEMINI_KEY||CONFIG.POLLINATIONS_KEY)?true:false;
 function setAI(v){ aiOK=v; if (typeof showNumber==='function' && H.code) showNumber(); }
 function aiAllowed(){
   try { const now=Date.now(); let h=JSON.parse(localStorage.getItem('subservientAIuse')||'[]').filter(t=>now-t<3600000);
@@ -1517,7 +1517,7 @@ document.querySelectorAll('.pick button').forEach(b=>b.onclick=()=>{
   const n=$('nameIn'); if (!n.value || n.value==='Holgen' || n.value==='Holga') n.value = pick==='f'?'Holga':'Holgen';
 });
 function moveIn(kind, name, code){
-  aiOK=null;
+  aiOK=(CONFIG.GEMINI_KEY||CONFIG.POLLINATIONS_KEY)?true:false;
   H.kind=kind; H.name=(name||'').trim().slice(0,18) || (kind==='f'?'Holga':'Holgen');
   code=String(code||'').replace(/\D/g,''); H.code = code.length===3 ? code : String(Math.floor(100+Math.random()*900));
   try { localStorage.setItem('subservient', JSON.stringify({kind:H.kind, name:H.name, code:H.code})); } catch(e){}
