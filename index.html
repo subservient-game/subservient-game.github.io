@@ -2539,8 +2539,11 @@ applyLang();
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
     if (e.target.closest('.mini')){ openMap(); return; }
     const n = NPCS.find(x=>x.room===H.room && x.g.contains(e.target));
+    const intro=x=>(LANG==='it'?'Sono ':'I\'m ')+x.name+(x.code?' '+x.code:'')+(x.bot?' 🤖':'');
+    if (!n && holG.contains(e.target)){ say((LANG==='it'?'Sono ':'I\'m ')+H.name+' '+H.code, 2200); focusCmd(); return; }
+    if (n) { n.dir=H.X>n.X?1:-1; npcSay(n, intro(n)); }
     if (n && n.topic){ openChatWith(n.topic, n.name); if (call) call.peerName=n.name; log('sys', (LANG==='it'?'Chat con ':'Chat with ')+n.name+(n.code?' '+n.code:'')); npcPose(n,'wave'); setTimeout(()=>npcPose(n,'idle'),1500); setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(err){} },60); return; }
-    if (n && n.bot){ n.dir=H.X>n.X?1:-1; npcPose(n,'wave','happy'); npcSay(n, pickLine('reply')); setTimeout(()=>npcPose(n,'idle'),2000); }
+    if (n && n.bot){ npcPose(n,'wave','happy'); setTimeout(()=>{ npcSay(n, pickLine('reply')); },1800); setTimeout(()=>npcPose(n,'idle'),2400); }
     focusCmd(); });
 })();
 
@@ -2583,7 +2586,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='17';
+const BUILD='18';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
