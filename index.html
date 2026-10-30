@@ -105,12 +105,13 @@
   .req { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); font-size:.92rem; }
   .req small { color:var(--muted); } .req .btns { display:flex; gap:6px; } .req .btns button { padding:6px 12px; font-size:14px; }
   .callbox { display:none; flex:0 0 auto; margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px; }
-  .callbox.show { display:flex; flex-direction:column; position:absolute; left:6px; right:6px; bottom:6px; top:auto; margin:0; max-height:64%; z-index:7; background:rgba(20,24,30,.9); border-color:rgba(255,255,255,.12); padding:6px 8px; }
-  .callbox.show .callhead { margin-bottom:4px; font-size:.9rem; } .callbox.show .callhead button { padding:3px 10px; font-size:12px; }
-  .callbox.show .log { flex:1 1 auto; max-height:none; min-height:0; font-size:.82rem; gap:3px; margin-bottom:5px; }
-  .callbox.show .log div { padding:3px 8px; }
+  .callbox.show { display:flex; flex-direction:column; flex:0 0 auto; margin-top:6px; padding:6px 8px; }
+  .callbox.show .callhead { margin-bottom:3px; font-size:.85rem; } .callbox.show .callhead button { padding:3px 10px; font-size:12px; }
+  .callbox.show .log { flex:0 0 auto; max-height:3.6em; min-height:0; font-size:.82rem; gap:3px; margin-bottom:5px; }
+  .callbox.show .log div { padding:2px 8px; }
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
-  .cam:has(.callbox.show) .caption { display:none; }
+  .cam { align-self:center; container-type:size; }
+  .cam .hud { font-size:clamp(6px, 2.5cqw, 12px); } .cam .caption { font-size:clamp(7px, 2.8cqw, 13px); } .cam .mini { min-width:0; width:23%; }
   .callhead { display:flex; justify-content:space-between; align-items:center; font-weight:600; margin-bottom:8px; }
   .callhead button { padding:6px 12px; font-size:14px; }
   .log { max-height:22vh; overflow-y:auto; display:flex; flex-direction:column; gap:5px; margin-bottom:8px; font-size:.92rem; }
@@ -1720,11 +1721,64 @@ async function npcWalk(n, x, id){
   npcPose(n,'idle');
 }
 
+
+/* ===== Community WITHOUT Firebase: each phone keeps its own copy, changes travel through the free ntfy relay ===== */
+(function(){
+  if (CONFIG.FIREBASE && CONFIG.FIREBASE.apiKey) return;           // real Firebase configured → use it
+  const LK='subservientDB';
+  let DB={requests:{}, players:{}}; try { DB=Object.assign(DB, JSON.parse(localStorage.getItem(LK)||'{}')); } catch(e){}
+  const save=()=>{ try{ localStorage.setItem(LK, JSON.stringify(DB)); }catch(e){} };
+  const L={docs:[], qs:[]};
+  const me=()=>topicOf(H.name,H.code);
+  let nq=false; const notify=()=>{ if (nq) return; nq=true; setTimeout(()=>{ nq=false; for (const d of L.docs) try{ d(); }catch(e){} for (const q of L.qs) try{ q(); }catch(e){} },0); };
+  const parties=r=>[r.from, r.to, ...(r.guests||[])].filter(t=>t && t!==me());
+  const share=r=>{ for (const t of parties(r)) fetch(`${NTFY}/${t}-db`,{method:'POST',body:JSON.stringify({t:'db',doc:r})}).catch(()=>{}); };
+  function merge(doc){
+    if (!doc || !doc.id || typeof doc.id!=='string') return false;
+    const old=DB.requests[doc.id]; if (old && (old.at||0)>(doc.at||0)) return false;
+    if (old && JSON.stringify(old)===JSON.stringify(doc)) return false;
+    DB.requests[doc.id]=doc; save(); return true;
+  }
+  const fakeSnap=d=>({exists:()=>!!d, data:()=>d});
+  function profileOf(uid){
+    if (uid===me()) return DB.players[uid];
+    for (const r of Object.values(DB.requests)){
+      if (r.from===uid) return {name:r.fromName, code:r.fromCode, kind:r.fromKind||'m'};
+      if (r.to===uid) return {name:r.toName, code:r.toCode, kind:r.toKind||'m'};
+    }
+    return null;
+  }
+  let es2=null;
+  function listenDB(){
+    try{ if(es2) es2.close(); }catch(e){}
+    const since=localStorage.getItem('subservientDBsince')||'12h';
+    es2=new EventSource(`${NTFY}/${me()}-db/sse?since=${since}`);
+    es2.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return;
+      try{ localStorage.setItem('subservientDBsince', String(m.time)); }catch(e){}
+      let d; try{ d=JSON.parse(m.message); }catch(e){ return; }
+      if (d.t==='db' && merge(d.doc)) notify(); };
+  }
+  window.FB={
+    local:true,
+    signIn: async()=>{ listenDB(); setTimeout(()=>{ const now=Date.now(); for (const r of Object.values(DB.requests)) if (now-(r.at||0)<60*864e5) share(r); }, 1500); return {user:{uid:me()}}; },
+    signOut: async()=>{ try{ es2&&es2.close(); }catch(e){} },
+    now: ()=>Date.now(),
+    get: async([c,id])=> c==='players' ? fakeSnap(profileOf(id)) : c==='numbers' ? fakeSnap(null) : fakeSnap(DB[c]&&DB[c][id]),
+    set: async([c,id],data,mergeIt)=>{ if (c==='numbers') return; DB[c]=DB[c]||{}; DB[c][id]=mergeIt?{...(DB[c][id]||{}),...data}:{...data}; save(); notify(); },
+    update: async([c,id],data)=>{ const d={...(DB.requests[id]||{}),...data, id}; DB.requests[id]=d; save(); share(d); notify(); },
+    add: async(c,data)=>{ const id=Date.now().toString(36)+Math.random().toString(36).slice(2,8); const d={...data,id}; DB.requests[id]=d; save(); share(d); notify(); return {id}; },
+    del: async([c,id])=>{ if (DB[c]) { delete DB[c][id]; save(); } },
+    listen: ([c,id],cb)=>{ const f=()=>cb(c==='players'&&id===me()?DB.players[me()]||{}:(DB[c]||{})[id]||null); L.docs.push(f); f(); },
+    query: (c,field,val,cb)=>{ const f=()=>cb(Object.values(DB.requests).filter(r=>r[field]===(val===C.uid?me():val))); L.qs.push(f); f(); },
+    queryContains: (c,field,val,cb)=>{ const f=()=>cb(Object.values(DB.requests).filter(r=>(r[field]||[]).includes(me()))); L.qs.push(f); f(); }
+  };
+  window.__fbLocal=true;
+})();
 /* ================= COMMUNITY (Firebase: anonymous sign-in + Firestore) ================= */
 const C = { ready:false, uid:null, me:null, inbox:[], outbox:[], guestOf:[], partner:null, partnerNPC:null, seenWeddings:{} };
 try { C.seenWeddings = JSON.parse(localStorage.getItem('subservientSeen')||'{}'); } catch(e){}
 const numKey = (name, code) => `${keyOf(name)}-${code}`;
-function fbReady(){ return !!(window.FB && CONFIG.FIREBASE && CONFIG.FIREBASE.apiKey); }
+function fbReady(){ return !!window.FB; }
 async function communityStart(){
   if (!fbReady()) { renderSocial(); return; }
   const F=window.FB;
@@ -1748,6 +1802,7 @@ async function communityStart(){
   } catch(e){ console.warn('community', e); renderSocial(tr('c_offline')); }
 }
 async function updateIdentity(){
+  if (window.FB && window.FB.local){ C.uid=topicOf(H.name,H.code); await window.FB.signIn(); await window.FB.set(['players',C.uid],{name:H.name,code:H.code,kind:H.kind,number:numKey(H.name,H.code)},true); renderSocial(); return; }
   const F=window.FB, key=numKey(H.name,H.code);
   try {
     if (key!==C.myKey){
@@ -1762,6 +1817,7 @@ async function updateIdentity(){
 }
 async function lookup(numberText){
   const m=String(numberText||'').trim().match(/^(.+?)\s*[-\s]\s*(\d{3})$/); if(!m) return null;
+  if (window.FB && window.FB.local) return {uid:topicOf(m[1].trim(),m[2]), name:m[1].trim().slice(0,18), code:m[2], key:numKey(m[1],m[2])};
   const s=await window.FB.get(['numbers',numKey(m[1],m[2])]); return s.exists()? {uid:s.data().uid, name:s.data().name, code:s.data().code, key:numKey(m[1],m[2])} : null;
 }
 /* status is DERIVED from the accepted requests, so both sides always agree */
@@ -2063,7 +2119,24 @@ applyLang();
 
 
 /* chat lives INSIDE the camera frame: always visible together with the command box */
-$('cam').appendChild($('callbox'));
+$('f').parentNode.insertBefore($('callbox'), $('f'));
+
+/* the camera always shows the WHOLE room: it gets smaller (same shape) when the keyboard or the chat need space */
+(function(){
+  const wrap=document.querySelector('.wrap'), camEl=$('cam');
+  function fit(){
+    const vv=window.visualViewport; const vh=vv?vv.height:innerHeight;
+    const cs=getComputedStyle(document.body); const pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+    let others=0; for (const el of wrap.children){ if (el===camEl) continue; if (el.compareDocumentPosition($('f')) & Node.DOCUMENT_POSITION_PRECEDING) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
+    const fullW=wrap.clientWidth; const h=Math.max(110, Math.min(fullW/1.6, vh-pad-others-6));
+    camEl.style.height=h+'px'; camEl.style.width=Math.min(fullW, h*1.6)+'px';
+  }
+  window.fitCam=fit;
+  if (window.visualViewport){ visualViewport.addEventListener('resize',fit); }
+  addEventListener('resize',fit);
+  new MutationObserver(()=>requestAnimationFrame(fit)).observe($('callbox'),{attributes:true,attributeFilter:['class']});
+  setInterval(fit,700); fit();
+})();
 /* ================= BOOT ================= */
 function tick(){ const d=new Date(); $('clock').textContent=d.toLocaleDateString('en-GB')+' '+d.toLocaleTimeString('en-GB'); }
 tick(); setInterval(tick,1000);
@@ -2074,7 +2147,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='11';
+const BUILD='12';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
