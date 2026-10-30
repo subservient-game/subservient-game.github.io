@@ -1119,7 +1119,7 @@ function tween(props, ms, id){
 }
 /* walking happens on a lane in front of the furniture, so the tenant never walks "through" things */
 /* characters never stop on top of each other (unless asked explicitly) */
-const GAP=46;
+const GAP=62;
 function freeSpot(x, self){
   if (x<10 || x>470 || window.__closeOK) return x;
   const occ=[]; if (self!=='me') occ.push(H.destX??H.X);
@@ -1791,20 +1791,86 @@ const PLACES = {
   disco: { it:['discoteca','disco','a ballare','in pista'], en:['disco','club','nightclub','dancing'] },
   pizzeria:{ it:['pizzeria','pizza'], en:['pizzeria','pizza place'] }
 };
+/* operational bots: they have a job and a post, and serve you when you ask */
+const L2=(it,en)=>({it,en});
 const BOTS = {
-  park:[{name:'Gino', kind:'m', look:{hair:'bald',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#4f9a4a',pants:'#8a5a3a'}, x:120},
-        {name:'Mia', kind:'f', look:{hair:'curly',hairColor:'#3f6fd1',skin:'#c98b5e',glasses:false,outfit:'#e87aa8',pants:'#2b2d31'}, x:380}],
-  beach:[{name:'Luna', kind:'f', look:{hair:'long',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:false,outfit:'#ff9f1c',pants:'#3f6fd1'}, x:330},
-         {name:'Bob', kind:'m', look:{hair:'mohawk',hairColor:'#d64545',skin:'#7a4a2c',glasses:false,outfit:'#2fb5a8',pants:'#eceff2'}, x:410}],
-  piazza:[{name:'Nico', kind:'m', look:{hair:'short',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#eceff2',pants:'#2b2d31'}, x:380},
-          {name:'Zoe', kind:'f', look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#3f6fd1',pants:'#8fa9c9'}, x:250}],
-  woods:[{name:'Rino', kind:'m', look:{hair:'short',hairColor:'#6b3e26',skin:'#eab48a',glasses:false,outfit:'#4f9a4a',pants:'#8a5a3a'}, x:340},
-         {name:'Ada', kind:'f', look:{hair:'pony',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:true,outfit:'#e07a32',pants:'#2b2d31'}, x:420}],
-  disco:[{name:'DJ Max', kind:'m', look:{hair:'mohawk',hairColor:'#4cc9f0',skin:'#7a4a2c',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'}, x:405},
-         {name:'Vale', kind:'f', look:{hair:'long',hairColor:'#e87aa8',skin:'#eab48a',glasses:false,outfit:'#c77dff',pants:'#2b2d31'}, x:150}],
-  pizzeria:[{name:'Totò', kind:'m', look:{hair:'bald',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#eceff2',pants:'#eceff2'}, x:300},
-         {name:'Sara', kind:'f', look:{hair:'bun',hairColor:'#222222',skin:'#c98b5e',glasses:true,outfit:'#d64545',pants:'#2b2d31'}, x:230}]
+  park:[{name:'Gino', kind:'m', role:L2('giardiniere','gardener'), post:230, work:['sweep','water'], look:{hair:'bald',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#4f9a4a',pants:'#8a5a3a'},
+         lines:L2(['Non calpestate le aiuole!','Trent\'anni che pulisco \'sto parco.','Chi ha lasciato la cacca del cane? Eh?'],['Keep off the flowerbeds!','Thirty years sweeping this park.','Who left the dog poo? Eh?'])}],
+  piazza:[{name:'Nico', kind:'m', role:L2('barista','barista'), post:200, work:['cook','present'], look:{hair:'short',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#eceff2',pants:'#2b2d31'},
+         sells:[{re:/(caff|espresso|cappuccin|coffee|macchiat)/, prop:'mug', it:'caffè', en:'coffee'},{re:/(spritz|birra|beer|aperitiv|vino|wine|drink)/, prop:'glass', it:'spritz', en:'spritz'}],
+         lines:L2(['Caffè? Cappuccino? Spritz?','Qui il caffè è vero, mica quello della macchinetta.'],['Coffee? Cappuccino? Spritz?','Real coffee here, not machine stuff.'])},
+          {name:'Zoe', kind:'f', role:L2('gelataia','ice-cream seller'), post:362, work:['present','wave'], look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#ff8fab',pants:'#eceff2'},
+         sells:[{re:/(gelat|ice ?cream|cono|cono)/, prop:'icecream', it:'gelato', en:'ice cream'}],
+         lines:L2(['Gelato artigianale! Pistacchio vero!','Cono o coppetta?'],['Artisan gelato! Real pistachio!','Cone or cup?'])}],
+  beach:[{name:'Luna', kind:'f', role:L2('bagnina','lifeguard'), post:330, work:['look','point'], look:{hair:'long',hairColor:'#e8c36a',skin:'#c98b5e',glasses:false,outfit:'#d64545',pants:'#d64545'},
+         lines:L2(['Non fate il bagno dopo mangiato!','FFFFIIII! Tu, esci dall\'acqua!','Bandiera gialla, gente.'],['No swimming right after lunch!','WHEEET! You, out of the water!','Yellow flag, people.'])},
+         {name:'Bob', kind:'m', role:L2('venditore di cocco','coconut seller'), post:420, roam:120, work:['present','wave'], look:{hair:'mohawk',hairColor:'#d64545',skin:'#7a4a2c',glasses:false,outfit:'#2fb5a8',pants:'#eceff2'},
+         sells:[{re:/(cocco|coconut|bibit|bevand|drink|acqua|water)/, prop:'can', it:'cocco', en:'coconut'}],
+         lines:L2(['Cocco bello! Cocco fresco!','Cocco, bibite, cocco!'],['Coconut! Fresh coconut!','Coconut, drinks, coconut!'])}],
+  woods:[{name:'Rino', kind:'m', role:L2('guardia forestale','park ranger'), post:390, work:['look','point'], look:{hair:'short',hairColor:'#6b3e26',skin:'#eab48a',glasses:false,outfit:'#5a6b3a',pants:'#8a5a3a'},
+         sells:[{re:/(marshmallow|wurstel|salsicc|sausage)/, prop:'stick', it:'marshmallow', en:'marshmallow'}],
+         lines:L2(['Occhio al fuoco!','Quei funghi non si mangiano. Fidati.','Ho visto un orso. Forse.'],['Mind the fire!','Don\'t eat those mushrooms. Trust me.','I saw a bear. Maybe.'])}],
+  disco:[{name:'DJ Max', kind:'m', role:L2('DJ','DJ'), post:405, work:['conduct','dance','disco'], look:{hair:'mohawk',hairColor:'#4cc9f0',skin:'#7a4a2c',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'},
+         lines:L2(['Mani in alto!','Questa la mettevo nel \'98!','Più forte? PIÙ FORTE!'],['Hands up!','I played this one in \'98!','Louder? LOUDER!'])},
+         {name:'Tony', kind:'m', role:L2('barman','bartender'), post:60, work:['cook','present'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#2b2d31',pants:'#2b2d31'},
+         sells:[{re:/(cocktail|drink|shot|birra|beer|mojito|gin|vodka|spritz)/, prop:'glass', it:'cocktail', en:'cocktail'}],
+         lines:L2(['Cosa ti preparo?','Analcolico? Ma sei serio?'],['What can I get you?','Alcohol-free? Seriously?'])}],
+  pizzeria:[{name:'Totò', kind:'m', role:L2('pizzaiolo','pizza maker'), post:300, work:['cook'], look:{hair:'bald',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#eceff2',pants:'#eceff2'},
+         sells:[{re:/(pizz|margherit|diavol|capricc|formagg|calzon)/, prop:'pizza', it:'pizza', en:'pizza'}],
+         lines:L2(['L\'ananas sulla pizza? Fuori!','Impasto a 72 ore, signori.','Margherita, la regina.'],['Pineapple on pizza? Get out!','72-hour dough, folks.','Margherita, the queen.'])},
+         {name:'Sara', kind:'f', role:L2('cameriera','waitress'), post:220, roam:90, work:['present','idle'], look:{hair:'bun',hairColor:'#222222',skin:'#c98b5e',glasses:true,outfit:'#d64545',pants:'#2b2d31'},
+         sells:[{re:/(birra|beer|coca|bibit|acqua|water|vino|wine)/, prop:'bottle', it:'birra', en:'beer'}],
+         lines:L2(['Accomodatevi!','Il conto? Dopo, dopo.'],['Take a seat!','The bill? Later, later.'])}]
 };
+/* random passers-by: rude but funny */
+const PASSERS = {
+  names:['Er Tamarro','Sciura Pina','Zio Franco','Il Molesto','Ubaldo','Cinzia','Il Ciccione','Nonno Peppe','Jessica','Il Fattone'],
+  gags:{
+    it:[{p:'fart',s:'Ops. Non sono stato io. Forse.'},{p:'drink',s:'BUUUURP! Scusate, peperonata.'},{p:'point',s:'Bel pigiama. L\'hai rubato a tuo nonno?'},{p:'angry',s:'Che cazzo guardi?'},
+        {p:'sing',s:'🎵 Nel blu dipinto di bluuu 🎵 (stonatissimo)'},{p:'present',s:'Hai due euro? No? Tirchio di merda.'},{p:'laugh',s:'AHAHAH! Ma come ti sei vestito?'},{p:'faint',s:'Sono inciampato. Colpa tua.'},
+        {p:'sneeze',s:'ETCIÙ! Tranquillo, non è contagioso. Credo.'},{p:'look',s:'Scusa, sai dov\'è il bagno? No? Allora la faccio qui.'},{p:'stomp',s:'Largo! Passo io, sfigato!'},{p:'think',s:'Mi scaccolo un attimo. Fai finta di niente.'}],
+    en:[{p:'fart',s:'Oops. Wasn\'t me. Probably.'},{p:'drink',s:'BUUUURP! Sorry, onions.'},{p:'point',s:'Nice pyjamas. Steal them from your grandpa?'},{p:'angry',s:'What the hell are you looking at?'},
+        {p:'sing',s:'🎵 Volareee, oh oh 🎵 (horribly off-key)'},{p:'present',s:'Got two quid? No? Cheap bastard.'},{p:'laugh',s:'HAHAHA! Who dressed you?'},{p:'faint',s:'I tripped. Your fault.'},
+        {p:'sneeze',s:'ACHOO! Relax, not contagious. I think.'},{p:'look',s:'Where\'s the loo? No? I\'ll go here then.'},{p:'stomp',s:'Move it, loser!'},{p:'think',s:'Just picking my nose. Don\'t mind me.'}]
+  }
+};
+function randomLook(kind){ const pick=a=>a[Math.floor(Math.random()*a.length)]; return {hair:pick(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly']), hairColor:pick(LOOKS.hairColor), skin:pick(LOOKS.skin), glasses:Math.random()<.4, outfit:pick(LOOKS.outfit), pants:pick(LOOKS.pants)}; }
+async function passerBy(r){
+  if (H.room!==r || !PL.topic || PL.passer) return;
+  const kind=Math.random()<.5?'f':'m', fromLeft=Math.random()<.5;
+  const name=PASSERS.names[Math.floor(Math.random()*PASSERS.names.length)];
+  const n=makeNPC({name, kind, room:r, x:fromLeft?-50:530}); npcLook(n, randomLook(kind)); n.bot=true; n.passer=true; n.role=L2('passante','passer-by'); PL.passer=n;
+  const gags=PASSERS.gags[LANG==='it'?'it':'en']; const g=gags[Math.floor(Math.random()*gags.length)];
+  try {
+    await npcWalk(n, clamp(H.X+(fromLeft?-60:60),40,440)); if (H.room!==r) return;
+    n.dir=H.X>n.X?1:-1; npcPose(n, POSES[g.p]?g.p:'idle'); npcSay(n, g.s, 3200);
+    await sleep(3400); if (H.room!==r) return; npcPose(n,'idle');
+    if (Math.random()<.4){ npcSay(n, LANG==='it'?'Ciao bello/a!':'Bye, gorgeous!'); }
+    await npcWalk(n, fromLeft?540:-60);
+  } finally { removeNPC(n); if (PL.passer===n) PL.passer=null; }
+}
+function botAt(n){ return n.post!=null ? n.post : n.X; }
+async function serve(bot, item){
+  if (bot.busy) return; bot.busy=true;
+  const it=LANG==='it';
+  try {
+    npcSay(bot, it?`Una ${item.it}? Arriva!`.replace('Una caffè','Un caffè').replace('Una gelato','Un gelato').replace('Una cocco','Un cocco').replace('Una cocktail','Un cocktail').replace('Una marshmallow','Un marshmallow'):`One ${item.en}? Coming up!`);
+    npcPose(bot,'cook'); await sleep(2600);
+    bot.P.propR.innerHTML=PROPS[item.prop]?PROPS[item.prop].s:'';
+    await npcWalk(bot, clamp(H.X+(H.X<240?50:-50),30,450)); bot.dir=H.X>bot.X?1:-1;
+    npcPose(bot,'present'); npcSay(bot, it?['Ecco qua!','Offre la casa. Stavolta.','Sono 5 euro. Scherzo.'][Math.floor(Math.random()*3)]:['Here you go!','On the house. This time.','That\'s five quid. Kidding.'][Math.floor(Math.random()*3)]);
+    await sleep(900); bot.P.propR.innerHTML=''; if (PROPS[item.prop]) setProp(item.prop); H.dir=bot.X>H.X?1:-1; setPose('cheer'); setTimeout(()=>setPose('idle'),1300);
+    await sleep(1400); npcPose(bot,'idle'); await npcWalk(bot, bot.post);
+  } finally { bot.busy=false; }
+}
+/* returns true if a worker took the order */
+function orderFrom(cmd){
+  const t=String(cmd).toLowerCase();
+  if (!/(ordin|vorrei|voglio|dammi|mi dai|portami|prendo|fammi|un |una |order|i'?d like|i want|give me|get me|bring me|can i have|one )/.test(t)) return false;
+  for (const n of PL.bots){ if (!n.sells) continue; for (const it of n.sells) if (it.re.test(t)){ serve(n, it); return true; } }
+  return false;
+}
+
 const BOT_LINES = {
   it:{ idle:['Che bella giornata.','Hai visto passare un piccione?','Io vengo qui tutti i giorni.','Mi annoio un po\'.','Qualcuno ha un panino?','Oggi mi sento fortunato.'],
        reply:['Ciao! Piacere!','Ehi, come va?','Ahah, sei simpatico.','Davvero? Racconta!','Non ci credo!','Vuoi fare amicizia?','Ok, ci sto!'] },
@@ -1826,11 +1892,13 @@ function enterPlace(r){
   setTimeout(()=>postPlace({t:'here', ...myPublic()}), 1500);
   PL.hb=setInterval(()=>postPlace({t:'here', ...myPublic()}), 9000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
-  PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.x}); npcLook(n,b.look); n.bot=true; return n; });
+  PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.post}); npcLook(n,b.look); n.bot=true; n.post=b.post; n.roam=b.roam||25; n.work=b.work; n.sells=b.sells; n.role=b.role; n.lines=b.lines; return n; });
+  clearTimeout(PL.passT); const nextPasser=()=>{ PL.passT=setTimeout(()=>{ if (H.room===r && Math.random()<.75) passerBy(r); if (PL.topic) nextPasser(); }, rnd(35000,75000)); }; PL.passT=setTimeout(()=>{ if (H.room===r) passerBy(r); nextPasser(); }, rnd(9000,18000));
   PL.wander=setInterval(()=>{ for (const n of PL.bots){ if (n.busy||n.room!==H.room) continue; const p=Math.random();
-      if (H.room==='disco' && p<.6){ npcPose(n, ['dance','disco','twist','robot'][Math.floor(Math.random()*4)]); continue; }
-      if (p<.35) npcWalk(n, clamp(n.X+rnd(-120,120),40,440)); else if (p<.55){ npcPose(n,['wave','look','dance','think','yawn','laugh'][Math.floor(Math.random()*6)]); setTimeout(()=>{ if(!n.busy) npcPose(n,'idle'); },2200); }
-      else if (p<.68) npcSay(n, pickLine('idle')); } }, 5000);
+      if (p<.45){ npcPose(n, n.work[Math.floor(Math.random()*n.work.length)]); }
+      else if (p<.65){ npcWalk(n, clamp(n.post+rnd(-n.roam,n.roam),30,450)); }
+      else if (p<.78){ npcSay(n, n.lines[LANG==='it'?'it':'en'][Math.floor(Math.random()*n.lines[LANG==='it'?'it':'en'].length)]); }
+      else npcPose(n,'idle'); } }, 4500);
   const it=LANG==='it'; const n=Object.keys(PL.peers).length;
   setTimeout(()=>{ const ppl=Object.keys(PL.peers).length; if (ppl) say(it?`C'è gente! (${ppl})`:`People here! (${ppl})`,2500); }, 2500);
 }
@@ -1839,6 +1907,7 @@ function leavePlace(silent){
   if (!PL.topic) return;
   postPlace({t:'bye'});
   try{ PL.es&&PL.es.close(); }catch(e){} clearInterval(PL.hb); clearInterval(PL.sweep); clearInterval(PL.wander);
+  clearTimeout(PL.passT); if (PL.passer){ removeNPC(PL.passer); PL.passer=null; }
   for (const id in PL.peers) removeNPC(PL.peers[id].n); PL.peers={};
   PL.bots.forEach(removeNPC); PL.bots=[]; PL.topic=null; PL.es=null;
 }
@@ -1875,7 +1944,7 @@ function targetIn(cmd){
   for (const n of ppl){ const nm=n.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); if (nm.length>=2 && new RegExp('[^a-z]'+nm.replace(/[^a-z0-9]/g,'')+'[^a-z]').test(t)) return n; }
   return null;
 }
-function describePerson(n){ const l=n.look||{}; return `${n.name} (${n.player?'real player':n.bot?'bot':n.topic?'friend visiting':'person'}, ${n.kind==='f'?'woman':'man'}, x=${Math.round(n.X)}${l.hair?`, ${l.hair} hair`:''})`; }
+function describePerson(n){ const l=n.look||{}; return `${n.name} (${n.player?'real player':n.passer?'rude passer-by bot':n.bot?'bot, '+(n.role?n.role.en:'local'):n.topic?'friend visiting':'person'}, ${n.kind==='f'?'woman':'man'}, x=${Math.round(n.X)}${l.hair?`, ${l.hair} hair`:''})`; }
 async function approachStep(s, id){
   // characters keep their distance; "close":true only when the command explicitly asks to stand in front of / on someone
   const want=String(s.name||s.to||'').toLowerCase(); if (!want) return;
@@ -2049,6 +2118,7 @@ $('f').addEventListener('submit', async e=>{
   if (/^\s*(mappa|map|apri la mappa|open the map)\s*$/i.test(cmd)){ i.value=''; openMap(); return; }
   if (/^\s*(arreda|arredamento|decora|decorate|furnish)\s*$/i.test(cmd)){ i.value=''; openCustom('home'); return; }
   const dcm = decoCommand(cmd); if (dcm){ i.value=''; runDeco(dcm); return; }
+  if (PLACES[H.room] && orderFrom(cmd)){ i.value=''; say(LANG==='it'?'Grazie!':'Thanks!',1500); return; }
   if (PLACES[H.room]) botReact(cmd);
   const callM = cmd.match(/^(?:call|phone|ring|chiama|telefona(?:\s+a)?)\s+(.{1,20}?)(?:\s+(\d{1,4}))?\s*$/i);
   if (callM){ startCall(callM[1].trim(), callM[2]||''); return; }
@@ -2147,22 +2217,27 @@ function updateNPCs(dt, now){
     P.armL.setAttribute('transform',`translate(-17 -38) rotate(${c.aL})`); P.elL.setAttribute('transform',`translate(0 19) rotate(${c.eL})`);
     P.armR.setAttribute('transform',`translate(17 -38) rotate(${c.aR})`); P.elR.setAttribute('transform',`translate(0 19) rotate(${c.eR})`);
     if (n.say && now>n.sayUntil){ n.sayEl&&n.sayEl.remove(); n.say=null; }
-    if (n.sayEl){ const hx=n.X, hy=n.Y-(HIP+80)*s+c.y; n.sayEl.setAttribute('transform',`translate(${clamp(hx,40,440)} ${Math.max(22,hy)})`); }
+    if (n.sayEl){ const hx=n.X, hy=Math.max(22, n.Y-(HIP+80)*s+c.y), w=n.sayW||80;
+      let cx=clamp(hx, w/2+4, 476-w/2);
+      if (hy<108 && cx+w/2>338) cx=Math.max(w/2+4, 338-w/2);          // keep clear of the map in the corner
+      n.sayEl.setAttribute('transform',`translate(${cx} ${hy})`);
+      const tl=n.sayEl.querySelector('.tail'); if (tl) tl.setAttribute('transform',`translate(${clamp(hx-cx,-w/2+8,w/2-8)} 0)`); }
   }
 }
 function npcSay(n, text, ms){
   n.sayEl&&n.sayEl.remove(); text=String(text).slice(0,60);
   const w=Math.min(190, 14+text.length*5.6);
   const g=document.createElementNS(NS,'g');
-  g.innerHTML=`<rect x="${-w/2}" y="-20" width="${w}" height="18" rx="9" fill="#fff" opacity=".96"/><path d="M-4 -2.5 L0 3 L4 -2.5 Z" fill="#fff"/><text x="0" y="-7.5" font-size="9.5" text-anchor="middle" font-family="Fredoka" font-weight="600" fill="#15171a">${esc(text)}</text>`;
-  fxL.appendChild(g); n.sayEl=g; n.say=text; n.sayUntil=performance.now()+(ms||Math.min(5000,1500+text.length*60));
+  g.innerHTML=`<rect x="${-w/2}" y="-20" width="${w}" height="18" rx="9" fill="#fff" opacity=".96"/><path class="tail" d="M-4 -2.5 L0 3 L4 -2.5 Z" fill="#fff"/><text x="0" y="-7.5" font-size="9.5" text-anchor="middle" font-family="Fredoka" font-weight="600" fill="#15171a">${esc(text)}</text>`;
+  fxL.appendChild(g); n.sayEl=g; n.sayW=w; n.say=text; n.sayUntil=performance.now()+(ms||Math.min(5000,1500+text.length*60));
 }
-async function npcWalk(n, x, id){
+async function npcWalk(n, x, id, again){
   x=freeSpot(x,n); n.destX=x;
   const dx=x-n.X; if (Math.abs(dx)<3) return; n.dir=dx>0?1:-1; npcPose(n,'walk');
   const ms=Math.abs(dx)/140*1000, t0=performance.now(), x0=n.X;
   await new Promise(res=>{ (function st(now){ if(id!=null && !alive(id)) return res(); const f=Math.min(1,(now-t0)/ms); n.X=x0+dx*f; if(f<1) requestAnimationFrame(st); else res(); })(performance.now()); });
   npcPose(n,'idle');
+  if (!again && n.X>10 && n.X<470){ const x2=freeSpot(n.X,n); if (Math.abs(x2-n.X)>2) await npcWalk(n, x2, id, true); }
 }
 
 
@@ -2552,11 +2627,11 @@ applyLang();
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
     if (e.target.closest('.mini')){ openMap(); return; }
     const n = NPCS.find(x=>x.room===H.room && x.g.contains(e.target));
-    const intro=x=>(LANG==='it'?'Sono ':'I\'m ')+x.name+(x.code?' '+x.code:'')+(x.bot?' 🤖':'');
+    const intro=x=>(LANG==='it'?'Sono ':'I\'m ')+x.name+(x.code?' '+x.code:'')+(x.role?', '+x.role[LANG==='it'?'it':'en']:'')+(x.bot?' 🤖':'');
     if (!n && holG.contains(e.target)){ say((LANG==='it'?'Sono ':'I\'m ')+H.name+' '+H.code, 2200); focusCmd(); return; }
     if (n) { n.dir=H.X>n.X?1:-1; npcSay(n, intro(n)); }
     if (n && n.topic){ openChatWith(n.topic, n.name); if (call) call.peerName=n.name; log('sys', (LANG==='it'?'Chat con ':'Chat with ')+n.name+(n.code?' '+n.code:'')); npcPose(n,'wave'); setTimeout(()=>npcPose(n,'idle'),1500); setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(err){} },60); return; }
-    if (n && n.bot){ npcPose(n,'wave','happy'); setTimeout(()=>{ npcSay(n, pickLine('reply')); },1800); setTimeout(()=>npcPose(n,'idle'),2400); }
+    if (n && n.bot){ npcPose(n,'wave','happy'); setTimeout(()=>{ const L=n.lines&&n.lines[LANG==='it'?'it':'en']; npcSay(n, n.passer?(LANG==='it'?'Che vuoi?':'What do you want?'):(L?L[Math.floor(Math.random()*L.length)]:pickLine('reply'))); },1800); setTimeout(()=>npcPose(n,'idle'),2400); }
     focusCmd(); });
 })();
 
@@ -2599,7 +2674,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='19';
+const BUILD='22';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
