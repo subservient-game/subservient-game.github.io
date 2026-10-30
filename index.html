@@ -1118,8 +1118,19 @@ function tween(props, ms, id){
   });
 }
 /* walking happens on a lane in front of the furniture, so the tenant never walks "through" things */
+/* characters never stop on top of each other (unless asked explicitly) */
+const GAP=46;
+function freeSpot(x, self){
+  if (x<10 || x>470 || window.__closeOK) return x;
+  const occ=[]; if (self!=='me') occ.push(H.destX??H.X);
+  for (const n of NPCS) if (n!==self && n.room===H.room && n.alpha>0.2 && n.g.style.display!=='none') occ.push(n.destX??n.X);
+  const ok=v=>occ.every(o=>Math.abs(o-v)>=GAP);
+  if (ok(x)) return x;
+  for (let k=1;k<12;k++) for (const v of [x+k*GAP/2, x-k*GAP/2]) if (v>=25 && v<=455 && ok(v)) return v;
+  return x;
+}
 async function walkTo(x, id, fast, sy){
-  x=clamp(x,-90,570); const endY = sy ?? STAND;
+  x=clamp(x,-90,570); x=freeSpot(x,'me'); H.destX=x; const endY = sy ?? STAND;
   const dx=x-H.X; if (Math.abs(dx)<4 && Math.abs(H.Y-endY)<2) return;
   H.dir = dx>=0?1:-1;
   setPose(fast?'run':'walk', fast?'focused':undefined);
@@ -1341,7 +1352,7 @@ STEPS (JSON objects, run in order)
 {"do":"vanish"} disappear in a puff.
 {"do":"call","name":"<friend's name>","code":"123"} phone another player (a number is name + 3-digit code).
 {"do":"decor","room":"<house room>","wall":"<color>","floor":"<color>","add":"<item>","remove":"<item>","x":300} — redecorate the tenant's house (only when asked). Items: ${Object.keys(DECOR).join(', ')}.
-{"do":"approach","name":"<person here>"} — walk right next to that person and face them. ALWAYS start with this when the command is about someone (hug Marco, punch Gino, dance with Luna...), then do the action. Interact ONLY with the person named in the command — never with a bot or anyone else unless the command names them. Real players cannot be moved: just act towards them.
+{"do":"approach","name":"<person here>","close":true} — walk right next to that person and face them. ALWAYS start with this when the command is about someone (hug Marco, punch Gino, dance with Luna...), then do the action. Interact ONLY with the person named in the command — never with a bot or anyone else unless the command names them. Real players cannot be moved: just act towards them.
 {"do":"npc","name":"<bot here>","pose":"<pose>","say":"...","ms":1800} — make a bot in the current public place walk over and act/answer.
 {"do":"partner","pose":"<pose>","face":"<face>","say":"...","x":300,"ms":1500} — ONLY if a partner lives here: the partner walks next to the tenant (or to x) and does a pose / line (kiss, hug, dance, wave, laugh…).
 {"do":"social","action":"date|propose|wedding|breakup","number":"Marco 123"} — relationships with other players (ask someone out by number, propose to the partner, plan the wedding, break up). Romance stays PG: kisses, hugs, hearts; anything intimate happens off-screen (lights off, door closed, a fade) — never describe or show sex.
@@ -1866,13 +1877,14 @@ function targetIn(cmd){
 }
 function describePerson(n){ const l=n.look||{}; return `${n.name} (${n.player?'real player':n.bot?'bot':n.topic?'friend visiting':'person'}, ${n.kind==='f'?'woman':'man'}, x=${Math.round(n.X)}${l.hair?`, ${l.hair} hair`:''})`; }
 async function approachStep(s, id){
+  // characters keep their distance; "close":true only when the command explicitly asks to stand in front of / on someone
   const want=String(s.name||s.to||'').toLowerCase(); if (!want) return;
   const n=peopleHere().find(x=>x.name.toLowerCase()===want) || peopleHere().find(x=>x.name.toLowerCase().startsWith(want));
   if (!n) return;
   await standUp(id);
   const side = H.X<=n.X ? -1 : 1;
-  let tx=n.X+side*42; if (tx<20||tx>460) tx=n.X-side*42;
-  await walkTo(clamp(tx,20,460), id); if (!alive(id)) return;
+  const dist=s.close?16:GAP; let tx=n.X+side*dist; if (tx<20||tx>460) tx=n.X-side*dist;
+  window.__closeOK=true; try { await walkTo(clamp(tx,20,460), id); } finally { window.__closeOK=false; } if (!alive(id)) return;
   H.dir = n.X>H.X?1:-1; n.dir = H.X>n.X?1:-1;
 }
 /* AI step: {"do":"npc","name":"Gino","pose":"dance","say":"..."} moves a bot (or the partner) */
@@ -2146,6 +2158,7 @@ function npcSay(n, text, ms){
   fxL.appendChild(g); n.sayEl=g; n.say=text; n.sayUntil=performance.now()+(ms||Math.min(5000,1500+text.length*60));
 }
 async function npcWalk(n, x, id){
+  x=freeSpot(x,n); n.destX=x;
   const dx=x-n.X; if (Math.abs(dx)<3) return; n.dir=dx>0?1:-1; npcPose(n,'walk');
   const ms=Math.abs(dx)/140*1000, t0=performance.now(), x0=n.X;
   await new Promise(res=>{ (function st(now){ if(id!=null && !alive(id)) return res(); const f=Math.min(1,(now-t0)/ms); n.X=x0+dx*f; if(f<1) requestAnimationFrame(st); else res(); })(performance.now()); });
@@ -2286,7 +2299,7 @@ function refreshPartner(){
 setInterval(()=>{
   const n=C.partnerNPC; if(!n || ceremonyOn || ROOMS[H.room].out || H.visit) return;
   if (n.busy) return;
-  if (Math.random()<.35){ n.room = Math.random()<.5 ? H.room : ['living','kitchen','bedroom','garden'][Math.floor(Math.random()*4)]; n.X = rnd(60,420); npcPose(n,'idle'); }
+  if (Math.random()<.35){ n.room = Math.random()<.5 ? H.room : ['living','kitchen','bedroom','garden'][Math.floor(Math.random()*4)]; n.destX=null; n.X = freeSpot(rnd(60,420), n); npcPose(n,'idle'); }
   else if (n.room===H.room){ const acts=['idle','drink','look','yawn','wave','think','dance']; const a=acts[Math.floor(Math.random()*acts.length)]; npcPose(n,a); if (a==='wave') npcSay(n, LANG==='it'?'Ciao amore!':'Hi love!'); setTimeout(()=>{ if(!n.busy) npcPose(n,'idle'); },2500); }
 }, 9000);
 
@@ -2586,7 +2599,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='18';
+const BUILD='19';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
