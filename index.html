@@ -1272,7 +1272,7 @@ function buildPrompt(cmd){
   const states = Object.entries(ST.o).map(([k,v])=>{ const a=[]; if('on' in v) a.push(v.on?'on':'off'); if('open' in v) a.push(v.open?'open':'closed'); if(v.grow&&v.grow!==1) a.push('grown x'+v.grow.toFixed(2)); return a.length?`${k}:${a.join(',')}`:null; }).filter(Boolean).join('; ');
   const dark = Object.keys(ST.dark).filter(k=>ST.dark[k]).join(', ')||'none';
   const who = (H.kind==='f' ? `a woman (she/her)` : `a man (he/him)`)+`: ${(H.look&&H.look.hair)||'messy'} hair${H.look&&H.look.glasses===false?'':', round glasses'}`;
-  return `You direct "Subservient ${H.name}", a comedy web toy in the spirit of the old obedient-webcam sites. ${H.name} is ${who}, cardigan, pyjama trousers, slippers, usually holding a coffee mug. Lazy, deadpan, but obeys EVERYTHING, filmed by security cameras in a small house. Turn the viewer's command into an animation script. Be inventive, funny and generous: the viewer should feel ${H.name} can do anything.
+  return `You direct "Subservient ${H.name}", a comedy web toy in the spirit of the old obedient-webcam sites. ${H.name} is ${who}, cardigan, pyjama trousers, slippers, usually holding a coffee mug. Lazy, deadpan, but obeys EVERYTHING, filmed by security cameras in a small house. Turn the viewer's command into an animation script. Be inventive, funny and generous: the viewer should feel ${H.name} can do anything. The players are adults (40+): crude, cheeky, sarcastic humour, insults and swearing (Italian or English) are welcome, in the lines and in the actions — just no explicit sexual content.
 
 HOUSE (scene is 480 x 300, floor y≈258, x 0-480 left→right)
 Rooms: living, kitchen, bathroom, bedroom, garden. "goto" an object in another room walks there automatically.
@@ -1748,7 +1748,7 @@ const BOT_LINES = {
 };
 const isPlace=r=>!!PLACES[r];
 const PL={ topic:null, es:null, hb:null, sweep:null, wander:null, peers:{}, bots:[], sid:Math.random().toString(36).slice(2,10) };
-const cleanTxt=t=>String(t||'').slice(0,90).replace(new RegExp(RUDE.source,'gi'),'***');
+const cleanTxt=t=>String(t||'').slice(0,140);
 function placeFromText(t){ t=String(t).toLowerCase(); for (const k in PLACES) for (const w of [...PLACES[k].it,...PLACES[k].en]) if (new RegExp('(^|[^a-zà-ú])'+w+'([^a-zà-ú]|$)').test(t)) return k; return null; }
 function postPlace(msg){ if (!PL.topic) return; fetch(`${NTFY}/${PL.topic}`,{method:'POST',body:JSON.stringify({...msg, sid:PL.sid})}).catch(()=>{}); }
 function myPublic(){ return {name:H.name, kind:H.kind, look:H.look, x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
@@ -1921,7 +1921,7 @@ function openDoor(){
 }
 function ignoreDoor(){ const k=H.knock; if(!k) return; H.knock=null; $('incoming').classList.remove('show'); sendTo(k.topic,{t:'nodoor'}); }
 /* ================= INPUT ================= */
-const RUDE=/\b(sex|sexy|nude|naked|porn|strip|fuck|dick|cock|pussy|tits|boobs|cazz|figa|scopa(re|mi)|spogliati|nuda|nudo)\b/;
+const RUDE=/\b(sex|sexy|nude|naked|porn|strip|cock|pussy|tits|boobs|scopa(re|mi)|spogliati|nuda|nudo)\b/;
 $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const i=$('cmd'), cmd=i.value.trim(); focusCmd(); if(!cmd) return; i.value='';
@@ -2480,7 +2480,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='13';
+const BUILD='14';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
