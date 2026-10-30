@@ -1751,13 +1751,14 @@ const PL={ topic:null, es:null, hb:null, sweep:null, wander:null, peers:{}, bots
 const cleanTxt=t=>String(t||'').slice(0,140);
 function placeFromText(t){ t=String(t).toLowerCase(); for (const k in PLACES) for (const w of [...PLACES[k].it,...PLACES[k].en]) if (new RegExp('(^|[^a-zà-ú])'+w+'([^a-zà-ú]|$)').test(t)) return k; return null; }
 function postPlace(msg){ if (!PL.topic) return; fetch(`${NTFY}/${PL.topic}`,{method:'POST',body:JSON.stringify({...msg, sid:PL.sid})}).catch(()=>{}); }
-function myPublic(){ return {name:H.name, kind:H.kind, look:H.look, x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
+function myPublic(){ return {topic:topicOf(H.name,H.code), code:H.code, name:H.name, kind:H.kind, look:H.look, x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
 function shareLook(){ if (PL.topic) postPlace({t:'here', ...myPublic()}); const t=otherTopic(); if (t) sendTo(t,{t:'look', look:H.look}); }
 function enterPlace(r){
   leavePlace(true);
   PL.topic='subservient-game-v2-place-'+r;
   try { PL.es=new EventSource(`${NTFY}/${PL.topic}/sse`); PL.es.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return; let d; try{ d=JSON.parse(m.message); }catch(e){ return; } onPlaceMsg(d, r); }; } catch(e){}
   postPlace({t:'here', ...myPublic()});
+  setTimeout(()=>postPlace({t:'here', ...myPublic()}), 1500);
   PL.hb=setInterval(()=>postPlace({t:'here', ...myPublic()}), 9000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.x}); npcLook(n,b.look); n.bot=true; return n; });
@@ -1784,7 +1785,7 @@ function onPlaceMsg(d, r){
     if (!p) postPlace({t:'here', ...myPublic()});
     if (!p){ const n=makeNPC({name:cleanTxt(d.name).slice(0,18)||'?', kind:d.kind==='f'?'f':'m', room:r, x:Math.random()<.5?-50:530}); n.player=true; p=PL.peers[id]={n, last:Date.now()};
       npcWalk(n, clamp(+d.x||240,30,450)).then(()=>{ npcPose(n,'wave'); npcSay(n, LANG==='it'?'Ciao!':'Hi!'); setTimeout(()=>npcPose(n,'idle'),1800); }); }
-    p.last=Date.now(); if (d.look) npcLook(p.n, d.look); if (d.costume && COST[d.costume]) npcCostume(p.n, d.costume);
+    p.last=Date.now(); if (typeof d.topic==='string' && /^subservient-game-v2-[a-z0-9-]+$/.test(d.topic)){ p.n.topic=d.topic; p.n.code=String(d.code||'').slice(0,3); } if (d.look) npcLook(p.n, d.look); if (d.costume && COST[d.costume]) npcCostume(p.n, d.costume);
     return;
   }
   if (!p) return; p.last=Date.now();
@@ -1872,7 +1873,7 @@ function enterHouse(d){
   setRoom(d.room&&ROOMS[d.room]?d.room:'living'); H.X=-60; H.Y=LANE;
   hostNPC = makeNPC({name:pv.name, kind:d.kind||'m', room:H.room, x:clamp(+d.x||300,40,440), outfit:d.outfit});
   if (d.look) npcLook(hostNPC, d.look); if (d.costume) npcCostume(hostNPC, d.costume);
-  hostNPC.dir=-1; npcSay(hostNPC, LANG==='it'?'Entra pure!':'Come in!');
+  hostNPC.topic=pv.topic; hostNPC.dir=-1; npcSay(hostNPC, LANG==='it'?'Entra pure!':'Come in!');
   walkTo(160, id).then(()=>say(LANG==='it'?`Ciao ${pv.name}!`:`Hi ${pv.name}!`,2500));
   houseLabel(); openChatWith(pv.topic, pv.name);
 }
@@ -1913,7 +1914,7 @@ function onVisitData(d){
 function openDoor(){
   const k=H.knock; if(!k) return; H.knock=null; $('incoming').classList.remove('show');
   const n=makeNPC({name:k.name, kind:k.kind, room:H.room, x:-60}); n.dir=1; if (k.look) npcLook(n,k.look);
-  H.guest={topic:k.topic, name:k.name, kind:k.kind, npc:n};
+  n.topic=k.topic; H.guest={topic:k.topic, name:k.name, kind:k.kind, npc:n};
   npcWalk(n, 150).then(()=>npcSay(n, LANG==='it'?'Ciao!':'Hi!'));
   sendTo(k.topic, {t:'enter', room:H.room, x:Math.round(H.X), kind:H.kind, costume:H.costume==='custom'?null:H.costume, look:H.look, deco:DECO});
   openChatWith(k.topic, k.name);
@@ -2438,7 +2439,11 @@ applyLang();
     b.addEventListener('mousedown', e=>e.preventDefault());
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
-  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault(); focusCmd(); });
+  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
+    const n = NPCS.find(x=>x.room===H.room && x.g.contains(e.target));
+    if (n && n.topic){ openChatWith(n.topic, n.name); if (call) call.peerName=n.name; log('sys', (LANG==='it'?'Chat con ':'Chat with ')+n.name+(n.code?' '+n.code:'')); npcPose(n,'wave'); setTimeout(()=>npcPose(n,'idle'),1500); setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(err){} },60); return; }
+    if (n && n.bot){ n.dir=H.X>n.X?1:-1; npcPose(n,'wave','happy'); npcSay(n, pickLine('reply')); setTimeout(()=>npcPose(n,'idle'),2000); }
+    focusCmd(); });
 })();
 
 
@@ -2480,7 +2485,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='14';
+const BUILD='15';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
