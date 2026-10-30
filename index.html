@@ -33,7 +33,7 @@
   h1 { font-size:clamp(1.05rem, 4.4vw, 1.5rem); margin:0 2px 8px; font-weight:600; text-align:center; letter-spacing:.01em; }
   h1 span { color:var(--accent); }
   header.top { display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:8px; }
-  header.top h1 { margin:0; }
+  header.top h1 { margin:0; padding:0 92px 0 96px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:min(1.5rem, 3.6vw); }
   .newbtn { position:absolute; left:0; background:var(--panel); border:1px solid var(--line); color:var(--fg); font-size:16px; padding:3px 10px; border-radius:999px; z-index:60; }
   .lang { position:absolute; right:0; display:flex; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:2px; z-index:60; }
   .lang button { background:none; color:var(--muted); font-size:12px; padding:4px 9px; border-radius:999px; }
@@ -111,6 +111,12 @@
   .callbox.show .log div { padding:2px 8px; }
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
+  .lookbtn { left:46px !important; }
+  .tabs { display:flex; gap:6px; margin-bottom:10px; } .tabs button { flex:1; background:#262a31; color:var(--fg); padding:9px; } .tabs button.on { background:var(--accent); color:#1a1a1a; }
+  .sheetBody .lbl { margin:10px 0 6px; color:var(--fg); font-weight:600; font-size:.9rem; text-align:left; }
+  .sws { display:flex; flex-wrap:wrap; gap:8px; } .sw { width:34px; height:34px; padding:0; border-radius:50%; border:2px solid rgba(255,255,255,.25); } .sw.on { border:3px solid var(--accent); box-shadow:0 0 0 2px #000 inset; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; } .chips button { background:#262a31; color:var(--fg); border:1px solid var(--line); padding:7px 11px; font-size:14px; font-weight:500; } .chips button.on { border-color:var(--accent); color:var(--accent); }
+  .sheetBody .small { font-size:.8rem; margin-top:12px; }
   .cam .hud { font-size:clamp(6px, 2.5cqw, 12px); } .cam .caption { font-size:clamp(7px, 2.8cqw, 13px); } .cam .mini { min-width:0; width:23%; }
   .callhead { display:flex; justify-content:space-between; align-items:center; font-weight:600; margin-bottom:8px; }
   .callhead button { padding:6px 12px; font-size:14px; }
@@ -175,7 +181,7 @@
     </div>
   </div>
 
-  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><h1 id="title">Subservient <span>Holgen</span></h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
+  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><h1 id="title">Subservient <span>Holgen</span></h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
   <div class="cam" id="cam">
     <svg class="scene" id="scene" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -292,7 +298,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 
 /* ================= WORLD STATE ================= */
 const ST = {
-  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false},
+  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false},
   o:{ tv:{on:false}, radio:{on:false}, plant:{grow:1}, fridge:{open:false}, stove:{on:false}, kitchen_sink:{on:false}, coffee:{on:false},
       cushion:{on:true}, toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
 };
@@ -303,7 +309,10 @@ const ROOMS = {
   kitchen: { name:'KITCHEN',     cam:2, mx:36, my:36, mw:32, mh:32 },
   bathroom:{ name:'BATHROOM',    cam:3, mx:36, my:2,  mw:32, mh:32 },
   bedroom: { name:'BEDROOM',     cam:4, mx:2,  my:2,  mw:32, mh:32 },
-  garden:  { name:'GARDEN',      cam:5, mx:70, my:2,  mw:32, mh:66 }
+  garden:  { name:'GARDEN',      cam:5, mx:70, my:2,  mw:32, mh:66 },
+  park:    { name:'PARK',        cam:6, mx:36, my:2,  mw:32, mh:32, out:1 },
+  piazza:  { name:'PIAZZA',      cam:7, mx:36, my:36, mw:32, mh:32, out:1 },
+  beach:   { name:'BEACH',       cam:8, mx:70, my:2,  mw:32, mh:66, out:1 }
 };
 /* x = where the tenant stands to use it (beside it, so they don't hide it); sy = standing depth; seat/lie = hip position */
 const OBJ = {
@@ -335,6 +344,13 @@ const OBJ = {
   tree:{room:'garden',x:172,seat:{x:150,y:146,legs:{lL:14,kL:-6,lR:-14,kR:6}},fx:{x:110,y:80},desc:'big tree (sit on the branch = climb)'},
   flowers:{room:'garden',x:150,fx:{x:178,y:238},desc:'flower bed (state grow)'},
   grill:{room:'garden',x:262,fx:{x:230,y:200},desc:'barbecue grill (on/off)'},
+  bench:{room:'park',x:150,seat:{x:140,y:207,legs:{lL:16,kL:-8,lR:-16,kR:8}},desc:'park bench (sit)'},
+  fountain:{room:'park',x:270,fx:{x:330,y:200},desc:'fountain in the park (fx splash)'},
+  towel:{room:'beach',x:150,fx:{x:120,y:262},desc:'beach towel (lie down on the sand: pose liefloor)'},
+  sea:{room:'beach',x:300,fx:{x:300,y:175},desc:'the sea (pose swim, fx splash)'},
+  sandcastle:{room:'beach',x:230,fx:{x:260,y:240},desc:'sandcastle'},
+  cafe:{room:'piazza',x:150,seat:{x:110,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:160,y:205},desc:'café table with chair (sit, drink coffee)'},
+  gelato:{room:'piazza',x:320,fx:{x:360,y:200},desc:'ice-cream cart'},
   hammock:{room:'garden',x:380,lie:{x:396,y:203,bend:35},seat:{x:380,y:212},desc:'hammock (lie)'}
 };
 for (const k in OBJ) OBJ[k].id=k;
@@ -470,6 +486,35 @@ function drawRoom(r){
     <rect x="292" y="150" width="6" height="100" fill="#7a5434"/><rect x="468" y="150" width="6" height="100" fill="#7a5434"/>
     <path d="M298 186 Q383 232 468 186 L468 190 Q383 238 298 190 Z" fill="#e8d9a8" stroke="#c9b27a"/><path d="M302 190 Q383 230 464 190" fill="none" stroke="#c9b27a" stroke-dasharray="3 3"/>`;
   }
+  if (r==='park'){
+    b+=`<rect width="480" height="300" fill="url(#gSky)"/><circle cx="60" cy="40" r="18" fill="#ffe27a"/>
+    <g fill="#7fb069"><circle cx="40" cy="190" r="50"/><circle cx="120" cy="175" r="60"/><circle cx="230" cy="185" r="55"/><circle cx="330" cy="170" r="62"/><circle cx="440" cy="185" r="55"/></g>
+    <g fill="#5e9a4e"><circle cx="80" cy="200" r="30"/><circle cx="280" cy="198" r="34"/><circle cx="400" cy="200" r="30"/></g>
+    <rect y="205" width="480" height="95" fill="url(#gGrass)"/><path d="M0 262 Q240 238 480 262 L480 284 Q240 258 0 284Z" fill="#d9c49a"/>
+    <rect x="96" y="172" width="88" height="6" rx="2" fill="#8b5a2b"/><rect x="96" y="182" width="88" height="6" rx="2" fill="#8b5a2b"/><rect x="100" y="170" width="4" height="78" fill="#3d3d3d"/><rect x="176" y="170" width="4" height="78" fill="#3d3d3d"/><rect x="94" y="203" width="92" height="7" rx="2" fill="#a0703f"/>
+    <ellipse cx="330" cy="236" rx="52" ry="12" fill="#9aa5b1"/><ellipse cx="330" cy="232" rx="44" ry="8" fill="#4cc9f0"/><rect x="324" y="186" width="12" height="46" fill="#9aa5b1"/><ellipse cx="330" cy="186" rx="20" ry="5" fill="#9aa5b1"/><path d="M330 182 Q310 160 296 228 M330 182 Q350 160 364 228" stroke="#a8e6fa" stroke-width="3" fill="none" opacity=".9"/>
+    <rect x="448" y="120" width="5" height="128" fill="#2b2d31"/><circle cx="450" cy="118" r="8" fill="#fff3b0"/>`;
+  }
+  if (r==='beach'){
+    b+=`<rect width="480" height="160" fill="url(#gSky)"/><circle cx="420" cy="50" r="22" fill="#ffd166"/>
+    <rect y="140" width="480" height="70" fill="#2a9df4"/><path d="M0 152 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke="#bfe6ff" stroke-width="2" fill="none"/><path d="M0 176 q25 -6 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#bfe6ff" stroke-width="2" fill="none" opacity=".7"/>
+    <path d="M0 200 Q120 190 240 200 T480 198 L480 300 L0 300Z" fill="#f2d49b"/><path d="M0 204 Q120 194 240 204 T480 202" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>
+    <line x1="120" y1="250" x2="112" y2="150" stroke="#555" stroke-width="3"/><path d="M62 168 Q112 118 162 152 Z" fill="#ef476f"/><path d="M84 160 Q112 126 112 152 Z" fill="#fff" opacity=".55"/>
+    <path d="M80 256 L172 256 L164 276 L72 276Z" fill="#06d6a0"/><path d="M80 262 L170 262 M78 268 L168 268" stroke="#fff" stroke-width="2"/>
+    <path d="M240 250 L240 232 L246 232 L246 226 L252 226 L252 232 L268 232 L268 226 L274 226 L274 232 L280 232 L280 250Z" fill="#e0b56e"/>
+    <path d="M440 250 Q432 200 446 150" stroke="#8b5a2b" stroke-width="8" fill="none"/><g fill="#2d9a4e"><path d="M446 150 Q410 140 392 166 Q420 150 446 156Z"/><path d="M446 150 Q480 136 490 160 Q466 148 446 156Z"/><path d="M446 150 Q430 118 404 116 Q432 130 444 152Z"/><path d="M446 150 Q466 116 486 120 Q462 132 448 152Z"/></g>`;
+  }
+  if (r==='piazza'){
+    const win=(x,y,w,h,c)=>{ let o=''; for(let i=0;i<w;i++) for(let j=0;j<h;j++) o+=`<rect x="${x+i*26}" y="${y+j*34}" width="14" height="20" fill="${c}"/>`; return o; };
+    b+=`<rect width="480" height="300" fill="url(#gSky)"/>
+    <rect x="0" y="40" width="120" height="180" fill="#e9c46a"/>${win(12,58,4,3,'#6d8fa8')}<rect x="120" y="70" width="130" height="150" fill="#e76f51"/>${win(134,86,5,3,'#f6e7c1')}<rect x="250" y="30" width="110" height="190" fill="#f4a261"/>${win(262,46,4,4,'#6d8fa8')}<rect x="360" y="60" width="120" height="160" fill="#84a59d"/>${win(374,76,4,3,'#f6e7c1')}
+    <g>${Array.from({length:8},(_,i)=>`<path d="M${10+i*16} 150 L${26+i*16} 150 L${26+i*16} 166 Q${18+i*16} 172 ${10+i*16} 166Z" fill="${i%2?'#fff':'#2a9d8f'}"/>`).join('')}</g><text x="74" y="144" text-anchor="middle" font-size="11" font-family="Fredoka, sans-serif" fill="#fff" font-weight="700">CAFFÈ</text>
+    <rect y="218" width="480" height="82" fill="#b8a99a"/><g stroke="#9c8d7f" stroke-width="1.2">${Array.from({length:5},(_,j)=>`<line x1="0" y1="${230+j*15}" x2="480" y2="${230+j*15}"/>`).join('')}${Array.from({length:24},(_,i)=>`<line x1="${i*20+(i%2)*10}" y1="218" x2="${i*20+(i%2)*10}" y2="300"/>`).join('')}</g>
+    <ellipse cx="160" cy="212" rx="22" ry="5" fill="#fff"/><rect x="158" y="214" width="4" height="34" fill="#555"/><rect x="150" y="246" width="20" height="3" fill="#555"/><path d="M152 206 l6 0 l-1 6 l-4 0z" fill="#fff" stroke="#999"/>
+    <rect x="96" y="172" width="5" height="76" fill="#555"/><rect x="96" y="200" width="30" height="6" rx="2" fill="#7a5434"/><rect x="121" y="206" width="4" height="42" fill="#555"/>
+    <rect x="330" y="196" width="64" height="40" rx="4" fill="#fff"/><rect x="330" y="214" width="64" height="8" fill="#ff8fab"/><circle cx="342" cy="244" r="8" fill="#555"/><circle cx="382" cy="244" r="8" fill="#555"/><line x1="362" y1="196" x2="362" y2="150" stroke="#555" stroke-width="3"/><path d="M326 162 Q362 132 398 162Z" fill="#ffd6e0"/><g transform="translate(350 190)"><path d="M0 0 l5 -10 l5 10z" fill="#e0b56e"/><circle cx="5" cy="-12" r="5" fill="#ff8fab"/></g>`;
+  }
+  b=decorate(r,b);
   backL.innerHTML=b; frontL.innerHTML=frontFor(r);
   darkOv.setAttribute('opacity', dark ? (r==='garden'?.55:.66) : 0);
   holG.style.filter = dark ? 'brightness(.7)' : '';
@@ -492,8 +537,10 @@ function frontFor(r){
 /* ================= MINIMAP ================= */
 function drawMini(){
   let s='';
-  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room;
-    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
+  const town=!!ROOMS[H.room].out;
+  if (town){ s+=`<rect x="2" y="36" width="32" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="18" y="50" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
+  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue;
+    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
     <text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-6)}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`;
   }
   const R=ROOMS[H.room]; const dx=R.mx+clamp(H.X/480*R.mw,2,R.mw-2), dy=R.my+R.mh*(H.room==='garden'?0.8:0.72);
@@ -537,8 +584,8 @@ const bodyMarkup = () => `
       <path d="M0 -15 q2 2.6 -.2 3.8" stroke="#d9a07a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
       <g id="eyes"></g>
       <g id="lashes"></g>
-      <g fill="rgba(255,255,255,.16)" stroke="#2b2b2b" stroke-width="1.4"><circle cx="-6.6" cy="-17" r="6"/><circle cx="6.6" cy="-17" r="6"/></g>
-      <path d="M-.7 -18 Q0 -19.4 .7 -18" stroke="#2b2b2b" stroke-width="1.2" fill="none"/><line x1="-12.6" y1="-17.5" x2="-15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/><line x1="12.6" y1="-17.5" x2="15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/>
+      <g id="glasses"><g fill="rgba(255,255,255,.16)" stroke="#2b2b2b" stroke-width="1.4"><circle cx="-6.6" cy="-17" r="6"/><circle cx="6.6" cy="-17" r="6"/></g>
+      <path d="M-.7 -18 Q0 -19.4 .7 -18" stroke="#2b2b2b" stroke-width="1.2" fill="none"/><line x1="-12.6" y1="-17.5" x2="-15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/><line x1="12.6" y1="-17.5" x2="15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/></g>
       <g id="brows"></g>
       <g id="mouth"></g>
       <g id="hairFront"></g>
@@ -559,7 +606,7 @@ function setColors(outfit, pants, skin){
   holG.style.setProperty('--pants',pants); holG.style.setProperty('--skin',skin); holG.style.setProperty('--skinD',shade(skin,.93));
 }
 function applyKind(){
-  J.hairBack.innerHTML=HAIR[H.kind].back; J.hairFront.innerHTML=HAIR[H.kind].front;
+  const lk=H.look||{hair:H.kind==='f'?'bun':'short',hairColor:'#c8642a'}; J.hairBack.innerHTML=hairSVG(lk,'back'); J.hairFront.innerHTML=hairSVG(lk,'front'); if (J.glasses) J.glasses.style.display = lk.glasses===false?'none':'';
   J.lashes.innerHTML = H.kind==='f' ? `<path d="M-12.4 -19.6 l-2 -1.4 M-11.8 -21.6 l-1.6 -1.8 M12.4 -19.6 l2 -1.4 M11.8 -21.6 l1.6 -1.8" stroke="#2b2b2b" stroke-width="1" stroke-linecap="round"/>` : '';
 }
 
@@ -726,9 +773,11 @@ function applyCostume(c){
   const base = COST[c.preset] || {};
   const m = {...base, ...c};
   const isF=H.kind==='f';
-  const skin = normColor(m.skin)||SKIN;
-  const outfit = m.outfit==='@skin'?skin:(normColor(m.outfit)||(isF?'#3f9a8c':'#d9a93b'));
-  const pants = m.pants==='@skin'?skin:(normColor(m.pants)||'#8fa9c9');
+  H.lastCostume = c;
+  const lk = H.look||{}, useLook = !c.preset || c.preset==='pajamas';
+  const skin = normColor(c.skin)||normColor(lk.skin)||normColor(m.skin)||SKIN;
+  const outfit = m.outfit==='@skin'?skin:(normColor(c.outfit)||(useLook&&normColor(lk.outfit))||normColor(base.outfit)||(isF?'#3f9a8c':'#d9a93b'));
+  const pants = m.pants==='@skin'?skin:(normColor(c.pants)||(useLook&&normColor(lk.pants))||normColor(base.pants)||'#8fa9c9');
   setColors(outfit, pants, skin);
   const fill=s=>sanitizeSVG(String(s||'').replace(/@INITIAL/g, esc((H.name||'H')[0].toUpperCase())));
   J.cHat.innerHTML=fill(m.hat); J.cFace.innerHTML=fill(m.face);
@@ -736,8 +785,8 @@ function applyCostume(c){
   J.cBack.innerHTML=fill(m.back);
   J.hairBack.style.display = J.hairFront.style.display = m.hideHair ? 'none' : '';
   J.cardi.style.display = m.hideCardi ? 'none' : '';
-  [J.thL2,J.thR2].forEach(e=>e.style.display = (m.pants && m.pants!=='#8fa9c9') ? 'none' : '');
-  holG.querySelectorAll('#knL > rect:nth-child(2), #knR > rect:nth-child(2)').forEach(e=>e.style.display = (m.pants && m.pants!=='#8fa9c9') ? 'none' : '');
+  [J.thL2,J.thR2].forEach(e=>e.style.display = (pants!=='#8fa9c9') ? 'none' : '');
+  holG.querySelectorAll('#knL > rect:nth-child(2), #knR > rect:nth-child(2)').forEach(e=>e.style.display = (pants!=='#8fa9c9') ? 'none' : '');
   H.costume = c.preset && COST[c.preset] ? c.preset : 'custom';
   if (c.preset==='pajamas' && !c.outfit && !c.hat) H.costume='pajamas';
 }
@@ -1039,7 +1088,7 @@ async function walkTo(x, id, fast, sy){
   if (alive(id)) setPose('idle');
 }
 let miniT=0; function drawMiniThrottled(){ const n=performance.now(); if(n-miniT>120){ miniT=n; drawMini(); } }
-function setRoom(r){ H.room=r; camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
+function setRoom(r){ const wasRoom=H.room; H.room=r; if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
 async function standUp(id){
   if (H.inShower){ H.inShower=false; drawRoom(H.room); }
   if (H.lying){ const o=OBJ[H.lying]; H.lying=null; if(o.room===H.room) drawRoom(H.room); setPose('idle'); await tween({Y:STAND, X:o.x}, 380, id); }
@@ -1201,6 +1250,8 @@ async function doStep(s, id){
   }
   if (d==='vanish'){ for(let i=0;i<7;i++) el('circle',{cx:H.X+rnd(-30,30),cy:H.Y-rnd(10,130),r:rnd(10,18),fill:'#eceff2',class:'poof'},null,800); await tween({alpha:0},300,id); H.hidden=true; return; }
   if (d==='partner'){ await partnerStep(s, id); return; }
+  if (d==='npc'){ await npcStep(s, id); return; }
+  if (d==='decor'){ if (!H.visit){ const o={...s}; if (o.add&&!DECOR[o.add]) o.add=findDecor(o.add); if (o.remove&&!DECOR[o.remove]) o.remove=findDecor(o.remove); decoApply(o); } await sleep(500); return; }
   if (d==='social'){ await socialAction(String(s.action||''), s.number); return; }
   if (d==='call'){ if (s.name) startCall(String(s.name), s.code); return; }
   if (d==='refuse'){
@@ -1220,15 +1271,16 @@ function buildPrompt(cmd){
   const objs = Object.values(OBJ).map(o=>`${o.id} [${o.room}] ${o.desc}`).join('\n');
   const states = Object.entries(ST.o).map(([k,v])=>{ const a=[]; if('on' in v) a.push(v.on?'on':'off'); if('open' in v) a.push(v.open?'open':'closed'); if(v.grow&&v.grow!==1) a.push('grown x'+v.grow.toFixed(2)); return a.length?`${k}:${a.join(',')}`:null; }).filter(Boolean).join('; ');
   const dark = Object.keys(ST.dark).filter(k=>ST.dark[k]).join(', ')||'none';
-  const who = H.kind==='f' ? `a woman (she/her): long ginger hair in a bun, round glasses` : `a man (he/him): messy ginger hair, round glasses`;
+  const who = (H.kind==='f' ? `a woman (she/her)` : `a man (he/him)`)+`: ${(H.look&&H.look.hair)||'messy'} hair${H.look&&H.look.glasses===false?'':', round glasses'}`;
   return `You direct "Subservient ${H.name}", a comedy web toy in the spirit of the old obedient-webcam sites. ${H.name} is ${who}, cardigan, pyjama trousers, slippers, usually holding a coffee mug. Lazy, deadpan, but obeys EVERYTHING, filmed by security cameras in a small house. Turn the viewer's command into an animation script. Be inventive, funny and generous: the viewer should feel ${H.name} can do anything.
 
 HOUSE (scene is 480 x 300, floor y≈258, x 0-480 left→right)
 Rooms: living, kitchen, bathroom, bedroom, garden. "goto" an object in another room walks there automatically.
+TOWN (outside the house, public): park, beach, piazza. Go out with {"do":"goto","room":"park"}; come home with room living. Other players and friendly bots hang out there.
 Objects (id [room] description):
 ${objs}
 
-NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
+NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}${PLACES[H.room]?` Out in the ${H.room}. People here: bots ${PL.bots.map(b=>b.name).join(', ')}${Object.values(PL.peers).length?'; players '+Object.values(PL.peers).map(p=>p.n.name).join(', '):''}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
 
 STEPS (JSON objects, run in order)
 {"do":"goto","object":"<id>"} | {"do":"goto","room":"<room>","x":0-480} (x<0 or >480 = off camera). Add "run":true to run.
@@ -1244,6 +1296,8 @@ STEPS (JSON objects, run in order)
 {"do":"appear","room":"<room>","x":240,"from":"top|left|right|here","pose":"faint","face":"dizzy","say":"..."} — make him (re)appear: "top" = falls from the sky and lands with a thud (great after diving out of a window into the garden), "here" = pops in with a puff.
 {"do":"vanish"} disappear in a puff.
 {"do":"call","name":"<friend's name>","code":"123"} phone another player (a number is name + 3-digit code).
+{"do":"decor","room":"<house room>","wall":"<color>","floor":"<color>","add":"<item>","remove":"<item>","x":300} — redecorate the tenant's house (only when asked). Items: ${Object.keys(DECOR).join(', ')}.
+{"do":"npc","name":"<bot or person here>","pose":"<pose>","say":"...","ms":1800} — make a bot in the current public place walk over and act/answer.
 {"do":"partner","pose":"<pose>","face":"<face>","say":"...","x":300,"ms":1500} — ONLY if a partner lives here: the partner walks next to the tenant (or to x) and does a pose / line (kiss, hug, dance, wave, laugh…).
 {"do":"social","action":"date|propose|wedding|breakup","number":"Marco 123"} — relationships with other players (ask someone out by number, propose to the partner, plan the wedding, break up). Romance stays PG: kisses, hugs, hearts; anything intimate happens off-screen (lights off, door closed, a fade) — never describe or show sex.
 {"do":"refuse","say":"..."} walk up to the camera and wag a finger.
@@ -1492,6 +1546,275 @@ $('btnHang').onclick=()=>{ if(!call) return; send({t:'hang'}); call=null; $('cal
 $('chatF').addEventListener('submit',e=>{ e.preventDefault(); const i=$('chatIn'), t=i.value.trim(); try{ i.focus({preventScroll:true}); }catch(_){ i.focus(); } if(!t||!call||call.state!=='active') return; i.value=''; log('me',t); say(t); setPose('phone'); send({t:'chat', text:t.slice(0,200)}); });
 
 
+/* ================= LOOK (character customisation) ================= */
+const HAIRSTYLES = {
+  short: HAIR.m, bun: HAIR.f,
+  long:{ back:`<path d="M-19 -22 C-23 -44 23 -44 19 -22 L21 12 Q0 18 -21 12 Z" fill="#c8642a"/>`, front:`<path d="M-17 -15 C-19 -35 19 -35 17 -15 C12 -26 -6 -28 -17 -15 Z" fill="#c8642a"/>` },
+  curly:{ back:'', front:`<g fill="#c8642a"><circle cx="-14" cy="-26" r="6"/><circle cx="-7" cy="-32" r="6.5"/><circle cx="1" cy="-34" r="6.5"/><circle cx="9" cy="-32" r="6.5"/><circle cx="15" cy="-26" r="6"/><circle cx="-17" cy="-19" r="4.5"/><circle cx="17" cy="-19" r="4.5"/></g>` },
+  mohawk:{ back:'', front:`<path d="M-4 -31 L-6 -46 L-1 -40 L1 -51 L4 -40 L8 -45 L4 -31 Z" fill="#c8642a"/>` },
+  pony:{ back:`<path d="M12 -30 Q32 -28 27 -2 Q23 10 18 2 Q23 -14 10 -24 Z" fill="#c8642a"/>`, front:`<path d="M-17 -15 C-19 -35 19 -35 17 -15 C12 -26 -6 -28 -17 -15 Z" fill="#c8642a"/><circle cx="13" cy="-28" r="3" fill="#ff5c86"/>` },
+  bald:{ back:'', front:`<path d="M-17 -16 Q-17 -24 -13 -27 L-13 -16 Z M17 -16 Q17 -24 13 -27 L13 -16 Z" fill="#c8642a"/>` }
+};
+const LOOKS = {
+  hair:{short:['Corti','Short'], bun:['Chignon','Bun'], long:['Lunghi','Long'], pony:['Coda','Ponytail'], curly:['Ricci','Curly'], mohawk:['Cresta','Mohawk'], bald:['Pelato','Bald']},
+  hairColor:['#c8642a','#6b3e26','#222222','#e8c36a','#eeeeee','#3f6fd1','#e87aa8','#4f9a4a','#8a5ac8'],
+  skin:['#f6cfa7','#eab48a','#c98b5e','#a46a43','#7a4a2c','#5a3520'],
+  outfit:['#d9a93b','#3f9a8c','#d64545','#3f6fd1','#e87aa8','#4f9a4a','#8a5ac8','#2b2d31','#eceff2'],
+  pants:['#8fa9c9','#2b2d31','#3f6fd1','#8a5a3a','#4f9a4a','#d64545','#eceff2','#e87aa8']
+};
+function defaultLook(kind){ return {hair: kind==='f'?'bun':'short', hairColor:'#c8642a', skin:'#f6cfa7', glasses:true, outfit:null, pants:null}; }
+H.look = (()=>{ try { return JSON.parse(localStorage.getItem('subservientLook')||'null'); } catch(e){ return null; } })();
+function saveLook(){ try{ localStorage.setItem('subservientLook', JSON.stringify(H.look)); }catch(e){} }
+function hairSVG(look, part){ const st=HAIRSTYLES[look.hair]||HAIRSTYLES.short; return (st[part]||'').replace(/#c8642a/g, look.hairColor||'#c8642a'); }
+function applyLook(){
+  if (!H.look) H.look=defaultLook(H.kind);
+  J.hairBack.innerHTML=hairSVG(H.look,'back'); J.hairFront.innerHTML=hairSVG(H.look,'front');
+  if (J.glasses) J.glasses.style.display = H.look.glasses===false ? 'none' : '';
+  applyCostume(H.lastCostume || 'pajamas');
+}
+function npcLook(n, look){
+  if (!n || !look) return; n.look=look;
+  n.P.hairBack.innerHTML=hairSVG(look,'back'); n.P.hairFront.innerHTML=hairSVG(look,'front');
+  if (n.P.glasses) n.P.glasses.style.display = look.glasses===false?'none':'';
+  const sk=normColor(look.skin)||SKIN; n.g.style.setProperty('--skin',sk); n.g.style.setProperty('--skinD',shade(sk,.93));
+  const o=normColor(look.outfit)||(n.kind==='f'?'#3f9a8c':'#d9a93b'), p=normColor(look.pants)||'#8fa9c9';
+  n.outfit=o; n.g.style.setProperty('--outfit',o); n.g.style.setProperty('--outfitD',shade(o,.78)); n.g.style.setProperty('--pants',p);
+  [n.P.thL2,n.P.thR2].forEach(e=>e.style.display = p!=='#8fa9c9'?'none':'');
+}
+function setLook(k, v){ H.look={...(H.look||defaultLook(H.kind)), [k]:v}; saveLook(); applyLook(); try{ shareLook(); }catch(e){} }
+
+/* ================= DECOR (rooms + garden) ================= */
+const DECOR = {
+  painting:{it:['quadro','dipinto'],en:['painting','picture'],wall:1, svg:`<rect x="-26" y="-20" width="52" height="40" fill="#6b4a2b"/><rect x="-22" y="-16" width="44" height="32" fill="#9fd3e0"/><path d="M-22 16 L-6 -2 L4 8 L12 0 L22 16Z" fill="#5c9a58"/><circle cx="12" cy="-8" r="4" fill="#ffd166"/>`},
+  poster:{it:['poster','manifesto'],en:['poster'],wall:1, svg:`<rect x="-18" y="-26" width="36" height="52" fill="#2b2d42"/><path d="M0 -18 L6 -4 L6 10 L-6 10 L-6 -4Z" fill="#ef476f"/><circle cx="0" cy="-2" r="2.5" fill="#8ecae6"/><path d="M-6 10 L-10 16 L-6 14 M6 10 L10 16 L6 14" stroke="#ffd166" stroke-width="2" fill="none"/><circle cx="-10" cy="-18" r="1.2" fill="#fff"/><circle cx="11" cy="-12" r="1" fill="#fff"/>`},
+  clock:{it:['orologio'],en:['clock'],wall:1, svg:`<circle r="13" fill="#fff" stroke="#3d405b" stroke-width="3"/><path d="M0 0 L0 -8 M0 0 L6 3" stroke="#3d405b" stroke-width="2"/>`},
+  mirror:{it:['specchio'],en:['mirror'],wall:1, svg:`<ellipse rx="14" ry="22" fill="#cfe8ef" stroke="#c9a227" stroke-width="3"/><path d="M-6 -10 L2 -16" stroke="#fff" stroke-width="2"/>`},
+  garland:{it:['lucine','festone','luci colorate'],en:['fairy lights','string lights','garland'],wall:1,out:1, svg:`<path d="M-70 0 Q0 22 70 0" stroke="#333" fill="none"/>${[-60,-40,-20,0,20,40,60].map((x,i)=>`<circle cx="${x}" cy="${Math.round(11-Math.abs(x)/7)}" r="3.5" fill="${['#ff5c86','#ffd166','#4cc9f0','#80ed99','#c77dff','#ff9f1c','#ff5c86'][i]}"/>`).join('')}`},
+  discoball:{it:['palla da discoteca','palla stroboscopica'],en:['disco ball','mirror ball'],wall:1, svg:`<line x1="0" y1="-70" x2="0" y2="-12" stroke="#999"/><circle r="12" fill="#c0c7d0"/><path d="M-12 0 H12 M-10 -6 H10 M-10 6 H10 M0 -12 V12 M-6 -10 V10 M6 -10 V10" stroke="#8a929c" stroke-width=".8"/><circle cx="-4" cy="-5" r="2" fill="#fff"/>`},
+  aquarium:{it:['acquario'],en:['aquarium','fish tank'], svg:`<rect x="-30" y="-14" width="60" height="14" fill="#6b4a2b"/><rect x="-28" y="-46" width="56" height="32" rx="2" fill="#7cc6e8" stroke="#dfeff5" stroke-width="2"/><path d="M-10 -32 q5 -5 10 0 q-5 5 -10 0 l-4 -3 v6z" fill="#f4a261"/><path d="M8 -24 q4 -4 8 0 q-4 4 -8 0 l-3 -2 v4z" fill="#e76f51"/><path d="M-22 -14 q2 -10 0 -16 M-18 -14 q3 -8 1 -12" stroke="#2a9d8f" stroke-width="2" fill="none"/>`},
+  bigplant:{it:['pianta grande','pianta','vaso'],en:['plant','big plant','pot plant'],out:1, svg:`<path d="M-10 0 L10 0 L8 -18 L-8 -18Z" fill="#c9734a"/><path d="M0 -18 C-20 -40 -24 -60 -6 -54 C-4 -70 8 -72 6 -54 C22 -62 20 -40 0 -18Z" fill="#4f9a4a"/>`},
+  armchair:{it:['poltrona'],en:['armchair'], svg:`<rect x="-24" y="-40" width="48" height="30" rx="8" fill="#c0504d"/><rect x="-28" y="-22" width="56" height="16" rx="6" fill="#a8423f"/><rect x="-30" y="-30" width="10" height="26" rx="4" fill="#933a37"/><rect x="20" y="-30" width="10" height="26" rx="4" fill="#933a37"/><rect x="-24" y="-6" width="4" height="6" fill="#3d2b1f"/><rect x="20" y="-6" width="4" height="6" fill="#3d2b1f"/>`},
+  cat:{it:['gatto','gattino','micio'],en:['cat','kitten'],out:1, svg:`<ellipse cx="0" cy="-5" rx="18" ry="6" fill="#8d6e97"/><ellipse cx="0" cy="-9" rx="11" ry="6" fill="#f4a261"/><circle cx="9" cy="-14" r="5" fill="#f4a261"/><path d="M6 -18 l1 -5 l3 4 M10 -18 l2 -5 l2 5" fill="#f4a261"/><path d="M-10 -8 q-8 2 -6 -6" stroke="#f4a261" stroke-width="3" fill="none"/><circle cx="11" cy="-15" r=".9" fill="#222"/>`},
+  dog:{it:['cane','cagnolino','cuccia'],en:['dog','puppy','doghouse'],out:1, svg:`<path d="M-24 0 L-24 -26 L0 -44 L24 -26 L24 0Z" fill="#c1121f"/><path d="M-26 -26 L0 -46 L26 -26" stroke="#6b3a1f" stroke-width="5" fill="none"/><path d="M-8 0 L-8 -14 Q0 -22 8 -14 L8 0Z" fill="#2b2d42"/><g transform="translate(36 0)"><ellipse cx="0" cy="-10" rx="11" ry="7" fill="#b07d48"/><circle cx="10" cy="-18" r="6" fill="#b07d48"/><path d="M8 -23 l-3 7 l5 0z" fill="#7a5434"/><rect x="-8" y="-5" width="3" height="5" fill="#b07d48"/><rect x="5" y="-5" width="3" height="5" fill="#b07d48"/><path d="M-11 -12 q-6 -4 -4 -9" stroke="#b07d48" stroke-width="3" fill="none"/><circle cx="12" cy="-19" r="1" fill="#000"/></g>`},
+  piano:{it:['pianoforte','piano'],en:['piano'], svg:`<rect x="-34" y="-52" width="68" height="42" rx="3" fill="#222"/><rect x="-30" y="-26" width="60" height="9" fill="#fff"/><g fill="#222">${[-26,-18,-6,2,10,22].map(x=>`<rect x="${x}" y="-26" width="3" height="5"/>`).join('')}</g><rect x="-30" y="-10" width="5" height="10" fill="#222"/><rect x="25" y="-10" width="5" height="10" fill="#222"/>`},
+  lavalamp:{it:['lampada lava','lampada'],en:['lava lamp'], svg:`<rect x="-6" y="-6" width="12" height="6" fill="#555"/><path d="M-5 -6 L5 -6 L3 -30 L-3 -30Z" fill="#9b5de5"/><circle cx="0" cy="-18" r="2.5" fill="#f15bb5"/><circle cx="1" cy="-25" r="1.5" fill="#f15bb5"/><rect x="-3" y="-34" width="6" height="4" fill="#555"/>`},
+  rug:{it:['tappeto'],en:['rug','carpet'],rug:1, svg:`<ellipse rx="60" ry="9" fill="#2a9d8f" opacity=".9"/><ellipse rx="50" ry="6" fill="none" stroke="#e9c46a" stroke-dasharray="4 3"/>`},
+  bookcase:{it:['libreria','scaffale'],en:['bookcase','bookshelf'], svg:`<rect x="-22" y="-74" width="44" height="74" fill="#8b5a2b"/>${[-70,-48,-26].map(y=>`<rect x="-19" y="${y}" width="38" height="19" fill="#5e3c1c"/>${[0,1,2,3,4].map(i=>`<rect x="${-17+i*7}" y="${y+3}" width="6" height="16" fill="${['#e63946','#457b9d','#f4a261','#2a9d8f','#e9c46a'][(i+y)%5<0?0:(i+y)%5]}"/>`).join('')}`).join('')}`},
+  pool:{it:['piscina'],en:['pool','swimming pool'],out:1,only:'out',rug:1, svg:`<ellipse rx="62" ry="12" fill="#e0e0e0"/><ellipse rx="56" ry="9" fill="#4cc9f0"/><path d="M-30 -1 q8 -3 16 0 M6 1 q8 -3 16 0" stroke="#fff" stroke-width="1.5" fill="none"/>`},
+  fountain:{it:['fontana'],en:['fountain'],out:1,only:'out', svg:`<ellipse cx="0" cy="-4" rx="30" ry="7" fill="#9aa5b1"/><ellipse cx="0" cy="-6" rx="25" ry="4" fill="#4cc9f0"/><rect x="-4" y="-30" width="8" height="24" fill="#9aa5b1"/><path d="M0 -32 Q-14 -44 -20 -14 M0 -32 Q14 -44 20 -14" stroke="#7fd4f5" stroke-width="2.5" fill="none"/>`},
+  pine:{it:['albero','abete','pino'],en:['tree','pine'],out:1,only:'out', svg:`<rect x="-4" y="-16" width="8" height="16" fill="#7a5434"/><path d="M0 -84 L-22 -40 L-12 -40 L-28 -16 L28 -16 L12 -40 L22 -40Z" fill="#2d6a4f"/>`},
+  roses:{it:['aiuola','fiori','rose'],en:['flower bed','flowers','roses'],out:1,only:'out', svg:`<rect x="-34" y="-6" width="68" height="6" rx="3" fill="#7a5434"/>${[-28,-18,-8,2,12,22,30].map((x,i)=>`<line x1="${x}" y1="-6" x2="${x}" y2="-20" stroke="#3a7d44" stroke-width="2"/><circle cx="${x}" cy="-22" r="4" fill="${['#e63946','#ffd166','#c77dff','#ff5c86','#f4a261','#e63946','#ffffff'][i]}"/>`).join('')}`},
+  gnome:{it:['nano da giardino','nano','gnomo'],en:['garden gnome','gnome'],out:1, svg:`<path d="M-8 0 L8 0 L6 -14 L-6 -14Z" fill="#3a86ff"/><circle cx="0" cy="-17" r="5" fill="#f6cfa7"/><path d="M-4 -15 Q0 -5 4 -15Z" fill="#fff"/><path d="M-6 -20 L0 -36 L6 -20Z" fill="#e63946"/>`},
+  trampoline:{it:['trampolino','tappeto elastico'],en:['trampoline'],out:1,only:'out', svg:`<path d="M-34 -14 L-30 0 M34 -14 L30 0 M0 -8 L0 0" stroke="#555" stroke-width="3"/><ellipse cx="0" cy="-16" rx="40" ry="8" fill="#222"/><ellipse cx="0" cy="-16" rx="40" ry="8" fill="none" stroke="#3a86ff" stroke-width="3"/>`},
+  swing:{it:['altalena'],en:['swing','swing set'],out:1,only:'out', svg:`<path d="M-32 0 L-24 -64 L24 -64 L32 0" stroke="#3a5a40" stroke-width="4" fill="none"/><path d="M-8 -64 L-8 -18 M8 -64 L8 -18" stroke="#777"/><rect x="-11" y="-19" width="22" height="4" fill="#bc6c25"/>`},
+  tent:{it:['tenda','canadese'],en:['tent'],out:1,only:'out', svg:`<path d="M-34 0 L0 -44 L34 0Z" fill="#f4a261"/><path d="M0 -44 L-8 0 L8 0Z" fill="#e76f51"/>`},
+  snowman:{it:['pupazzo di neve'],en:['snowman'],out:1,only:'out', svg:`<circle cy="-11" r="12" fill="#fff"/><circle cy="-30" r="8" fill="#fff"/><path d="M0 -30 l8 1 l-8 1z" fill="#f77f00"/><circle cx="-3" cy="-32" r="1" fill="#222"/><circle cx="3" cy="-32" r="1" fill="#222"/><rect x="-6" y="-44" width="12" height="7" fill="#222"/>`}
+};
+const HOUSE_ROOMS=['living','kitchen','bathroom','bedroom','garden'];
+let DECO={}; try { DECO=JSON.parse(localStorage.getItem('subservientDeco')||'{}')||{}; } catch(e){}
+function saveDeco(){ try{ localStorage.setItem('subservientDeco', JSON.stringify(DECO)); }catch(e){} }
+function decoSrc(){ return H.visit ? (H.visitDeco||{}) : DECO; }
+function decorate(r, b){
+  if (!HOUSE_ROOMS.includes(r)) return b;
+  const d=decoSrc()[r]; if (!d) return b;
+  if (r==='garden'){
+    if (d.wall) b=b.replace('<g fill="#f7f2e6">', `<g fill="${d.wall}">`);
+    if (d.floor) b=b.replace('fill="url(#gGrass)"', `fill="${d.floor}"`);
+  } else {
+    if (d.wall) b=b.replace(/(<rect width="480" height="232" fill=")#[0-9a-f]{6}/, '$1'+d.wall);
+    if (d.floor) b=b.replace(/(<rect y="232" width="480" height="68" fill=")[^"]+/, '$1'+d.floor);
+  }
+  const items=(d.items||[]).filter(it=>DECOR[it.k]);
+  const out=r==='garden';
+  const yOf=it=>{ const D=DECOR[it.k]; if (D.wall) return out?150:96; if (D.rug) return out?262:264; return out?248:244; };
+  const sorted=[...items].sort((a,b2)=>(DECOR[a.k].rug?0:1)-(DECOR[b2.k].rug?0:1));
+  b+=sorted.map(it=>`<g transform="translate(${clamp(+it.x||240,20,460)} ${yOf(it)})">${DECOR[it.k].svg}</g>`).join('');
+  return b;
+}
+const COLOR_IT={rosso:'#d64545',rossa:'#d64545',blu:'#3f6fd1',azzurro:'#9ccfe8',azzurra:'#9ccfe8',celeste:'#9ccfe8',verde:'#7cbf7a',giallo:'#f2d95c',gialla:'#f2d95c',rosa:'#f2a7c3',viola:'#b79ce0',lilla:'#cdb8ea',arancione:'#f4a261',nero:'#2b2d31',nera:'#2b2d31',bianco:'#f4f1ea',bianca:'#f4f1ea',grigio:'#a9adb5',grigia:'#a9adb5',marrone:'#8b5a2b',oro:'#d4af37',dorato:'#d4af37',beige:'#e6d8ba',crema:'#f3ead3',turchese:'#2fb5a8',legno:'#a0703f',wood:'#a0703f'};
+Object.assign(COLOR_NAMES, COLOR_IT);
+function findColor(t){ const m=String(t).toLowerCase().match(/#[0-9a-f]{6}\b/); if (m) return m[0]; for (const w of String(t).toLowerCase().split(/[^a-zà-ú#0-9]+/)) if (COLOR_NAMES[w]) return COLOR_NAMES[w]; return null; }
+function findDecor(t){ t=String(t).toLowerCase(); let best=null, len=0; for (const k in DECOR){ for (const w of [...DECOR[k].it,...DECOR[k].en]) if (t.includes(w) && w.length>len){ best=k; len=w.length; } } return best; }
+function roomFromText(t){ const m=String(t).toLowerCase().match(/(cucina|bagno|camera|giardino|soggiorno|salotto|kitchen|bathroom|bedroom|garden|living)/); return m ? {cucina:'kitchen',kitchen:'kitchen',bagno:'bathroom',bathroom:'bathroom',camera:'bedroom',bedroom:'bedroom',giardino:'garden',garden:'garden',soggiorno:'living',salotto:'living',living:'living'}[m[1]] : null; }
+const FREE_SPOTS={living:[252,455,190,30,385],kitchen:[470,30,300,200],bathroom:[250,470,30,110],bedroom:[290,40,250,470],garden:[60,330,440,200,260]};
+function freeX(r){ const used=((DECO[r]||{}).items||[]).map(i=>+i.x); for (const x of (FREE_SPOTS[r]||[])) if (!used.some(u=>Math.abs(u-x)<40)) return x; const c=[70,150,210,290,350,420,120,250,380,40]; let best=240, bd=-1; for (const x of c){ const d=Math.min(999,...used.map(u=>Math.abs(u-x))); if (d>bd){ bd=d; best=x; } } return best; }
+/* apply a decor change to MY house; returns a short line to say, or null */
+function decoApply(o){
+  let r=o.room&&HOUSE_ROOMS.includes(o.room)?o.room:(HOUSE_ROOMS.includes(H.room)?H.room:'living');
+  const it=LANG==='it';
+  if (o.add && DECOR[o.add]){
+    const D=DECOR[o.add];
+    if (D.only==='out' && r!=='garden') r='garden';
+    const d=DECO[r]||(DECO[r]={}); d.items=d.items||[];
+    if (d.items.length>=12) return it?'La stanza è piena.':'The room is full.';
+    d.items.push({k:o.add, x:typeof o.x==='number'?clamp(o.x,20,460):freeX(r)});
+  }
+  if (o.remove){ const d=DECO[r]; if (d&&d.items){ const i=d.items.map(x=>x.k).lastIndexOf(o.remove); if (i>=0) d.items.splice(i,1); else return null; } else return null; }
+  if (o.clear){ DECO[r]={}; }
+  const d=DECO[r]||(DECO[r]={});
+  const w=normColor(o.wall), f=normColor(o.floor); if (w) d.wall=w; if (f) d.floor=f;
+  saveDeco(); if (!H.visit && H.room===r) drawRoom(r);
+  try { if (H.guest) sendTo(H.guest.topic,{t:'deco', deco:DECO}); } catch(e){}
+  return r;
+}
+/* "dipingi le pareti di rosa", "metti un acquario", "togli il gatto", "pavimento blu" */
+function decoCommand(cmd){
+  const t=cmd.toLowerCase();
+  if (H.visit) return null;
+  const room=roomFromText(t);
+  const isWall=/(paret|muri|muro|\bwalls?\b|staccionat|recinto|\bfence\b)/.test(t), isFloor=/(paviment|\bfloor|prato|erba\b|\bgrass|\blawn)/.test(t);
+  const col=findColor(t);
+  if ((isWall||isFloor) && col){
+    return {room:room||(/(staccionat|recinto|fence|prato|erba|grass|lawn)/.test(t)?'garden':null), wall:isWall?col:null, floor:isFloor?col:null};
+  }
+  const k=findDecor(t); if (!k) return null;
+  if (/(togli|rimuovi|leva|elimina|butta via|via il|via la|remove|delete|get rid)/.test(t)) return {room, remove:k};
+  if (/(metti|aggiungi|compra|piazza|mettere|voglio|add|put|buy|place|get)/.test(t)) return {room, add:k};
+  return null;
+}
+async function runDeco(o){
+  const id=++runId;
+  const target=o.room||(DECOR[o.add]&&DECOR[o.add].only==='out'?'garden':(HOUSE_ROOMS.includes(H.room)?H.room:'living'));
+  if (target!==H.room) await gotoRoom(target, 240, id);
+  if (!alive(id)) return;
+  setPose(o.wall||o.floor?'sweep':'present');
+  await sleep(900);
+  const r=decoApply({...o, room:target});
+  if (r===null){ setPose('shrug'); say(LANG==='it'?'Non c\'è niente del genere qui.':'There\'s nothing like that here.',2500); await sleep(1500); setPose('idle'); return; }
+  setPose('cheer'); say(typeof r==='string'&&!HOUSE_ROOMS.includes(r)?r:(LANG==='it'?['Fatto. Arredatore nato.','Ecco. Stile.','Ora sì che è casa mia.'][Math.floor(Math.random()*3)]:['Done. Natural designer.','There. Style.','Now it feels like home.'][Math.floor(Math.random()*3)]),2600);
+  await sleep(1800); if (alive(id)) setPose('idle');
+}
+
+/* ================= CUSTOMISE PANEL (look + house) ================= */
+function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
+function openCustom(tab){
+  tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
+  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button></div>`;
+  if (tab==='look'){
+    h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${Object.entries(LOOKS.hair).map(([k,n])=>`<button type="button" class="${L.hair===k?'on':''}" data-act="hair:${k}">${n[it?0:1]}</button>`).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Colore capelli':'Hair colour'}</p><div class="sws">${LOOKS.hairColor.map(c=>sw(c,'hairColor:'+c,L.hairColor===c)).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Pelle':'Skin'}</p><div class="sws">${LOOKS.skin.map(c=>sw(c,'skin:'+c,L.skin===c)).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Maglia':'Top'}</p><div class="sws">${LOOKS.outfit.map(c=>sw(c,'outfit:'+c,L.outfit===c)).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Pantaloni':'Trousers'}</p><div class="sws">${LOOKS.pants.map(c=>sw(c,'pants:'+c,(L.pants||'#8fa9c9')===c)).join('')}</div>`;
+    h+=`<div class="chips"><button type="button" class="${L.glasses!==false?'on':''}" data-act="glasses">👓 ${it?'Occhiali':'Glasses'}</button></div>`;
+  } else {
+    const r = HOUSE_ROOMS.includes(window.__decoRoom)?window.__decoRoom:(HOUSE_ROOMS.includes(H.room)?H.room:'living'); window.__decoRoom=r;
+    const names={living:it?'Soggiorno':'Living',kitchen:it?'Cucina':'Kitchen',bathroom:it?'Bagno':'Bathroom',bedroom:it?'Camera':'Bedroom',garden:it?'Giardino':'Garden'};
+    const d=DECO[r]||{}; const out=r==='garden';
+    h+=`<div class="chips">${HOUSE_ROOMS.map(k=>`<button type="button" class="${k===r?'on':''}" data-act="room:${k}">${names[k]}</button>`).join('')}</div>`;
+    const wc=['#e6d8ba','#f4f1ea','#f2a7c3','#9ccfe8','#7cbf7a','#f2d95c','#b79ce0','#f4a261','#a9adb5','#2b2d31'];
+    const fc=out?['#5d9b4a','#7cbf7a','#3f7a3a','#c9b37a','#a9adb5','#e6d8ba']:['#a0703f','#6b4a2b','#d9c3a0','#a9adb5','#2b2d31','#3f6fd1','#d64545','#f4f1ea'];
+    h+=`<p class="lbl">${out?(it?'Staccionata':'Fence'):(it?'Pareti':'Walls')}</p><div class="sws">${(out?['#f7f2e6','#8b5a2b','#d64545','#3f6fd1','#2b2d31','#7cbf7a']:wc).map(c=>sw(c,'wall:'+c,d.wall===c)).join('')}</div>`;
+    h+=`<p class="lbl">${out?(it?'Prato':'Lawn'):(it?'Pavimento':'Floor')}</p><div class="sws">${fc.map(c=>sw(c,'floor:'+c,d.floor===c)).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Aggiungi':'Add'}</p><div class="chips">${Object.entries(DECOR).filter(([k,D])=>out?D.out:D.only!=='out').map(([k,D])=>`<button type="button" data-act="add:${k}">＋ ${(it?D.it:D.en)[0]}</button>`).join('')}</div>`;
+    if ((d.items||[]).length) h+=`<p class="lbl">${it?'In questa stanza':'In this room'}</p><div class="chips">${d.items.map((x,i)=>`<button type="button" data-act="del:${i}">✕ ${(it?DECOR[x.k].it:DECOR[x.k].en)[0]}</button>`).join('')}</div>`;
+    h+=`<p class="muted small">${it?'Puoi anche scrivere: “metti un acquario”, “pareti rosa”, “togli il gatto”.':'You can also type: “add an aquarium”, “pink walls”, “remove the cat”.'}</p>`;
+  }
+  h+=`<button class="ghost close" id="shClose">${tr('c_close')}</button>`;
+  sheet(h);
+  $('shClose').onclick=closeSheet;
+  $('sheetBody').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openCustom(b.dataset.tab));
+  $('sheetBody').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
+    const [k,v]=b.dataset.act.split(/:(.*)/s);
+    if (tab==='look'){ if (k==='glasses') setLook('glasses', !(H.look&&H.look.glasses!==false)); else setLook(k,v); openCustom('look'); return; }
+    const r=window.__decoRoom;
+    if (k==='room'){ window.__decoRoom=v; if (!H.visit && v!==H.room){ const id=++runId; gotoRoom(v,240,id); } openCustom('home'); return; }
+    if (H.visit){ say(LANG==='it'?'Non è casa mia, non tocco niente.':'Not my house, hands off.',2500); return; }
+    if (k==='wall') decoApply({room:r, wall:v}); else if (k==='floor') decoApply({room:r, floor:v});
+    else if (k==='add') decoApply({room:r, add:v}); else if (k==='del'){ const d=DECO[r]; if(d&&d.items){ d.items.splice(+v,1); saveDeco(); if (H.room===r) drawRoom(r); try{ if (H.guest) sendTo(H.guest.topic,{t:'deco', deco:DECO}); }catch(e){} } }
+    if (!H.visit && H.room!==r){ const id=++runId; gotoRoom(r,240,id); }
+    openCustom('home');
+  });
+}
+/* ================= TOWN: public places where players and bots meet ================= */
+const PLACES = {
+  park:  { it:['parco','giardini pubblici'], en:['park'] },
+  beach: { it:['spiaggia','mare'], en:['beach','sea','seaside'] },
+  piazza:{ it:['piazza','bar','caffè','caffe','gelateria','centro'], en:['piazza','square','cafe','café','town','downtown'] }
+};
+const BOTS = {
+  park:[{name:'Gino', kind:'m', look:{hair:'bald',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#4f9a4a',pants:'#8a5a3a'}, x:120},
+        {name:'Mia', kind:'f', look:{hair:'curly',hairColor:'#3f6fd1',skin:'#c98b5e',glasses:false,outfit:'#e87aa8',pants:'#2b2d31'}, x:380}],
+  beach:[{name:'Luna', kind:'f', look:{hair:'long',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:false,outfit:'#ff9f1c',pants:'#3f6fd1'}, x:330},
+         {name:'Bob', kind:'m', look:{hair:'mohawk',hairColor:'#d64545',skin:'#7a4a2c',glasses:false,outfit:'#2fb5a8',pants:'#eceff2'}, x:410}],
+  piazza:[{name:'Nico', kind:'m', look:{hair:'short',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#eceff2',pants:'#2b2d31'}, x:380},
+          {name:'Zoe', kind:'f', look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#3f6fd1',pants:'#8fa9c9'}, x:250}]
+};
+const BOT_LINES = {
+  it:{ idle:['Che bella giornata.','Hai visto passare un piccione?','Io vengo qui tutti i giorni.','Mi annoio un po\'.','Qualcuno ha un panino?','Oggi mi sento fortunato.'],
+       reply:['Ciao! Piacere!','Ehi, come va?','Ahah, sei simpatico.','Davvero? Racconta!','Non ci credo!','Vuoi fare amicizia?','Ok, ci sto!'] },
+  en:{ idle:['Lovely day.','Did you see that pigeon?','I come here every day.','I\'m a bit bored.','Anyone got a sandwich?','Feeling lucky today.'],
+       reply:['Hi! Nice to meet you!','Hey, how are you?','Haha, you\'re funny.','Really? Tell me more!','No way!','Want to be friends?','Okay, I\'m in!'] }
+};
+const isPlace=r=>!!PLACES[r];
+const PL={ topic:null, es:null, hb:null, sweep:null, wander:null, peers:{}, bots:[], sid:Math.random().toString(36).slice(2,10) };
+const cleanTxt=t=>String(t||'').slice(0,90).replace(new RegExp(RUDE.source,'gi'),'***');
+function placeFromText(t){ t=String(t).toLowerCase(); for (const k in PLACES) for (const w of [...PLACES[k].it,...PLACES[k].en]) if (new RegExp('(^|[^a-zà-ú])'+w+'([^a-zà-ú]|$)').test(t)) return k; return null; }
+function postPlace(msg){ if (!PL.topic) return; fetch(`${NTFY}/${PL.topic}`,{method:'POST',body:JSON.stringify({...msg, sid:PL.sid})}).catch(()=>{}); }
+function myPublic(){ return {name:H.name, kind:H.kind, look:H.look, x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
+function shareLook(){ if (PL.topic) postPlace({t:'here', ...myPublic()}); const t=otherTopic(); if (t) sendTo(t,{t:'look', look:H.look}); }
+function enterPlace(r){
+  leavePlace(true);
+  PL.topic='subservient-game-v2-place-'+r;
+  try { PL.es=new EventSource(`${NTFY}/${PL.topic}/sse`); PL.es.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return; let d; try{ d=JSON.parse(m.message); }catch(e){ return; } onPlaceMsg(d, r); }; } catch(e){}
+  postPlace({t:'here', ...myPublic()});
+  PL.hb=setInterval(()=>postPlace({t:'here', ...myPublic()}), 9000);
+  PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
+  PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.x}); npcLook(n,b.look); n.bot=true; return n; });
+  PL.wander=setInterval(()=>{ for (const n of PL.bots){ if (n.busy||n.room!==H.room) continue; const p=Math.random();
+      if (p<.35) npcWalk(n, clamp(n.X+rnd(-120,120),40,440)); else if (p<.55){ npcPose(n,['wave','look','dance','think','yawn','laugh'][Math.floor(Math.random()*6)]); setTimeout(()=>{ if(!n.busy) npcPose(n,'idle'); },2200); }
+      else if (p<.68) npcSay(n, pickLine('idle')); } }, 5000);
+  const it=LANG==='it'; const n=Object.keys(PL.peers).length;
+  setTimeout(()=>{ const ppl=Object.keys(PL.peers).length; if (ppl) say(it?`C'è gente! (${ppl})`:`People here! (${ppl})`,2500); }, 2500);
+}
+function pickLine(kind){ const L=BOT_LINES[LANG==='it'?'it':'en'][kind]; return L[Math.floor(Math.random()*L.length)]; }
+function leavePlace(silent){
+  if (!PL.topic) return;
+  postPlace({t:'bye'});
+  try{ PL.es&&PL.es.close(); }catch(e){} clearInterval(PL.hb); clearInterval(PL.sweep); clearInterval(PL.wander);
+  for (const id in PL.peers) removeNPC(PL.peers[id].n); PL.peers={};
+  PL.bots.forEach(removeNPC); PL.bots=[]; PL.topic=null; PL.es=null;
+}
+function onPlaceMsg(d, r){
+  if (!d || d.sid===PL.sid || H.room!==r) return;
+  const id=String(d.sid||'').slice(0,12); if (!id) return;
+  if (d.t==='bye'){ const p=PL.peers[id]; if (p){ npcWalk(p.n, p.n.X<240?-60:540).then(()=>removeNPC(p.n)); delete PL.peers[id]; } return; }
+  let p=PL.peers[id];
+  if (d.t==='here'){
+    if (!p) postPlace({t:'here', ...myPublic()});
+    if (!p){ const n=makeNPC({name:cleanTxt(d.name).slice(0,18)||'?', kind:d.kind==='f'?'f':'m', room:r, x:Math.random()<.5?-50:530}); n.player=true; p=PL.peers[id]={n, last:Date.now()};
+      npcWalk(n, clamp(+d.x||240,30,450)).then(()=>{ npcPose(n,'wave'); npcSay(n, LANG==='it'?'Ciao!':'Hi!'); setTimeout(()=>npcPose(n,'idle'),1800); }); }
+    p.last=Date.now(); if (d.look) npcLook(p.n, d.look); if (d.costume && COST[d.costume]) npcCostume(p.n, d.costume);
+    return;
+  }
+  if (!p) return; p.last=Date.now();
+  if (d.t==='script'){ const steps=(d.steps||[]).slice(0,20).map(s=>({...s, say:s.say?cleanTxt(s.say):undefined, text:s.text?cleanTxt(s.text):undefined})).filter(s=>!['goto'].includes(s.do)||!s.room||s.room===r); npcRun(p.n, steps); }
+}
+/* bots answer when you mention them */
+function botReact(cmd){
+  const t=String(cmd).toLowerCase();
+  for (const n of PL.bots){ if (n.room===H.room && t.includes(n.name.toLowerCase())){
+    n.busy=true; setTimeout(async()=>{ await npcWalk(n, clamp(H.X+(H.X<240?60:-60),30,450)); n.dir=H.X>n.X?1:-1;
+      const hug=/(abbraccia|hug)/.test(t), dance=/(balla|dance)/.test(t), kiss=/(bacia|bacio|kiss)/.test(t);
+      npcPose(n, hug?'hug':dance?'dance':kiss?'kiss':'wave', 'happy'); npcSay(n, pickLine('reply')); await sleep(2600); npcPose(n,'idle'); n.busy=false; }, 1200);
+  } }
+}
+/* AI step: {"do":"npc","name":"Gino","pose":"dance","say":"..."} moves a bot (or the partner) */
+async function npcStep(s, id){
+  const n=NPCS.find(x=>x.room===H.room && x.name && s.name && x.name.toLowerCase()===String(s.name).toLowerCase() && !x.player);
+  if (!n) return; n.busy=true;
+  await npcWalk(n, typeof s.x==='number'?clamp(s.x,20,460):clamp(H.X+(H.X<240?55:-55),20,460), id); n.dir=H.X>n.X?1:-1;
+  if (s.pose) npcPose(n, POSES[s.pose]?s.pose:'idle', s.face); if (s.say) npcSay(n, cleanTxt(s.say));
+  await sleep(clamp(+s.ms||1800,300,6000)); n.busy=false;
+}
+async function goPlace(r){
+  const id=++runId;
+  if (H.visit){ sendTo(H.visit.topic,{t:'leave'}); if (hostNPC){ removeNPC(hostNPC); hostNPC=null; } H.visit=null; }
+  if (r===H.room) return;
+  await gotoRoom(r, 240, id);
+  if (alive(id)){ setPose('wave'); say(LANG==='it'?{park:'Al parco! Aria fresca.',beach:'Al mare! Finalmente.',piazza:'In piazza. Vediamo chi c\'è.',living:'Casa dolce casa.'}[r]:{park:'The park! Fresh air.',beach:'The beach! Finally.',piazza:'The square. Let\'s see who\'s around.',living:'Home sweet home.'}[r],2500); setTimeout(()=>{ if(alive(id)) setPose('idle'); },1600); }
+}
+
 /* ================= VISITS: go to a friend's house (they must open the door) ================= */
 H.visit=null;      // when I'm a guest: {topic, name, kind}
 H.guest=null;      // when I host: {topic, name, kind, npc}
@@ -1538,17 +1861,17 @@ async function goVisit(name, code){
   const id=++runId; await gotoRoom('living', -60, id);
   H.pendingVisit={topic:topicOf(name,code), name:String(name).slice(0,18)};
   say(LANG==='it'?`Din don! Busso da ${name}…`:`Ding dong! Knocking at ${name}'s…`, 4000);
-  const ok=await sendTo(H.pendingVisit.topic, {t:'knock', code:H.code, kind:H.kind});
+  const ok=await sendTo(H.pendingVisit.topic, {t:'knock', code:H.code, kind:H.kind, look:H.look});
   if (!ok){ H.pendingVisit=null; say(tr('nosignal')); }
   const ref=H.pendingVisit; setTimeout(()=>{ if (H.pendingVisit===ref){ H.pendingVisit=null; H.X=-60; walkTo(240, ++runId); say(LANG==='it'?'Non c\'è nessuno. Torno a casa.':'Nobody home. Going back.',3000); } }, 30000);
 }
 function enterHouse(d){
   const pv=H.pendingVisit; if (!pv || pv.topic!==d.fromTopic) return;
-  H.pendingVisit=null; H.visit={topic:pv.topic, name:pv.name, kind:d.kind||'m'};
+  H.pendingVisit=null; H.visit={topic:pv.topic, name:pv.name, kind:d.kind||'m'}; H.visitDeco=d.deco||{}; if (PLACES[H.room]) leavePlace();
   const id=++runId;
   setRoom(d.room&&ROOMS[d.room]?d.room:'living'); H.X=-60; H.Y=LANE;
   hostNPC = makeNPC({name:pv.name, kind:d.kind||'m', room:H.room, x:clamp(+d.x||300,40,440), outfit:d.outfit});
-  if (d.costume) npcCostume(hostNPC, d.costume);
+  if (d.look) npcLook(hostNPC, d.look); if (d.costume) npcCostume(hostNPC, d.costume);
   hostNPC.dir=-1; npcSay(hostNPC, LANG==='it'?'Entra pure!':'Come in!');
   walkTo(160, id).then(()=>say(LANG==='it'?`Ciao ${pv.name}!`:`Hi ${pv.name}!`,2500));
   houseLabel(); openChatWith(pv.topic, pv.name);
@@ -1561,12 +1884,12 @@ function leaveVisit(silent){
   if (!H.visit) return;
   const t=H.visit.topic; if (!silent) sendTo(t,{t:'leave'});
   if (hostNPC){ removeNPC(hostNPC); hostNPC=null; }
-  H.visit=null; const id=++runId; setRoom('living'); H.X=-60; H.Y=LANE; walkTo(200,id).then(()=>say(LANG==='it'?'Casa dolce casa.':'Home sweet home.',2500));
+  H.visit=null; H.visitDeco=null; const id=++runId; setRoom('living'); drawRoom('living'); H.X=-60; H.Y=LANE; walkTo(200,id).then(()=>say(LANG==='it'?'Casa dolce casa.':'Home sweet home.',2500));
 }
 function onVisitData(d){
   if (d.t==='knock'){
     if (H.guest || H.visit){ sendTo(d.fromTopic,{t:'busy'}); return; }
-    H.knock={topic:d.fromTopic, name:String(d.from||'?').slice(0,18), kind:d.kind||'m'};
+    H.knock={topic:d.fromTopic, name:String(d.from||'?').slice(0,18), kind:d.kind||'m', look:d.look};
     $('incomingTxt').textContent = LANG==='it' ? `🔔 ${H.knock.name} ${String(d.code||'')} è alla porta` : `🔔 ${H.knock.name} ${String(d.code||'')} is at the door`;
     $('btnAnswer').textContent = LANG==='it'?'Apri':'Open'; $('btnDecline').textContent = LANG==='it'?'Non aprire':'Ignore';
     $('incoming').classList.add('show');
@@ -1574,6 +1897,8 @@ function onVisitData(d){
     return true;
   }
   if (d.t==='enter'){ enterHouse(d); return true; }
+  if (d.t==='deco' && H.visit && d.fromTopic===H.visit.topic){ H.visitDeco=d.deco||{}; drawRoom(H.room); return true; }
+  if (d.t==='look'){ const n = H.visit && d.fromTopic===H.visit.topic ? hostNPC : H.guest && d.fromTopic===H.guest.topic ? H.guest.npc : null; if (n) npcLook(n, d.look); return true; }
   if (d.t==='busy' && H.pendingVisit && H.pendingVisit.topic===d.fromTopic){ H.pendingVisit=null; say(LANG==='it'?'Non può ricevere visite adesso.':'They can\'t have visitors now.',3000); return true; }
   if (d.t==='nodoor' && H.pendingVisit && H.pendingVisit.topic===d.fromTopic){ H.pendingVisit=null; const id=++runId; H.X=-60; walkTo(200,id); say(LANG==='it'?'Non mi ha aperto. Torno a casa.':'They didn\'t open. Going home.',3000); return true; }
   if (d.t==='script'){
@@ -1587,10 +1912,10 @@ function onVisitData(d){
 }
 function openDoor(){
   const k=H.knock; if(!k) return; H.knock=null; $('incoming').classList.remove('show');
-  const n=makeNPC({name:k.name, kind:k.kind, room:H.room, x:-60}); n.dir=1;
+  const n=makeNPC({name:k.name, kind:k.kind, room:H.room, x:-60}); n.dir=1; if (k.look) npcLook(n,k.look);
   H.guest={topic:k.topic, name:k.name, kind:k.kind, npc:n};
   npcWalk(n, 150).then(()=>npcSay(n, LANG==='it'?'Ciao!':'Hi!'));
-  sendTo(k.topic, {t:'enter', room:H.room, x:Math.round(H.X), kind:H.kind, costume:H.costume==='custom'?null:H.costume});
+  sendTo(k.topic, {t:'enter', room:H.room, x:Math.round(H.X), kind:H.kind, costume:H.costume==='custom'?null:H.costume, look:H.look, deco:DECO});
   openChatWith(k.topic, k.name);
   say(LANG==='it'?`Benvenuto ${k.name}!`:`Welcome ${k.name}!`,2500);
 }
@@ -1614,6 +1939,13 @@ $('f').addEventListener('submit', async e=>{
   if (visM && /casa|visit|visita|\bda\b|go to/i.test(cmd)){ i.value=''; goVisit(visM[1], visM[2]); return; }
   if (/^\s*(torna a casa|vai a casa|go home|torna indietro|esci)\s*$/i.test(cmd) && H.visit){ leaveVisit(); return; }
   if (/^\s*(manda via|caccia|kick out|send home)\b/i.test(cmd) && H.guest){ sendTo(H.guest.topic,{t:'kick'}); const n=H.guest.npc; npcWalk(n,-60).then(()=>removeNPC(n)); H.guest=null; say(LANG==='it'?'Ciao ciao!':'Bye bye!'); return; }
+  const plc = placeFromText(cmd);
+  if (plc && /(vai|andiamo|\bva\b|andare|portami|corri|usciamo|esci|go|take me|walk|run|head|let'?s)/i.test(cmd) && !/casa (di|da)/i.test(cmd)){ i.value=''; goPlace(plc); return; }
+  if (PLACES[H.room] && /^\s*(torna a casa|vai a casa|torna indietro|go home|go back home|casa)\s*[.!]*$/i.test(cmd)){ i.value=''; goPlace('living'); return; }
+  if (/^\s*(personalizza|aspetto|cambia aspetto|look|customi[sz]e|outfit)\s*$/i.test(cmd)){ i.value=''; openCustom('look'); return; }
+  if (/^\s*(arreda|arredamento|decora|decorate|furnish)\s*$/i.test(cmd)){ i.value=''; openCustom('home'); return; }
+  const dcm = decoCommand(cmd); if (dcm){ i.value=''; runDeco(dcm); return; }
+  if (PLACES[H.room]) botReact(cmd);
   const callM = cmd.match(/^(?:call|phone|ring|chiama|telefona(?:\s+a)?)\s+(.{1,20}?)(?:\s+(\d{1,4}))?\s*$/i);
   if (callM){ startCall(callM[1].trim(), callM[2]||''); return; }
   const id=++runId; stopFx(); bubble.classList.remove('show'); clearSpawns(false);
@@ -1654,6 +1986,7 @@ function moveIn(kind, name, code){
   try { localStorage.setItem('subservient', JSON.stringify({kind:H.kind, name:H.name, code:H.code})); } catch(e){}
   $('title').innerHTML=`Subservient <span>${esc(H.name)}</span>`; document.title=`Subservient ${H.name}`;
   $('cmd').placeholder=tr('ph',H.name);
+  if (!H.look || H.look.kind!==kind){ H.look={...defaultLook(kind), kind}; saveLook(); }
   applyKind(); applyCostume('pajamas'); setProp('mug');
   $('setup').classList.add('hide');
   showNumber(); initPeer();
@@ -1853,7 +2186,7 @@ function refreshPartner(){
 }
 // the partner wanders around the house on their own
 setInterval(()=>{
-  const n=C.partnerNPC; if(!n || ceremonyOn) return;
+  const n=C.partnerNPC; if(!n || ceremonyOn || ROOMS[H.room].out || H.visit) return;
   if (n.busy) return;
   if (Math.random()<.35){ n.room = Math.random()<.5 ? H.room : ['living','kitchen','bedroom','garden'][Math.floor(Math.random()*4)]; n.X = rnd(60,420); npcPose(n,'idle'); }
   else if (n.room===H.room){ const acts=['idle','drink','look','yawn','wave','think','dance']; const a=acts[Math.floor(Math.random()*acts.length)]; npcPose(n,a); if (a==='wave') npcSay(n, LANG==='it'?'Ciao amore!':'Hi love!'); setTimeout(()=>{ if(!n.busy) npcPose(n,'idle'); },2500); }
@@ -2037,7 +2370,7 @@ function openSetup(){
   const r=$('btnReset'); r.dataset.sure=''; r.textContent=tr('restartAll');
   $('setup').classList.remove('hide');
 }
-$('btnNew').onclick=openSetup;
+$('btnNew').onclick=openSetup; $('btnLook').onclick=()=>openCustom('look');
 $('btnCancelSetup').onclick=()=>{ $('setup').classList.add('hide'); if (window.focusCmd) focusCmd(); };
 $('btnReset').onclick=async()=>{
   const r=$('btnReset'); if (!r.dataset.sure){ r.dataset.sure='1'; r.textContent=tr('restartSure'); return; }
@@ -2147,7 +2480,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='12';
+const BUILD='13';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
