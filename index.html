@@ -44,7 +44,7 @@
   .hud { position:absolute; left:10px; top:8px; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:clamp(8px, 2vw, 12px); line-height:1.45; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.85); pointer-events:none; }
   .rec::before { content:"●"; color:#ff453a; margin-right:5px; animation:blink 1.2s infinite steps(1); }
   @keyframes blink { 50% { opacity:0; } }
-  .mini { position:absolute; right:8px; top:8px; width:24%; min-width:92px; background:rgba(12,14,18,.62); border-radius:8px; padding:4px; pointer-events:none; }
+  .mini { position:absolute; right:8px; top:8px; width:24%; min-width:92px; background:rgba(12,14,18,.62); border-radius:8px; padding:4px; pointer-events:auto; cursor:pointer; }
   .mini svg { display:block; width:100%; }
   .caption { position:absolute; left:0; right:0; bottom:9px; text-align:center; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:clamp(9px, 2.3vw, 13px); color:#fff; text-shadow:0 1px 4px #000, 0 0 2px #000; pointer-events:none; padding:0 12px; }
   .bubble { position:absolute; left:50%; top:20%; max-width:min(78%, 340px); width:max-content; transform:translate(-50%,-100%) scale(.6); transform-origin:50% 100%; background:#fff; color:#15171a; font-weight:600; padding:6px 12px; border-radius:14px; font-size:clamp(11px, 3vw, 16px); line-height:1.25; overflow-wrap:anywhere; text-align:center; opacity:0; transition:opacity .18s, transform .22s cubic-bezier(.3,1.6,.5,1); pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.3); z-index:3; }
@@ -112,6 +112,10 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  .mtiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .mtile { display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px; background:#262a31; color:var(--fg); border:2px solid transparent; font-size:14px; font-weight:600; }
+  .mtile .me { font-size:26px; line-height:1.1; } .mtile small { color:var(--accent); font-size:11px; font-weight:500; } .mtile.on { border-color:var(--accent); }
+  .m-park,.m-garden,.m-woods { background:#25402a; } .m-beach { background:#1f3d5c; } .m-piazza,.m-pizzeria { background:#4a3324; } .m-disco { background:#36204f; }
   .tabs { display:flex; gap:6px; margin-bottom:10px; } .tabs button { flex:1; background:#262a31; color:var(--fg); padding:9px; } .tabs button.on { background:var(--accent); color:#1a1a1a; }
   .sheetBody .lbl { margin:10px 0 6px; color:var(--fg); font-weight:600; font-size:.9rem; text-align:left; }
   .sws { display:flex; flex-wrap:wrap; gap:8px; } .sw { width:34px; height:34px; padding:0; border-radius:50%; border:2px solid rgba(255,255,255,.25); } .sw.on { border:3px solid var(--accent); box-shadow:0 0 0 2px #000 inset; }
@@ -298,7 +302,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 
 /* ================= WORLD STATE ================= */
 const ST = {
-  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false},
+  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false,woods:false,disco:false,pizzeria:false},
   o:{ tv:{on:false}, radio:{on:false}, plant:{grow:1}, fridge:{open:false}, stove:{on:false}, kitchen_sink:{on:false}, coffee:{on:false},
       cushion:{on:true}, toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
 };
@@ -310,9 +314,12 @@ const ROOMS = {
   bathroom:{ name:'BATHROOM',    cam:3, mx:36, my:2,  mw:32, mh:32 },
   bedroom: { name:'BEDROOM',     cam:4, mx:2,  my:2,  mw:32, mh:32 },
   garden:  { name:'GARDEN',      cam:5, mx:70, my:2,  mw:32, mh:66 },
-  park:    { name:'PARK',        cam:6, mx:36, my:2,  mw:32, mh:32, out:1 },
-  piazza:  { name:'PIAZZA',      cam:7, mx:36, my:36, mw:32, mh:32, out:1 },
-  beach:   { name:'BEACH',       cam:8, mx:70, my:2,  mw:32, mh:66, out:1 }
+  park:    { name:'PARK',        cam:6,  mx:2,  my:2,  mw:24, mh:32, out:1 },
+  piazza:  { name:'PIAZZA',      cam:7,  mx:28, my:2,  mw:24, mh:32, out:1 },
+  beach:   { name:'BEACH',       cam:8,  mx:54, my:2,  mw:24, mh:32, out:1 },
+  woods:   { name:'WOODS',       cam:9,  mx:80, my:2,  mw:22, mh:32, out:1 },
+  disco:   { name:'DISCO',       cam:10, mx:28, my:36, mw:24, mh:32, out:1 },
+  pizzeria:{ name:'PIZZA',       cam:11, mx:54, my:36, mw:24, mh:32, out:1 }
 };
 /* x = where the tenant stands to use it (beside it, so they don't hide it); sy = standing depth; seat/lie = hip position */
 const OBJ = {
@@ -351,6 +358,13 @@ const OBJ = {
   sandcastle:{room:'beach',x:230,fx:{x:260,y:240},desc:'sandcastle'},
   cafe:{room:'piazza',x:150,seat:{x:110,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:160,y:205},desc:'café table with chair (sit, drink coffee)'},
   gelato:{room:'piazza',x:320,fx:{x:360,y:200},desc:'ice-cream cart'},
+  log:{room:'woods',x:150,seat:{x:145,y:210,legs:{lL:22,kL:-12,lR:-22,kR:12}},desc:'log bench by the campfire (sit)'},
+  campfire:{room:'woods',x:225,fx:{x:262,y:222},desc:'campfire (fx fire / marshmallows)'},
+  mushrooms:{room:'woods',x:360,fx:{x:390,y:244},desc:'odd mushrooms'},
+  dj:{room:'disco',x:350,fx:{x:405,y:185},desc:'DJ booth (play music, fx notes)'},
+  dancefloor:{room:'disco',x:200,fx:{x:200,y:250},desc:'light-up dance floor (dance, disco)'},
+  oven:{room:'pizzeria',x:340,fx:{x:390,y:200},desc:'wood-fired pizza oven (cook pizza)'},
+  pizza_table:{room:'pizzeria',x:150,seat:{x:100,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:155,y:196},desc:'table with chair (sit and eat pizza)'},
   hammock:{room:'garden',x:380,lie:{x:396,y:203,bend:35},seat:{x:380,y:212},desc:'hammock (lie)'}
 };
 for (const k in OBJ) OBJ[k].id=k;
@@ -514,6 +528,35 @@ function drawRoom(r){
     <rect x="96" y="172" width="5" height="76" fill="#555"/><rect x="96" y="200" width="30" height="6" rx="2" fill="#7a5434"/><rect x="121" y="206" width="4" height="42" fill="#555"/>
     <rect x="330" y="196" width="64" height="40" rx="4" fill="#fff"/><rect x="330" y="214" width="64" height="8" fill="#ff8fab"/><circle cx="342" cy="244" r="8" fill="#555"/><circle cx="382" cy="244" r="8" fill="#555"/><line x1="362" y1="196" x2="362" y2="150" stroke="#555" stroke-width="3"/><path d="M326 162 Q362 132 398 162Z" fill="#ffd6e0"/><g transform="translate(350 190)"><path d="M0 0 l5 -10 l5 10z" fill="#e0b56e"/><circle cx="5" cy="-12" r="5" fill="#ff8fab"/></g>`;
   }
+  if (r==='woods'){
+    b+=`<rect width="480" height="300" fill="url(#gSky)"/><rect width="480" height="300" fill="#0b3d2e" opacity=".22"/>
+    <g fill="#1f5a3a">${Array.from({length:11},(_,i)=>`<path d="M${i*46-6} 205 L${i*46+20} ${92+(i*37)%40} L${i*46+46} 205Z"/>`).join('')}</g>
+    <rect y="200" width="480" height="100" fill="#4a7a3a"/><path d="M0 268 Q240 246 480 268 L480 286 Q240 264 0 286Z" fill="#8a6a45" opacity=".7"/>
+    <g fill="#2d6a4f"><path d="M-10 250 L30 70 L70 250Z"/><path d="M430 250 L470 80 L510 250Z"/></g><rect x="26" y="240" width="8" height="12" fill="#5a3a22"/><rect x="466" y="240" width="8" height="12" fill="#5a3a22"/>
+    <rect x="100" y="210" width="92" height="16" rx="8" fill="#7a5434"/><ellipse cx="100" cy="218" rx="6" ry="8" fill="#c08a55"/><rect x="104" y="226" width="6" height="22" fill="#5a3a22"/><rect x="182" y="226" width="6" height="22" fill="#5a3a22"/>
+    <ellipse cx="262" cy="244" rx="28" ry="7" fill="#777"/><path d="M244 242 L280 230 M246 230 L280 244" stroke="#6b4a2b" stroke-width="6" stroke-linecap="round"/>
+    <ellipse cx="262" cy="222" rx="34" ry="26" fill="url(#gFireGlow)" opacity=".8"/><path class="flick" d="M248 238 Q250 220 256 228 Q258 206 264 222 Q270 210 272 228 Q278 220 276 238Z" fill="#ff9f1c"/><path d="M256 238 Q260 226 264 232 Q268 224 270 238Z" fill="#ffd166"/>
+    <g transform="translate(390 248)"><rect x="-3" y="-10" width="6" height="10" fill="#f4f1ea"/><ellipse cx="0" cy="-11" rx="10" ry="6" fill="#d64545"/><circle cx="-4" cy="-12" r="1.5" fill="#fff"/><circle cx="3" cy="-14" r="1.5" fill="#fff"/></g><g transform="translate(408 250) scale(.7)"><rect x="-3" y="-10" width="6" height="10" fill="#f4f1ea"/><ellipse cx="0" cy="-11" rx="10" ry="6" fill="#d64545"/><circle cx="2" cy="-12" r="1.5" fill="#fff"/></g>`;
+  }
+  if (r==='disco'){
+    const cols=['#ff5c86','#ffd166','#4cc9f0','#80ed99','#c77dff','#ff9f1c'];
+    b+=`<rect width="480" height="300" fill="#120a24"/>
+    ${cols.map((c,i)=>`<path d="M240 40 L${i*90-40} 240 L${i*90+10} 240Z" fill="${c}" opacity=".16"/>`).join('')}
+    <line x1="240" y1="0" x2="240" y2="28" stroke="#888"/><circle cx="240" cy="40" r="13" fill="#c0c7d0"/><path d="M227 40 H253 M229 34 H251 M229 46 H251 M240 27 V53 M234 29 V51 M246 29 V51" stroke="#8a929c" stroke-width=".8"/><circle cx="235" cy="35" r="2.5" fill="#fff"/>
+    <text x="110" y="110" font-family="Fredoka, sans-serif" font-size="30" font-weight="700" fill="#ff5c86" opacity=".9">DISCO</text>
+    <g>${Array.from({length:36},(_,i)=>`<rect x="${(i%12)*40}" y="${232+Math.floor(i/12)*23}" width="39" height="22" fill="${cols[(i*7+Math.floor(i/12))%6]}" opacity=".55"/>`).join('')}</g>
+    <rect x="18" y="150" width="40" height="90" rx="4" fill="#222"/><circle cx="38" cy="180" r="12" fill="#444"/><circle cx="38" cy="216" r="15" fill="#444"/>
+    <rect x="360" y="178" width="96" height="62" rx="5" fill="#2b2d42"/><circle cx="385" cy="186" r="11" fill="#111" stroke="#666"/><circle cx="430" cy="186" r="11" fill="#111" stroke="#666"/><text x="408" y="224" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#4cc9f0">DJ</text>`;
+  }
+  if (r==='pizzeria'){
+    b+=`<rect width="480" height="232" fill="#c9744f"/><g stroke="#a85d3d" stroke-width="1.5">${Array.from({length:10},(_,j)=>`<line x1="0" y1="${j*24}" x2="480" y2="${j*24}"/>`).join('')}${Array.from({length:100},(_,i)=>`<line x1="${(i%20)*24+(Math.floor(i/20)%2)*12}" y1="${Math.floor(i/20)*48}" x2="${(i%20)*24+(Math.floor(i/20)%2)*12}" y2="${Math.floor(i/20)*48+24}"/>`).join('')}</g>
+    <rect y="232" width="480" height="68" fill="url(#checker)"/><rect y="222" width="480" height="11" fill="#7a4a2c"/>
+    <rect x="150" y="28" width="180" height="36" rx="6" fill="#2b2d31"/><text x="240" y="54" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="20" font-weight="700" fill="#ffd166">PIZZERIA</text>
+    <rect x="210" y="80" width="64" height="80" rx="3" fill="#2b2d31"/><g fill="#fff" font-size="7" font-family="Fredoka, sans-serif"><text x="218" y="98">Margherita</text><text x="218" y="114">Diavola</text><text x="218" y="130">4 Formaggi</text><text x="218" y="146">Capricciosa</text></g>
+    <path d="M330 234 L330 178 Q390 104 450 178 L450 234Z" fill="#b5651d"/><path d="M362 234 L362 200 Q390 168 418 200 L418 234Z" fill="#2b1a10"/><ellipse cx="390" cy="222" rx="24" ry="12" fill="url(#gFireGlow)"/><path class="flick" d="M374 232 Q378 214 384 224 Q390 206 396 224 Q402 214 406 232Z" fill="#ff9f1c"/><rect x="380" y="98" width="20" height="40" fill="#8a4a1a"/>
+    <rect x="118" y="196" width="76" height="8" fill="#fff"/><g fill="#d64545">${Array.from({length:7},(_,i)=>`<rect x="${118+i*11}" y="196" width="5" height="8"/>`).join('')}</g><rect x="152" y="204" width="5" height="44" fill="#5a3a22"/><ellipse cx="160" cy="194" rx="14" ry="3.5" fill="#f2c14e"/><g fill="#d64545"><circle cx="155" cy="193" r="1.6"/><circle cx="163" cy="194" r="1.6"/><circle cx="160" cy="192" r="1.4"/></g>
+    <rect x="84" y="166" width="5" height="82" fill="#5a3a22"/><rect x="84" y="200" width="32" height="6" rx="2" fill="#7a4a2c"/><rect x="111" y="206" width="4" height="42" fill="#5a3a22"/>`;
+  }
   b=decorate(r,b);
   backL.innerHTML=b; frontL.innerHTML=frontFor(r);
   darkOv.setAttribute('opacity', dark ? (r==='garden'?.55:.66) : 0);
@@ -538,10 +581,10 @@ function frontFor(r){
 function drawMini(){
   let s='';
   const town=!!ROOMS[H.room].out;
-  if (town){ s+=`<rect x="2" y="36" width="32" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="18" y="50" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
+  if (town){ s+=`<rect x="2" y="36" width="24" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="91" y="54" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text><text x="14" y="50" text-anchor="middle" font-size="4.4" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
   for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue;
-    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
-    <text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-6)}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`;
+    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='woods'?'#24513a':k==='disco'?'#4a2a6e':k==='pizzeria'?'#a0522d':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
+    <text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-6)}" font-size="${R.out?4.4:5.2}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`;
   }
   const R=ROOMS[H.room]; const dx=R.mx+clamp(H.X/480*R.mw,2,R.mw-2), dy=R.my+R.mh*(H.room==='garden'?0.8:0.72);
   s+=`<circle cx="${dx}" cy="${dy}" r="2.8" fill="#ff5c86" stroke="#fff" stroke-width=".8"/>`;
@@ -1251,6 +1294,7 @@ async function doStep(s, id){
   if (d==='vanish'){ for(let i=0;i<7;i++) el('circle',{cx:H.X+rnd(-30,30),cy:H.Y-rnd(10,130),r:rnd(10,18),fill:'#eceff2',class:'poof'},null,800); await tween({alpha:0},300,id); H.hidden=true; return; }
   if (d==='partner'){ await partnerStep(s, id); return; }
   if (d==='npc'){ await npcStep(s, id); return; }
+  if (d==='approach'){ await approachStep(s, id); return; }
   if (d==='decor'){ if (!H.visit){ const o={...s}; if (o.add&&!DECOR[o.add]) o.add=findDecor(o.add); if (o.remove&&!DECOR[o.remove]) o.remove=findDecor(o.remove); decoApply(o); } await sleep(500); return; }
   if (d==='social'){ await socialAction(String(s.action||''), s.number); return; }
   if (d==='call'){ if (s.name) startCall(String(s.name), s.code); return; }
@@ -1276,11 +1320,11 @@ function buildPrompt(cmd){
 
 HOUSE (scene is 480 x 300, floor y≈258, x 0-480 left→right)
 Rooms: living, kitchen, bathroom, bedroom, garden. "goto" an object in another room walks there automatically.
-TOWN (outside the house, public): park, beach, piazza. Go out with {"do":"goto","room":"park"}; come home with room living. Other players and friendly bots hang out there.
+TOWN (outside the house, public): park, beach, piazza, woods, disco, pizzeria. Go out with {"do":"goto","room":"park"}; come home with room living. Other players and friendly bots hang out there.
 Objects (id [room] description):
 ${objs}
 
-NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}${PLACES[H.room]?` Out in the ${H.room}. People here: bots ${PL.bots.map(b=>b.name).join(', ')}${Object.values(PL.peers).length?'; players '+Object.values(PL.peers).map(p=>p.n.name).join(', '):''}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
+NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}${peopleHere().length?` People in this scene: ${peopleHere().map(describePerson).join('; ')}. The tenant is at x=${Math.round(H.X)}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
 
 STEPS (JSON objects, run in order)
 {"do":"goto","object":"<id>"} | {"do":"goto","room":"<room>","x":0-480} (x<0 or >480 = off camera). Add "run":true to run.
@@ -1297,7 +1341,8 @@ STEPS (JSON objects, run in order)
 {"do":"vanish"} disappear in a puff.
 {"do":"call","name":"<friend's name>","code":"123"} phone another player (a number is name + 3-digit code).
 {"do":"decor","room":"<house room>","wall":"<color>","floor":"<color>","add":"<item>","remove":"<item>","x":300} — redecorate the tenant's house (only when asked). Items: ${Object.keys(DECOR).join(', ')}.
-{"do":"npc","name":"<bot or person here>","pose":"<pose>","say":"...","ms":1800} — make a bot in the current public place walk over and act/answer.
+{"do":"approach","name":"<person here>"} — walk right next to that person and face them. ALWAYS start with this when the command is about someone (hug Marco, punch Gino, dance with Luna...), then do the action. Interact ONLY with the person named in the command — never with a bot or anyone else unless the command names them. Real players cannot be moved: just act towards them.
+{"do":"npc","name":"<bot here>","pose":"<pose>","say":"...","ms":1800} — make a bot in the current public place walk over and act/answer.
 {"do":"partner","pose":"<pose>","face":"<face>","say":"...","x":300,"ms":1500} — ONLY if a partner lives here: the partner walks next to the tenant (or to x) and does a pose / line (kiss, hug, dance, wave, laugh…).
 {"do":"social","action":"date|propose|wedding|breakup","number":"Marco 123"} — relationships with other players (ask someone out by number, propose to the partner, plan the wedding, break up). Romance stays PG: kisses, hugs, hearts; anything intimate happens off-screen (lights off, door closed, a fade) — never describe or show sex.
 {"do":"refuse","say":"..."} walk up to the camera and wag a finger.
@@ -1730,7 +1775,10 @@ function openCustom(tab){
 const PLACES = {
   park:  { it:['parco','giardini pubblici'], en:['park'] },
   beach: { it:['spiaggia','mare'], en:['beach','sea','seaside'] },
-  piazza:{ it:['piazza','bar','caffè','caffe','gelateria','centro'], en:['piazza','square','cafe','café','town','downtown'] }
+  piazza:{ it:['piazza','bar','caffè','caffe','gelateria','centro'], en:['piazza','square','cafe','café','town','downtown'] },
+  woods: { it:['bosco','foresta','campeggio','falò'], en:['woods','forest','campfire','camping'] },
+  disco: { it:['discoteca','disco','a ballare','in pista'], en:['disco','club','nightclub','dancing'] },
+  pizzeria:{ it:['pizzeria','pizza'], en:['pizzeria','pizza place'] }
 };
 const BOTS = {
   park:[{name:'Gino', kind:'m', look:{hair:'bald',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#4f9a4a',pants:'#8a5a3a'}, x:120},
@@ -1738,7 +1786,13 @@ const BOTS = {
   beach:[{name:'Luna', kind:'f', look:{hair:'long',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:false,outfit:'#ff9f1c',pants:'#3f6fd1'}, x:330},
          {name:'Bob', kind:'m', look:{hair:'mohawk',hairColor:'#d64545',skin:'#7a4a2c',glasses:false,outfit:'#2fb5a8',pants:'#eceff2'}, x:410}],
   piazza:[{name:'Nico', kind:'m', look:{hair:'short',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#eceff2',pants:'#2b2d31'}, x:380},
-          {name:'Zoe', kind:'f', look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#3f6fd1',pants:'#8fa9c9'}, x:250}]
+          {name:'Zoe', kind:'f', look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#3f6fd1',pants:'#8fa9c9'}, x:250}],
+  woods:[{name:'Rino', kind:'m', look:{hair:'short',hairColor:'#6b3e26',skin:'#eab48a',glasses:false,outfit:'#4f9a4a',pants:'#8a5a3a'}, x:340},
+         {name:'Ada', kind:'f', look:{hair:'pony',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:true,outfit:'#e07a32',pants:'#2b2d31'}, x:420}],
+  disco:[{name:'DJ Max', kind:'m', look:{hair:'mohawk',hairColor:'#4cc9f0',skin:'#7a4a2c',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'}, x:405},
+         {name:'Vale', kind:'f', look:{hair:'long',hairColor:'#e87aa8',skin:'#eab48a',glasses:false,outfit:'#c77dff',pants:'#2b2d31'}, x:150}],
+  pizzeria:[{name:'Totò', kind:'m', look:{hair:'bald',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#eceff2',pants:'#eceff2'}, x:300},
+         {name:'Sara', kind:'f', look:{hair:'bun',hairColor:'#222222',skin:'#c98b5e',glasses:true,outfit:'#d64545',pants:'#2b2d31'}, x:230}]
 };
 const BOT_LINES = {
   it:{ idle:['Che bella giornata.','Hai visto passare un piccione?','Io vengo qui tutti i giorni.','Mi annoio un po\'.','Qualcuno ha un panino?','Oggi mi sento fortunato.'],
@@ -1763,6 +1817,7 @@ function enterPlace(r){
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.x}); npcLook(n,b.look); n.bot=true; return n; });
   PL.wander=setInterval(()=>{ for (const n of PL.bots){ if (n.busy||n.room!==H.room) continue; const p=Math.random();
+      if (H.room==='disco' && p<.6){ npcPose(n, ['dance','disco','twist','robot'][Math.floor(Math.random()*4)]); continue; }
       if (p<.35) npcWalk(n, clamp(n.X+rnd(-120,120),40,440)); else if (p<.55){ npcPose(n,['wave','look','dance','think','yawn','laugh'][Math.floor(Math.random()*6)]); setTimeout(()=>{ if(!n.busy) npcPose(n,'idle'); },2200); }
       else if (p<.68) npcSay(n, pickLine('idle')); } }, 5000);
   const it=LANG==='it'; const n=Object.keys(PL.peers).length;
@@ -1800,6 +1855,26 @@ function botReact(cmd){
       npcPose(n, hug?'hug':dance?'dance':kiss?'kiss':'wave', 'happy'); npcSay(n, pickLine('reply')); await sleep(2600); npcPose(n,'idle'); n.busy=false; }, 1200);
   } }
 }
+
+/* who is the command about? (players first, then bots, then visitors) */
+function peopleHere(){ return NPCS.filter(n=>n.room===H.room && n.name && n.alpha>0.2); }
+function targetIn(cmd){
+  const t=' '+String(cmd).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')+' ';
+  const ppl=peopleHere().sort((a,b)=>(b.player?2:b.topic?1:0)-(a.player?2:a.topic?1:0));
+  for (const n of ppl){ const nm=n.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); if (nm.length>=2 && new RegExp('[^a-z]'+nm.replace(/[^a-z0-9]/g,'')+'[^a-z]').test(t)) return n; }
+  return null;
+}
+function describePerson(n){ const l=n.look||{}; return `${n.name} (${n.player?'real player':n.bot?'bot':n.topic?'friend visiting':'person'}, ${n.kind==='f'?'woman':'man'}, x=${Math.round(n.X)}${l.hair?`, ${l.hair} hair`:''})`; }
+async function approachStep(s, id){
+  const want=String(s.name||s.to||'').toLowerCase(); if (!want) return;
+  const n=peopleHere().find(x=>x.name.toLowerCase()===want) || peopleHere().find(x=>x.name.toLowerCase().startsWith(want));
+  if (!n) return;
+  await standUp(id);
+  const side = H.X<=n.X ? -1 : 1;
+  let tx=n.X+side*42; if (tx<20||tx>460) tx=n.X-side*42;
+  await walkTo(clamp(tx,20,460), id); if (!alive(id)) return;
+  H.dir = n.X>H.X?1:-1; n.dir = H.X>n.X?1:-1;
+}
 /* AI step: {"do":"npc","name":"Gino","pose":"dance","say":"..."} moves a bot (or the partner) */
 async function npcStep(s, id){
   const n=NPCS.find(x=>x.room===H.room && x.name && s.name && x.name.toLowerCase()===String(s.name).toLowerCase() && !x.player);
@@ -1813,9 +1888,24 @@ async function goPlace(r){
   if (H.visit){ sendTo(H.visit.topic,{t:'leave'}); if (hostNPC){ removeNPC(hostNPC); hostNPC=null; } H.visit=null; }
   if (r===H.room) return;
   await gotoRoom(r, 240, id);
-  if (alive(id)){ setPose('wave'); say(LANG==='it'?{park:'Al parco! Aria fresca.',beach:'Al mare! Finalmente.',piazza:'In piazza. Vediamo chi c\'è.',living:'Casa dolce casa.'}[r]:{park:'The park! Fresh air.',beach:'The beach! Finally.',piazza:'The square. Let\'s see who\'s around.',living:'Home sweet home.'}[r],2500); setTimeout(()=>{ if(alive(id)) setPose('idle'); },1600); }
+  if (alive(id)){ setPose('wave'); say(LANG==='it'?({park:'Al parco! Aria fresca.',beach:'Al mare! Finalmente.',piazza:'In piazza. Vediamo chi c\'è.',woods:'Nel bosco. Spero niente orsi.',disco:'Discoteca! Alla mia età...',pizzeria:'Pizzeria. Ora si ragiona.',living:'Casa dolce casa.'}[r]||'Eccomi.'):({park:'The park! Fresh air.',beach:'The beach! Finally.',piazza:'The square. Let\'s see who\'s around.',woods:'The woods. Hopefully no bears.',disco:'The disco! At my age...',pizzeria:'Pizza time. Now we\'re talking.',living:'Home sweet home.'}[r]||'Here I am.'),2500); setTimeout(()=>{ if(alive(id)) setPose('idle'); },1600); }
 }
 
+
+/* ================= BIG MAP (tap the minimap) ================= */
+function openMap(){
+  const it=LANG==='it';
+  const tiles=[
+    ['living','🛋️',it?'Soggiorno':'Living'],['kitchen','🍳',it?'Cucina':'Kitchen'],['bathroom','🛁',it?'Bagno':'Bathroom'],['bedroom','🛏️',it?'Camera':'Bedroom'],['garden','🌳',it?'Giardino':'Garden'],
+    ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria']];
+  const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
+  sheet(`<h3>🗺️ ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
+    <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,5).map(tile).join('')}</div>
+    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(5).map(tile).join('')}</div>
+    <button class="ghost close" id="shClose">${tr('c_close')}</button>`);
+  $('shClose').onclick=closeSheet;
+  $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r!==H.room) goPlace(r); });
+}
 /* ================= VISITS: go to a friend's house (they must open the door) ================= */
 H.visit=null;      // when I'm a guest: {topic, name, kind}
 H.guest=null;      // when I host: {topic, name, kind, npc}
@@ -1944,6 +2034,7 @@ $('f').addEventListener('submit', async e=>{
   if (plc && /(vai|andiamo|\bva\b|andare|portami|corri|usciamo|esci|go|take me|walk|run|head|let'?s)/i.test(cmd) && !/casa (di|da)/i.test(cmd)){ i.value=''; goPlace(plc); return; }
   if (PLACES[H.room] && /^\s*(torna a casa|vai a casa|torna indietro|go home|go back home|casa)\s*[.!]*$/i.test(cmd)){ i.value=''; goPlace('living'); return; }
   if (/^\s*(personalizza|aspetto|cambia aspetto|look|customi[sz]e|outfit)\s*$/i.test(cmd)){ i.value=''; openCustom('look'); return; }
+  if (/^\s*(mappa|map|apri la mappa|open the map)\s*$/i.test(cmd)){ i.value=''; openMap(); return; }
   if (/^\s*(arreda|arredamento|decora|decorate|furnish)\s*$/i.test(cmd)){ i.value=''; openCustom('home'); return; }
   const dcm = decoCommand(cmd); if (dcm){ i.value=''; runDeco(dcm); return; }
   if (PLACES[H.room]) botReact(cmd);
@@ -1963,6 +2054,12 @@ $('f').addEventListener('submit', async e=>{
   if (!alive(id)) return;
   bubble.classList.remove('show');
   if (!steps) steps = offline(cmd);
+  const tgt = targetIn(cmd);
+  if (tgt && !steps.some(st=>st.do==='approach' && String(st.name||'').toLowerCase()===tgt.name.toLowerCase())){
+    // drop moves aimed elsewhere (bots, furniture) and walk to the person who was named
+    steps = [{do:'approach', name:tgt.name}, ...steps.filter(st=>!(st.do==='goto' && !st.room) && !(st.do==='npc' && String(st.name||'').toLowerCase()!==tgt.name.toLowerCase()))];
+    steps.forEach(st=>{ if (st.do==='act' && st.at && !OBJ[st.at]) delete st.at; });
+  }
   runScript(steps, id);
 });
 
@@ -2440,6 +2537,7 @@ applyLang();
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
+    if (e.target.closest('.mini')){ openMap(); return; }
     const n = NPCS.find(x=>x.room===H.room && x.g.contains(e.target));
     if (n && n.topic){ openChatWith(n.topic, n.name); if (call) call.peerName=n.name; log('sys', (LANG==='it'?'Chat con ':'Chat with ')+n.name+(n.code?' '+n.code:'')); npcPose(n,'wave'); setTimeout(()=>npcPose(n,'idle'),1500); setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(err){} },60); return; }
     if (n && n.bot){ n.dir=H.X>n.X?1:-1; npcPose(n,'wave','happy'); npcSay(n, pickLine('reply')); setTimeout(()=>npcPose(n,'idle'),2000); }
@@ -2485,7 +2583,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='15';
+const BUILD='17';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
