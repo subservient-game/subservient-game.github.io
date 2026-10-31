@@ -113,6 +113,10 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  .fly1 { animation:fly1 22s linear infinite; } @keyframes fly1 { from { transform:translate(-80px,10px); } 50% { transform:translate(260px,-14px); } to { transform:translate(600px,6px); } }
+  .fly2 { animation:fly2 31s linear infinite; } @keyframes fly2 { from { transform:translate(560px,0); } to { transform:translate(-120px,-20px); } }
+  .flutter { animation:flutter 6s ease-in-out infinite; } @keyframes flutter { 0%,100% { transform:translate(205px,225px) scale(1,1); } 25% { transform:translate(225px,212px) scale(.4,1); } 50% { transform:translate(240px,220px) scale(1,1); } 75% { transform:translate(220px,230px) scale(.4,1); } }
+  .sway { animation:sway 5s ease-in-out infinite; transform-origin:185px 39px; } @keyframes sway { 50% { transform:skewX(1.5deg); } }
   .side { display:contents; }
   body.land .wrap { max-width:none; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:12px; align-items:start; }
   body.land header.top { grid-column:1 / -1; margin-bottom:6px; }
@@ -256,6 +260,7 @@
       <g id="vehF"></g>
       <g id="front"></g>
       <g id="spawnF"></g>
+      <rect id="tint" width="480" height="300" opacity="0" pointer-events="none" style="mix-blend-mode:soft-light"/>
       <g id="wx" pointer-events="none"></g>
       <g id="fx"></g>
     </svg>
@@ -694,6 +699,7 @@ function drawRoom(r){
     ${['#ff5c86','#ffd166','#4cc9f0'].map((c,i)=>`<circle cx="${280+i*60}" cy="20" r="6" fill="${c}"/><path d="M${280+i*60} 26 L${250+i*60} 232 L${310+i*60} 232Z" fill="${c}" opacity=".08"/>`).join('')}`;
   }
   if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
+  b+=roomDetails(r);
   b=decorate(r,b);
   { const outdoor=['garden','park','beach','woods','piazza'].includes(r);
     if (outdoor) b+=`<rect width="480" height="300" fill="url(#sunWarm)"/><rect y="236" width="480" height="64" fill="url(#floorShade)" opacity=".6"/>`;
@@ -745,10 +751,10 @@ const HAIR = {
 const bodyMarkup = () => `
 <g id="hips">
   <g id="cBack0"></g>
-  <g id="legL"><rect id="thL" x="-5.8" y="0" width="11.6" height="27" rx="5" class="pants"/><rect id="thL2" x="-5.8" y="0" width="11.6" height="27" rx="5" fill="url(#pjStripe)"/>
-    <g id="knL"><rect x="-5.2" y="-2" width="10.4" height="25" rx="4.5" class="pants"/><rect x="-5.2" y="-2" width="10.4" height="25" rx="4.5" fill="url(#pjStripe)"/><rect x="-3.5" y="21" width="7" height="3" class="skin"/><ellipse cx="-2" cy="26" rx="9" ry="4.6" fill="#8a5a3a" class="shoe"/><ellipse cx="-2.5" cy="24.6" rx="6.5" ry="2.4" fill="#b07a52"/></g></g>
-  <g id="legR"><rect id="thR" x="-5.8" y="0" width="11.6" height="27" rx="5" class="pants"/><rect id="thR2" x="-5.8" y="0" width="11.6" height="27" rx="5" fill="url(#pjStripe)"/>
-    <g id="knR"><rect x="-5.2" y="-2" width="10.4" height="25" rx="4.5" class="pants"/><rect x="-5.2" y="-2" width="10.4" height="25" rx="4.5" fill="url(#pjStripe)"/><rect x="-3.5" y="21" width="7" height="3" class="skin"/><ellipse cx="2" cy="26" rx="9" ry="4.6" fill="#8a5a3a"/><ellipse cx="2.5" cy="24.6" rx="6.5" ry="2.4" fill="#b07a52"/></g></g>
+  <g id="legL"><path id="thL" d="M-6.4 0 Q-6.9 13 -5.4 27.5 L5.4 27.5 Q6.9 13 6.4 0 Z" class="pants"/><path id="thL2" d="M-6.4 0 Q-6.9 13 -5.4 27.5 L5.4 27.5 Q6.9 13 6.4 0 Z" fill="url(#pjStripe)"/>
+    <g id="knL"><path d="M-5.4 -2 L5.4 -2 Q5.3 11 4.3 23 L-4.3 23 Q-5.3 11 -5.4 -2 Z" class="pants"/><path d="M-5.4 -2 L5.4 -2 Q5.3 11 4.3 23 L-4.3 23 Q-5.3 11 -5.4 -2 Z" fill="url(#pjStripe)"/><path d="M-3.6 20 L3.6 20 L3.4 23.5 L-3.4 23.5Z" class="skin"/><path d="M-9.5 26 Q-9.5 21.2 -3.5 21.2 L2 21.2 Q7.6 21.8 8.2 25.6 Q8.4 28.8 4.6 28.8 L-6.4 28.8 Q-9.5 28.8 -9.5 26Z" fill="#8a5a3a" class="shoe"/><path d="M-9.4 27.2 L8.3 27.2 L8 28.8 L-9 28.8Z" fill="#4a2f1c"/><path d="M-6 23.4 Q-2 22.4 2 23.2" stroke="#fff" stroke-opacity=".25" stroke-width="1.2" fill="none" stroke-linecap="round"/></g></g>
+  <g id="legR"><path id="thR" d="M-6.4 0 Q-6.9 13 -5.4 27.5 L5.4 27.5 Q6.9 13 6.4 0 Z" class="pants"/><path id="thR2" d="M-6.4 0 Q-6.9 13 -5.4 27.5 L5.4 27.5 Q6.9 13 6.4 0 Z" fill="url(#pjStripe)"/>
+    <g id="knR"><path d="M-5.4 -2 L5.4 -2 Q5.3 11 4.3 23 L-4.3 23 Q-5.3 11 -5.4 -2 Z" class="pants"/><path d="M-5.4 -2 L5.4 -2 Q5.3 11 4.3 23 L-4.3 23 Q-5.3 11 -5.4 -2 Z" fill="url(#pjStripe)"/><path d="M-3.6 20 L3.6 20 L3.4 23.5 L-3.4 23.5Z" class="skin"/><path d="M9.5 26 Q9.5 21.2 3.5 21.2 L-2 21.2 Q-7.6 21.8 -8.2 25.6 Q-8.4 28.8 -4.6 28.8 L6.4 28.8 Q9.5 28.8 9.5 26Z" fill="#8a5a3a"/><path d="M9.4 27.2 L-8.3 27.2 L-8 28.8 L9 28.8Z" fill="#4a2f1c"/><path d="M6 23.4 Q2 22.4 -2 23.2" stroke="#fff" stroke-opacity=".25" stroke-width="1.2" fill="none" stroke-linecap="round"/></g></g>
   <g id="tor">
     <g id="cBack"></g>
     <path d="M-15 3 L15 3 L14 -4 L-14 -4 Z" class="pants"/>
@@ -759,12 +765,12 @@ const bodyMarkup = () => `
     <g fill="#6b4a2a"><circle cx="-3.6" cy="-16" r="1.2"/><circle cx="-2.6" cy="-8" r="1.2"/><circle cx="-1.8" cy="-1" r="1.2"/></g>
     <rect class="outfitD" x="-14" y="-14" width="7" height="7" rx="1.5"/><rect class="outfitD" x="7" y="-14" width="7" height="7" rx="1.5"/></g>
     <g id="cTorso"></g><g id="phys"></g>
-    <rect x="-4" y="-47" width="8" height="7" class="skinD"/>
+    <path d="M-4.4 -48 L4.4 -48 L4.8 -40.5 L-4.8 -40.5Z" class="skinD"/><path d="M-4.4 -46 Q0 -43.5 4.4 -46" stroke="#000" stroke-opacity=".1" stroke-width="1.4" fill="none"/>
     <g id="propB"></g>
     <g id="head">
       <g id="hairBack"></g>
       <circle cx="-15.5" cy="-16" r="3.6" class="skinD"/><circle cx="15.5" cy="-16" r="3.6" class="skinD"/>
-      <circle cx="0" cy="-17" r="16" class="skin"/><path d="M6 -31.5 A16 16 0 0 1 6 -2.5 A19 19 0 0 0 6 -31.5Z" fill="#7a3b1a" opacity=".07"/><ellipse cx="-7" cy="-27" rx="5" ry="2.6" fill="#fff" opacity=".18"/>
+      <path d="M-16 -19 Q-16 -33.2 0 -33.2 Q16 -33.2 16 -19 Q16 -6.5 9.6 -2.6 Q4.6 .4 0 .4 Q-4.6 .4 -9.6 -2.6 Q-16 -6.5 -16 -19Z" class="skin"/><path d="M6 -31.5 A16 16 0 0 1 6 -2.5 A19 19 0 0 0 6 -31.5Z" fill="#7a3b1a" opacity=".07"/><ellipse cx="-7" cy="-27" rx="5" ry="2.6" fill="#fff" opacity=".18"/>
       <g fill="#e88b6c" opacity=".6"><circle cx="-10" cy="-9.5" r="1"/><circle cx="-12" cy="-11" r=".8"/><circle cx="-8.3" cy="-11.4" r=".8"/><circle cx="10" cy="-9.5" r="1"/><circle cx="12" cy="-11" r=".8"/><circle cx="8.3" cy="-11.4" r=".8"/></g>
       <path d="M0 -15 q2 2.6 -.2 3.8" stroke="#d9a07a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
       <g id="eyes"></g>
@@ -777,10 +783,10 @@ const bodyMarkup = () => `
       <g id="cFace"></g>
       <g id="cHat"></g>
     </g>
-    <g id="armL"><rect class="outfit" x="-4.6" y="-1" width="9.2" height="21" rx="4.5"/>
-      <g id="elL"><rect class="outfit" x="-4.2" y="-2" width="8.4" height="20" rx="4"/><rect class="outfitD" x="-4.3" y="14" width="8.6" height="4" rx="1.5"/><circle id="handL" cx="0" cy="21" r="4.6" class="skin"/></g></g>
-    <g id="armR"><rect class="outfit" x="-4.6" y="-1" width="9.2" height="21" rx="4.5"/>
-      <g id="elR"><rect class="outfit" x="-4.2" y="-2" width="8.4" height="20" rx="4"/><rect class="outfitD" x="-4.3" y="14" width="8.6" height="4" rx="1.5"/><circle id="handR" cx="0" cy="21" r="4.6" class="skin"/><g id="propR"></g></g></g>
+    <g id="armL"><path class="outfit" d="M-5 -1.5 Q-5.6 9 -4.4 20.5 L4.4 20.5 Q5.6 9 5 -1.5 Q0 -4.5 -5 -1.5 Z"/><path d="M1.5 -1 Q4 9 3.6 20" stroke="#000" stroke-opacity=".08" stroke-width="2.4" fill="none"/>
+      <g id="elL"><path class="outfit" d="M-4.5 -2 L4.5 -2 Q4.6 8 3.9 17.5 L-3.9 17.5 Q-4.6 8 -4.5 -2 Z"/><rect class="outfitD" x="-4.4" y="14.2" width="8.8" height="4" rx="1.6"/><circle id="handL" cx="0" cy="21.2" r="4.5" class="skin"/><ellipse cx="-3.4" cy="19.6" rx="1.7" ry="2.8" class="skin" transform="rotate(-28 -3.4 19.6)"/><path d="M-2.4 24.2 Q0 25.4 2.4 24.2" stroke="#000" stroke-opacity=".16" stroke-width=".8" fill="none"/></g></g>
+    <g id="armR"><path class="outfit" d="M-5 -1.5 Q-5.6 9 -4.4 20.5 L4.4 20.5 Q5.6 9 5 -1.5 Q0 -4.5 -5 -1.5 Z"/><path d="M1.5 -1 Q4 9 3.6 20" stroke="#000" stroke-opacity=".08" stroke-width="2.4" fill="none"/>
+      <g id="elR"><path class="outfit" d="M-4.5 -2 L4.5 -2 Q4.6 8 3.9 17.5 L-3.9 17.5 Q-4.6 8 -4.5 -2 Z"/><rect class="outfitD" x="-4.4" y="14.2" width="8.8" height="4" rx="1.6"/><circle id="handR" cx="0" cy="21.2" r="4.5" class="skin"/><ellipse cx="3.4" cy="19.6" rx="1.7" ry="2.8" class="skin" transform="rotate(28 3.4 19.6)"/><path d="M-2.4 24.2 Q0 25.4 2.4 24.2" stroke="#000" stroke-opacity=".16" stroke-width=".8" fill="none"/><g id="propR"></g></g></g>
   </g>
 </g>`;
 holG.innerHTML = bodyMarkup();
@@ -797,18 +803,18 @@ function applyKind(){
 
 /* ---------- faces ---------- */
 const EYES = {
-  normal:`<circle cx="-6.6" cy="-17" r="2"/><circle cx="6.6" cy="-17" r="2"/>`,
-  wide:`<circle cx="-6.6" cy="-17" r="2.9"/><circle cx="6.6" cy="-17" r="2.9"/><circle cx="-5.7" cy="-18" r=".9" fill="#fff"/><circle cx="7.5" cy="-18" r=".9" fill="#fff"/>`,
+  normal:`<ellipse cx="-6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-6.3" cy="-16.6" r="1.9" fill="#3b2a20"/><circle cx="-5.7" cy="-17.400000000000002" r=".7" fill="#fff"/><ellipse cx="6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="6.8999999999999995" cy="-16.6" r="1.9" fill="#3b2a20"/><circle cx="7.499999999999999" cy="-17.400000000000002" r=".7" fill="#fff"/>`,
+  wide:`<ellipse cx="-6.6" cy="-17" rx="3.6" ry="4" fill="#fff"/><ellipse cx="6.6" cy="-17" rx="3.6" ry="4" fill="#fff"/><circle cx="-6.6" cy="-17" r="2.2" fill="#3b2a20"/><circle cx="6.6" cy="-17" r="2.2" fill="#3b2a20"/><circle cx="-5.8" cy="-18" r=".9" fill="#fff"/><circle cx="7.4" cy="-18" r=".9" fill="#fff"/>`,
   closed:`<path class="ln" stroke="#222" stroke-width="1.3" d="M-9.6 -16.6 Q-6.6 -14.4 -3.6 -16.6 M3.6 -16.6 Q6.6 -14.4 9.6 -16.6"/>`,
   happy:`<path class="ln" stroke="#222" stroke-width="1.3" d="M-9.4 -15.8 Q-6.6 -19.6 -3.8 -15.8 M3.8 -15.8 Q6.6 -19.6 9.4 -15.8"/>`,
-  wink:`<circle cx="-6.6" cy="-17" r="2"/><path class="ln" stroke="#222" stroke-width="1.3" d="M3.8 -15.8 Q6.6 -19.6 9.4 -15.8"/>`,
-  angry:`<circle cx="-6.6" cy="-16.5" r="1.9"/><circle cx="6.6" cy="-16.5" r="1.9"/>`,
-  sad:`<circle cx="-6.6" cy="-16" r="1.9"/><circle cx="6.6" cy="-16" r="1.9"/>`,
+  wink:`<ellipse cx="-6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-6.3" cy="-16.6" r="1.9" fill="#3b2a20"/><circle cx="-5.7" cy="-17.400000000000002" r=".7" fill="#fff"/><path class="ln" stroke="#222" stroke-width="1.3" d="M3.8 -15.8 Q6.6 -19.6 9.4 -15.8"/>`,
+  angry:`<ellipse cx="-6.6" cy="-16.5" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-6.0" cy="-15.9" r="1.8" fill="#3b2a20"/><circle cx="-5.4" cy="-16.7" r=".7" fill="#fff"/><ellipse cx="6.6" cy="-16.5" rx="2.9" ry="3.2" fill="#fff"/><circle cx="6.0" cy="-15.9" r="1.8" fill="#3b2a20"/><circle cx="6.6" cy="-16.7" r=".7" fill="#fff"/>`,
+  sad:`<ellipse cx="-6.6" cy="-16" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-6.6" cy="-15.2" r="1.8" fill="#3b2a20"/><circle cx="-6.0" cy="-16.0" r=".7" fill="#fff"/><ellipse cx="6.6" cy="-16" rx="2.9" ry="3.2" fill="#fff"/><circle cx="6.6" cy="-15.2" r="1.8" fill="#3b2a20"/><circle cx="7.199999999999999" cy="-16.0" r=".7" fill="#fff"/>`,
   x:`<path class="ln" stroke="#222" stroke-width="1.3" d="M-9 -19.4 l4.8 4.8 M-4.2 -19.4 l-4.8 4.8 M4.2 -19.4 l4.8 4.8 M9 -19.4 l-4.8 4.8"/>`,
   heart:`<path d="M-6.6 -13.6 l-3.6 -3.6 a2 2 0 0 1 3.6 -2.6 a2 2 0 0 1 3.6 2.6 z M6.6 -13.6 l-3.6 -3.6 a2 2 0 0 1 3.6 -2.6 a2 2 0 0 1 3.6 2.6 z" fill="#ff3d6e"/>`,
   strain:`<path class="ln" stroke="#222" stroke-width="1.3" d="M-9.4 -19 L-4.4 -17 L-9.4 -15 M9.4 -19 L4.4 -17 L9.4 -15"/>`,
-  up:`<circle cx="-6" cy="-19.2" r="2"/><circle cx="7.2" cy="-19.2" r="2"/>`,
-  side:`<circle cx="-4.4" cy="-17" r="2"/><circle cx="8.8" cy="-17" r="2"/>`,
+  up:`<ellipse cx="-6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-6.1" cy="-18.4" r="1.8" fill="#3b2a20"/><circle cx="-5.5" cy="-19.2" r=".7" fill="#fff"/><ellipse cx="6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="7.1" cy="-18.4" r="1.8" fill="#3b2a20"/><circle cx="7.699999999999999" cy="-19.2" r=".7" fill="#fff"/>`,
+  side:`<ellipse cx="-6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="-5.199999999999999" cy="-16.8" r="1.8" fill="#3b2a20"/><circle cx="-4.6" cy="-17.6" r=".7" fill="#fff"/><ellipse cx="6.6" cy="-17" rx="2.9" ry="3.2" fill="#fff"/><circle cx="8.0" cy="-16.8" r="1.8" fill="#3b2a20"/><circle cx="8.6" cy="-17.6" r=".7" fill="#fff"/>`,
   tired:`<path class="ln" stroke="#222" stroke-width="1.3" d="M-9.4 -17 H-3.8 M3.8 -17 H9.4"/><circle cx="-6.6" cy="-15.8" r="1.4"/><circle cx="6.6" cy="-15.8" r="1.4"/>`,
   stars:`<path d="M-6.6 -21 l1.2 2.6 2.8.3 -2.1 1.9.6 2.8 -2.5 -1.4 -2.5 1.4.6 -2.8 -2.1 -1.9 2.8 -.3z M6.6 -21 l1.2 2.6 2.8.3 -2.1 1.9.6 2.8 -2.5 -1.4 -2.5 1.4.6 -2.8 -2.1 -1.9 2.8 -.3z" fill="#f5b400"/>`
 };
@@ -1005,8 +1011,8 @@ const KEYS = Object.keys(N);
 const SIT = { lL:13, kL:-12, lR:-13, kR:12, sL:.22, sR:.22 };
 const P = (frames, dur=600, opt={}) => ({ frames:frames.map(f=>({...N,...f})), dur, ...opt });
 const POSES = {
-  idle: P([{}, {y:.8, head:2}], 1600),
-  walk: P([{y:0,lL:15,lR:-3,aL:-4,aR:-18,head:-2},{y:-2.5,lL:3,lR:-3,aL:10,aR:-10},{y:0,lL:3,lR:-15,aL:22,aR:4,head:2},{y:-2.5,lL:3,lR:-3,aL:10,aR:-10}], 130),
+  idle: P([{}, {y:.7, head:1.6, tor:.5, aL:11.5, aR:-11.5}, {y:.2, head:-.6, tor:-.3}], 1500),
+  walk: P([{y:0,lL:16,kL:-12,lR:-6,kR:3,aL:-10,eL:-14,aR:16,eR:12,head:-1.5,rot:-1.2,tor:-1},{y:-2.4,lL:5,kL:-6,lR:-4,kR:5,aL:4,eL:-8,aR:-2,eR:8,rot:0,tor:0},{y:0,lL:6,kL:-3,lR:-16,kR:12,aL:16,eL:-12,aR:-10,eR:14,head:1.5,rot:1.2,tor:1},{y:-2.4,lL:4,kL:-5,lR:-5,kR:6,aL:-2,eL:-8,aR:4,eR:8,rot:0,tor:0}], 140),
   run: P([{y:0,lL:26,kL:-20,lR:-4,aL:-30,eL:-60,aR:-40,eR:60,head:-3},{y:-5,lL:3,lR:-3},{y:0,lL:4,lR:-26,kR:20,aL:40,eL:-60,aR:30,eR:60,head:3},{y:-5}], 90),
   sneak: P([{y:4,lL:14,kL:-14,lR:-4,aL:-40,eL:-100,aR:40,eR:100,head:6},{y:5,lL:4,lR:-14,kR:14,aL:-40,eL:-100,aR:40,eR:100,head:4}], 330, {usesR:1}),
   sit: P([{aL:14,eL:-24,aR:-14,eR:24},{aL:14,eL:-24,aR:-14,eR:24,head:2,y:.5}], 1600),
@@ -1265,8 +1271,10 @@ function tween(props, ms, id){
 const GAP=62;
 function freeSpot(x, self){
   if (x<10 || x>470 || window.__closeOK || (self && self.player)) return x;
-  const occ=[]; if (self!=='me') occ.push(H.destX??H.X);
-  for (const n of NPCS) if (n!==self && n.room===H.room && n.alpha>0.2 && n.g.style.display!=='none') occ.push(n.destX??n.X);
+  // in public places bots ignore real people (so every phone moves them the same way); people step aside instead
+  const botOnly = self && self!=='me' && self.bot && typeof PL!=='undefined' && PL.topic;
+  const occ=[]; if (self!=='me' && !botOnly) occ.push(H.destX??H.X);
+  for (const n of NPCS) if (n!==self && n.room===H.room && n.alpha>0.2 && n.g.style.display!=='none' && (!botOnly || n.bot)) occ.push(n.destX??n.X);
   const ok=v=>occ.every(o=>Math.abs(o-v)>=GAP);
   if (ok(x)) return x;
   for (let k=1;k<12;k++) for (const v of [x+k*GAP/2, x-k*GAP/2]) if (v>=25 && v<=455 && ok(v)) return v;
@@ -1285,7 +1293,7 @@ async function walkTo(x, id, fast, sy){
   if (alive(id)) setPose('idle');
 }
 let miniT=0; function drawMiniThrottled(){ const n=performance.now(); if(n-miniT>120){ miniT=n; drawMini(); } }
-function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); }catch(e){} },0); if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
+function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); applyTint(); }catch(e){} },0); if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
 async function standUp(id){
   if (H.inShower){ H.inShower=false; drawRoom(H.room); }
   if (H.lying){ const o=OBJ[H.lying]; H.lying=null; if(o.room===H.room) drawRoom(H.room); setPose('idle'); await tween({Y:STAND, X:o.x}, 380, id); }
@@ -2076,14 +2084,14 @@ function enterPlace(r){
   setTimeout(()=>postPlace({t:'here', ...myPublic()}), 1500);
   PL.lastSent=Date.now(); PL.lastX=H.X;
   PL.unstack=setInterval(()=>{ if (H.room!==r || H.seat || H.lying || !['idle','drink'].includes(H.pose)) return; const me=topicOf(H.name,H.code);
-      const clash=Object.values(PL.peers).find(p=>p.arrived && Math.abs(p.n.X-H.X)<GAP-12 && (p.n.topic||'')<me);
+      const clash=Object.values(PL.peers).find(p=>p.arrived && Math.abs(p.n.X-H.X)<GAP-12 && (p.n.topic||'')<me) || NPCS.find(n=>n.bot && n.room===H.room && Math.abs(((n.destX??n.X))-H.X)<GAP-12);
       if (clash){ const id=++runId; walkTo(freeSpot(H.X+(H.X<240?GAP:-GAP),'me'), id); } }, 2500);
   PL.hb=setInterval(()=>{ const now=Date.now(), moved=Math.abs(H.X-PL.lastX)>5; if ((moved && now-PL.lastSent>3000) || now-PL.lastSent>12000){ PL.lastSent=now; PL.lastX=H.X; postPlace({t:'here', ...myPublic()}); } }, 1000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
   setTimeout(()=>nightExtras(r), 800);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.post}); npcLook(n,b.look); n.bot=true; n.post=b.post; n.roam=b.roam||25; n.work=b.work; n.sells=b.sells; n.role=b.role; n.lines=b.lines; return n; });
-  clearInterval(PL.passT); PL.passSlot=Math.floor(Date.now()/60000);
-  PL.passT=setInterval(()=>{ const sl=Math.floor(Date.now()/60000); if (sl===PL.passSlot) return; const off=Math.floor(srand(sl,r,1)*25000); if (srand(sl,r,2)<.7){ PL.passSlot=sl; setTimeout(()=>{ if (H.room===r) passerBy(r, sl); }, off); } else PL.passSlot=sl; }, 1000);
+  clearInterval(PL.passT); PL.passSlot=null;
+  PL.passT=setInterval(()=>{ const sl=Math.floor(Date.now()/60000); if (sl===PL.passSlot) return; PL.passSlot=sl; if (srand(sl,r,2)>=.7) return; const off=Math.floor(srand(sl,r,1)*25000), late=(Date.now()%60000)-off; if (late>4000) return; setTimeout(()=>{ if (H.room===r) passerBy(r, sl); }, Math.max(0,-late)); }, 1000);
   PL.wander=setInterval(()=>{ const slot=Math.floor(Date.now()/4500); if (slot===PL.lastSlot) return; PL.lastSlot=slot; PL.bots.forEach((n,bi)=>{ if (n.busy||n.room!==H.room||n.smuggler) return; const p=srand(slot,bi,r), q=srand(slot,bi,r,9);
       if (H.room==='disco' && p<.6){ npcPose(n, ['dance','disco','twist','robot'][Math.floor(q*4)]); return; }
       if (p<.45){ npcPose(n, n.work[Math.floor(q*n.work.length)]); }
@@ -2188,6 +2196,44 @@ function openMap(){
   $('shClose').onclick=closeSheet;
   $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r===H.room) return; if (r==='bunker'){ if (H.visit){ say(LANG==='it'?'Non da qui.':'Not from here.',2000); return; } openBunker(); return; } if (r==='bisca') enterHidden('bisca'); else if (r==='prive'){ if (isNight()){ goPlace('disco').then(()=>{ const id=++runId; setRoom('prive'); H.X=-40; walkTo(180,id); }); } else say(LANG==='it'?'Il privé apre alle 22.':'The privé opens at 10pm.',2500); } else goPlace(r); });
 }
+
+/* extra detail drawn on top of each room (decorative only) */
+function roomDetails(r){
+  if (r==='living') return `<line x1="420" y1="0" x2="420" y2="34" stroke="#555"/><path d="M404 34 L436 34 L428 48 L412 48Z" fill="#e9c46a"/><ellipse cx="420" cy="49" rx="6" ry="2" fill="#fff6c9"/>
+    <g transform="translate(290 74)"><circle r="10" fill="#fff" stroke="#6b4a2b" stroke-width="2.5"/><path d="M0 0 L0 -7 M0 0 L5 2" stroke="#333" stroke-width="1.6" stroke-linecap="round"/></g>
+    <rect x="286" y="210" width="9" height="12" rx="1.5" fill="#f4efe6" stroke="#cfc6b5"/><circle cx="290.5" cy="214" r="1" fill="#999"/><circle cx="290.5" cy="218" r="1" fill="#999"/>
+    <path d="M150 196 Q160 186 172 196 L172 214 L150 214Z" fill="#c0504d" opacity=".9"/><path d="M152 200 L170 200 M152 205 L170 205" stroke="#fff" stroke-opacity=".35"/>
+    <g transform="translate(16 250)"><path d="M-8 0 L8 0 L6 -16 L-6 -16Z" fill="#c9734a"/><path d="M0 -16 C-14 -30 -12 -46 -2 -40 C0 -52 10 -50 6 -38 C16 -40 14 -26 0 -16Z" fill="#5c9a58"/></g>
+    <g transform="translate(400 262)"><rect x="-12" y="-4" width="24" height="4" rx="1" fill="#d64545"/><rect x="-10" y="-8" width="22" height="4" rx="1" fill="#3a86ff"/><rect x="-13" y="-11" width="20" height="3" rx="1" fill="#e9c46a"/></g>
+    <g class="sway"><path d="M189 39 Q184 75 191 111 L180 111 Q176 75 182 39Z" fill="#000" opacity=".06"/></g>`;
+  if (r==='kitchen') return `<line x1="200" y1="0" x2="200" y2="30" stroke="#555"/><path d="M186 30 Q200 18 214 30Z" fill="#2a9d8f"/><ellipse cx="200" cy="31" rx="7" ry="2" fill="#fff6c9"/>
+    <g transform="translate(34 46)"><rect x="-16" y="-18" width="32" height="36" fill="#fff" stroke="#ccc"/><rect x="-16" y="-18" width="32" height="8" fill="#d64545"/><g fill="#bbb">${Array.from({length:12},(_,i)=>`<rect x="${-13+(i%4)*7}" y="${-6+Math.floor(i/4)*7}" width="5" height="4"/>`).join('')}</g><circle cx="${-13+2*7+2.5}" cy="${-6+7+2}" r="3.4" fill="none" stroke="#d64545"/></g>
+    <g transform="translate(332 72)"><circle r="12" fill="#fff" stroke="#2a9d8f" stroke-width="2.5"/><path d="M0 0 L0 -8 M0 0 L6 3" stroke="#333" stroke-width="1.6" stroke-linecap="round"/></g>
+    <g transform="translate(112 184)"><path d="M-6 0 L6 0 L5 -8 L-5 -8Z" fill="#c9734a"/><path d="M0 -8 q-6 -8 -2 -12 q2 6 2 12 q0 -10 4 -13 q2 6 -4 13" fill="#4f9a4a"/></g>
+    <rect x="200" y="258" width="70" height="12" rx="5" fill="#2a9d8f" opacity=".75"/><path d="M206 264 L264 264" stroke="#fff" stroke-opacity=".4" stroke-dasharray="4 3"/>`;
+  if (r==='bathroom') return `<rect x="56" y="104" width="64" height="5" rx="1" fill="#b08a64"/><rect x="62" y="88" width="9" height="16" rx="2" fill="#9fd3e0"/><rect x="76" y="92" width="8" height="12" rx="2" fill="#f4a261"/><rect x="88" y="86" width="7" height="18" rx="2" fill="#e87aa8"/>
+    <g transform="translate(108 98)"><ellipse cx="0" cy="2" rx="7" ry="4.5" fill="#ffd166"/><circle cx="4" cy="-3" r="3.6" fill="#ffd166"/><path d="M7 -3 l3 1 l-3 1z" fill="#f77f00"/><circle cx="5" cy="-4" r=".7" fill="#222"/></g>
+    <g transform="translate(24 248)"><path d="M-9 0 L9 0 L7 -16 L-7 -16Z" fill="#fff" stroke="#ccc"/><path d="M0 -16 C-6 -40 -18 -40 -4 -28 M0 -16 C2 -42 12 -44 4 -26 M0 -16 C12 -30 20 -26 6 -20" stroke="#4f9a4a" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+    <g transform="translate(270 240)"><rect x="-10" y="-22" width="20" height="22" rx="3" fill="#ddd"/><rect x="-10" y="-22" width="20" height="5" rx="2" fill="#bbb"/></g>`;
+  if (r==='bedroom') return `${[30,60,90,120,150].map((x,i)=>`<circle cx="${x}" cy="${46+(i%2)*6}" r="3.2" fill="${['#ff5c86','#ffd166','#4cc9f0','#80ed99','#c77dff'][i]}"/>`).join('')}<path d="M20 44 Q90 60 160 44" stroke="#333" stroke-width=".8" fill="none"/>
+    <g transform="translate(310 100)"><rect x="-18" y="-22" width="36" height="30" fill="#6b4a2b"/><rect x="-14" y="-18" width="28" height="22" fill="#9fd3e0"/><circle cx="-4" cy="-8" r="5" fill="#f6cfa7"/><circle cx="6" cy="-8" r="5" fill="#eab48a"/><path d="M-12 4 Q-4 -4 0 4 Q6 -4 12 4Z" fill="#d64545"/></g>
+    <g transform="translate(250 196)"><rect x="-8" y="-4" width="12" height="4" fill="#3a86ff"/><rect x="-6" y="-8" width="11" height="4" fill="#e9c46a"/></g>
+    <g transform="translate(200 266)"><ellipse cx="-7" cy="0" rx="7" ry="3" fill="#e87aa8"/><ellipse cx="7" cy="1" rx="7" ry="3" fill="#e87aa8"/><circle cx="-10" cy="-1" r="2" fill="#fff"/><circle cx="4" cy="0" r="2" fill="#fff"/></g>
+`;
+  if (r==='garden') return `<g fill="#5e9a4e">${[250,272,294].map(x=>`<circle cx="${x}" cy="210" r="14"/>`).join('')}</g><g fill="#ff5c86">${[248,262,280,296].map((x,i)=>`<circle cx="${x}" cy="${202+(i%2)*6}" r="2"/>`).join('')}</g>
+    <g transform="translate(18 252)"><rect x="-2" y="-36" width="4" height="36" fill="#6b4a2b"/><rect x="-12" y="-50" width="24" height="16" rx="7" fill="#3a86ff"/><rect x="10" y="-50" width="3" height="10" fill="#d64545"/></g>
+    ${[120,170,210].map((x,i)=>`<ellipse cx="${x}" cy="${272+(i%2)*6}" rx="12" ry="4" fill="#bdb5a6"/>`).join('')}
+    <g class="fly1"><path d="M0 0 l4 -4 l1 4 l4 -4" stroke="#333" stroke-width="1.4" fill="none" transform="translate(40 60)"/></g>
+    <g class="flutter" transform="translate(205 225)"><path d="M0 0 q-6 -7 -8 0 q2 6 8 0 q6 -7 8 0 q-2 6 -8 0" fill="#ffd166"/></g>`;
+  if (['park','beach','woods','piazza'].includes(r)) return `<g class="fly1"><path d="M0 0 l4 -4 l1 4 l4 -4" stroke="#333" stroke-width="1.4" fill="none" transform="translate(60 50)"/></g><g class="fly2"><path d="M0 0 l3 -3 l1 3 l3 -3" stroke="#333" stroke-width="1.2" fill="none" transform="translate(140 80)"/></g>${r==='beach'?`<g class="fly1"><path d="M0 0 q5 -6 10 0 q5 -6 10 0" stroke="#fff" stroke-width="1.8" fill="none" transform="translate(300 60)"/></g>`:''}`;
+  return '';
+}
+/* light that follows the phone clock (always daytime) */
+function tintNow(){ const h=new Date().getHours()+new Date().getMinutes()/60;
+  if (h>=6 && h<10) return ['#9cc4ff',.18]; if (h>=10 && h<15) return [null,0]; if (h>=15 && h<18) return ['#ffcc66',.22]; if (h>=18 && h<22) return ['#ff8a5c',.26]; return ['#7b86e0',.22]; }
+function applyTint(){ const el=$('tint'); if (!el) return; const [c,o]=tintNow(); if (!c){ el.setAttribute('opacity',0); return; } const out=['garden','park','beach','woods','piazza'].includes(H.room);
+  el.setAttribute('fill',c); el.setAttribute('opacity', (out?o:o*.6).toFixed(2)); }
+setInterval(applyTint, 60000);
 /* ================= LIFE: Pippi, hunger, hygiene ================= */
 const LIFE = (()=>{ let d=null; try { d=JSON.parse(localStorage.getItem('subservientLife')||'null'); } catch(e){} return Object.assign({pippi:50, food:80, clean:80, t:Date.now(), owned:[], bisca:false, prive:false}, d||{}); })();
 function saveLife(){ LIFE.t=Date.now(); try{ localStorage.setItem('subservientLife', JSON.stringify(LIFE)); }catch(e){} renderStats(); }
@@ -3470,6 +3516,9 @@ $('cmd').addEventListener('pointerdown',()=>{ KB.target=$('cmd'); });
 })();
 kbSetup();
 
+/* small spontaneous gestures while waiting */
+setInterval(()=>{ if (!H.code || H.seat || H.lying || H.riding || JOB || caption.textContent.startsWith('>') || !['idle'].includes(H.pose) || Math.random()>.35) return;
+  const g=['look','think','yawn','shrug'][Math.floor(Math.random()*4)], id=runId; setPose(g); setTimeout(()=>{ if (runId===id && H.pose===g) setPose('idle'); }, g==='look'?1700:1400); }, 7000);
 /* ================= BOOT ================= */
 function tick(){ const d=new Date(); $('clock').textContent=d.toLocaleDateString('en-GB')+' '+d.toLocaleTimeString('en-GB'); }
 tick(); setInterval(tick,1000);
@@ -3480,7 +3529,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='29';
+const BUILD='30';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
