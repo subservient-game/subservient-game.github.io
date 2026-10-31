@@ -392,14 +392,15 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=46"></script>
-<script src="adv/engine.js?v=46"></script>
-<script src="adv/minigames.js?v=46"></script>
-<script src="adv/c1-data.js?v=46"></script>
-<script src="adv/c1-story-a.js?v=46"></script>
-<script src="adv/c1-story-b.js?v=46"></script>
-<script src="adv/c1-story-c.js?v=46"></script>
-<script src="adv/c1-story-d.js?v=46"></script>
+<script src="adv/music.js?v=47"></script>
+<script src="adv/engine.js?v=47"></script>
+<script src="adv/minigames.js?v=47"></script>
+<script src="adv/c1-data.js?v=47"></script>
+<script src="adv/c1-story-a.js?v=47"></script>
+<script src="adv/c1-story-b.js?v=47"></script>
+<script src="adv/c1-story-c.js?v=47"></script>
+<script src="adv/c1-story-d.js?v=47"></script>
+<script src="adv/c1-story-e.js?v=47"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -3947,7 +3948,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='46';
+const BUILD='47';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
