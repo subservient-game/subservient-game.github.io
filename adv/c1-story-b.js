@@ -289,7 +289,9 @@ avOn('look:vero',()=>me('Il VERO Mestolo d\'Oro. Pesantissimo. Sotto il manico c
 avOn('use:vero:lente use:lente:vero',()=>me('Con la lente: l\'incisione è una mappa! Una costa, un vulcano, una X. E una scritta minuscola: "1 di 4". Il primo di quattro pezzi.','Through the glass: the engraving is a map! A coastline, a volcano, an X. And tiny writing: "1 of 4". The first of four pieces.'));
 avOn('look:lettera use:me:lettera',()=>avLetter());
 /* ================= FINALE ================= */
-avOn('give:sindaco:vero',async()=>{ const f=F(); avDel('vero'); f.end=1; avSave();
+avOn('give:sindaco:vero',async()=>{ const f=F();
+  if (f.nestDone && !f.ladleClean){ await npcAct('sindaco','scared',1200,'angry'); await np('sindaco','È COPERTO DI CACCA DI CORVO! Il sacro Mestolo di San Pancrazio! Non lo tocco neanche coi guanti del vescovo. Lavalo! Con l\'acqua benedetta, se possibile. O almeno con quella della fontana.','IT\'S COVERED IN CROW POOP! The sacred Ladle of Saint Pancras! I won\'t touch it even with the bishop\'s gloves. Wash it! With holy water, ideally. Or at least the fountain\'s.'); return; }
+  avDel('vero'); f.end=1; avSave();
   await np('sindaco','Questo pesa! È VERO! IL MESTOLO D\'ORO DI SAN PANCRAZIO! Cittadini, la Sagra è salva!','This is heavy! It\'s REAL! THE GOLDEN LADLE OF SAINT PANCRAS! Citizens, the Festival is saved!');
   AV.npcs.forEach(n=>{ n.keep=1; npcPose(n,'cheer','happy'); }); setPose('cheer');
   await np('sindaco','E Gaspare! Il mio assessore! Voleva rifilarci quello di cioccolato e tenersi il vero! Lo farò arrestare... appena qualcuno lo tira fuori dai cassonetti.','And Gaspare! My own councillor! Wanted to fob us off with chocolate and keep the real one! I\'ll have him arrested... once someone pulls him out of the bins.');
