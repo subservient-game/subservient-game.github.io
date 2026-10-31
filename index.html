@@ -113,6 +113,18 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  .side { display:contents; }
+  body.land .wrap { max-width:none; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:12px; align-items:start; }
+  body.land header.top { grid-column:1 / -1; margin-bottom:6px; }
+  body.land .cam { grid-column:1; align-self:start; }
+  body.land .side { grid-column:2; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
+  body.land form.cmd { margin-top:0; } body.land form.cmd input { padding:10px 12px; } body.land #go { padding:10px 16px; }
+  body.land .callbox.show { margin-top:0; margin-bottom:6px; }
+  body.land .kbd { margin-top:6px; padding:5px 3px 3px; } body.land .kr { gap:4px; margin-bottom:4px; }
+  body.land .kk { height:34px; font-size:16px; max-width:none; } body.land .kk.fn { font-size:13px; max-width:none; } body.land .kk.go { max-width:none; }
+  body.land .mynum, body.land .social, body.land #ver { display:none; }
+  body.land.chat .callbox.show .log { max-height:1.7em; } body.land.chat .callbox.show .callhead { margin-bottom:2px; } body.land.chat .callbox.show { padding:4px 6px; }
+  body.land.chat .kk { height:27px; font-size:14px; } body.land.chat .kr { margin-bottom:3px; } body.land.chat form.cmd input { padding:7px 10px; } body.land.chat #go { padding:7px 14px; } body.land .kbbar { display:none; }
   .kbd { flex:0 0 auto; margin-top:8px; padding:6px 3px 4px; background:#1a1d23; border-radius:14px; user-select:none; -webkit-user-select:none; touch-action:none; }
   .kr { display:flex; gap:5px; justify-content:center; margin-bottom:6px; } .kr:last-child { margin-bottom:0; }
   .kk { flex:1 1 0; max-width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:#3a3f48; color:#eef0f3; border-radius:8px; font-size:19px; font-family:system-ui,sans-serif; box-shadow:0 2px 0 #121418; }
@@ -3377,6 +3389,9 @@ applyLang();
 
 /* chat lives INSIDE the camera frame: always visible together with the command box */
 $('f').parentNode.insertBefore($('callbox'), $('f'));
+/* everything except header + camera lives in a side column: in portrait it behaves as before, in landscape it sits to the right of the camera */
+(function(){ const wrap=document.querySelector('.wrap'); const side=document.createElement('div'); side.className='side'; side.id='side';
+  wrap.insertBefore(side, $('callbox')); ['callbox','f','kbd','kbbar','mynum','social','ver'].forEach(id=>{ const el=id==='kbbar'?document.querySelector('.kbbar'):$(id); if (el) side.appendChild(el); }); })();
 
 /* the camera always shows the WHOLE room: it gets smaller (same shape) when the keyboard or the chat need space */
 (function(){
@@ -3384,7 +3399,14 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
   function fit(){
     const vv=window.visualViewport; const vh=vv?vv.height:innerHeight;
     const cs=getComputedStyle(document.body); const pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
-    let others=0; for (const el of wrap.children){ if (el===camEl) continue; const lastEl=($('kbd')&&$('kbd').style.display!=='none')?($('kbd').nextElementSibling||$('kbd')):$('f'); if (el!==lastEl && (el.compareDocumentPosition(lastEl) & Node.DOCUMENT_POSITION_PRECEDING)) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
+    const land = innerWidth>innerHeight && vh<600; document.body.classList.toggle('land', land);
+    document.body.classList.toggle('chat', $('callbox').classList.contains('show'));
+    if (land){ const head=document.querySelector('header.top'); const headH=head.offsetHeight+parseFloat(getComputedStyle(head).marginBottom||0);
+      const h=Math.max(120, vh-pad-headH-4); const maxW=wrap.clientWidth*0.6; const w=Math.min(h*1.6, maxW);
+      camEl.style.width=w+'px'; camEl.style.height=(w/1.6)+'px'; const sd=$('side'); if (sd) sd.style.maxHeight=(vh-pad-headH-4)+'px'; return; }
+    if ($('side')) $('side').style.maxHeight='';
+    const kids=[...wrap.children].flatMap(el=>el.id==='side'?[...el.children]:[el]);
+    let others=0; for (const el of kids){ if (el===camEl) continue; const lastEl=($('kbd')&&$('kbd').style.display!=='none')?($('kbd').nextElementSibling||$('kbd')):$('f'); if (el!==lastEl && (el.compareDocumentPosition(lastEl) & Node.DOCUMENT_POSITION_PRECEDING)) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
     const fullW=wrap.clientWidth; const h=Math.max(110, Math.min(fullW/1.6, vh-pad-others-6));
     camEl.style.height=h+'px'; camEl.style.width=Math.min(fullW, h*1.6)+'px';
   }
@@ -3458,7 +3480,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='28';
+const BUILD='29';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
