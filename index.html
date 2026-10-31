@@ -181,18 +181,18 @@
 
   .advbar { display:none; }
   body.adv .advbar { display:flex; flex-direction:column; margin-top:6px; flex:none; min-height:0; }
-  body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs { grid-auto-rows:1fr; } body.adv .advverbs button { font-size:16px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
+  body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs button { font-size:16px; padding:12px 2px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
   body.adv form#f, body.adv #kbd, body.adv .kbbar, body.adv #callbox, body.adv .social, body.adv .mynum, body.adv #btnLook, body.adv #btnNew, body.adv .jobbar { display:none !important; }
   .advline { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; color:#ffd166; text-align:center; min-height:18px; margin-bottom:4px; }
-  .advrow { display:flex; gap:6px; }
-  .advverbs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; flex:0 0 46%; }
+  .advrow { display:flex; flex-direction:column; gap:6px; }
+  .advverbs { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; flex:none; }
   .advverbs button { padding:9px 2px; font-size:13px; border-radius:8px; background:#2a2240; color:#c9b8ff; border:1px solid #4b3d78; font-weight:700; }
   .advverbs button.on { background:#ffd166; color:#222; border-color:#ffd166; }
-  .advinv { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:4px; align-content:start; max-height:132px; overflow-y:auto; background:#15121f; border-radius:10px; padding:4px; }
+  .advinv { flex:1; display:grid; grid-template-columns:repeat(5,1fr); grid-auto-rows:min-content; gap:4px; align-content:start; max-height:132px; overflow-y:auto; background:#15121f; border-radius:10px; padding:4px; }
   .advinv button { padding:4px 2px; border-radius:8px; background:#231d33; border:1px solid #3a3054; color:#ddd; font-size:10px; line-height:1.1; display:flex; flex-direction:column; align-items:center; gap:1px; }
   .advinv button b { font-size:20px; } .advinv button.on { border-color:#ffd166; background:#3a2f12; }
   .aiempty { grid-column:1/-1; color:#777; font-size:12px; text-align:center; padding:14px 4px; }
-  .advdlg { flex:1; display:flex; flex-direction:column; gap:5px; }
+  .advdlg { flex:1; display:flex; flex-direction:column; gap:5px; overflow-y:auto; }
   .advdlg button { text-align:left; padding:10px 12px; border-radius:8px; background:#15121f; color:#c9b8ff; border:1px solid #3a3054; font-size:14px; font-weight:600; }
   .advdlg button:active { color:#ffd166; }
   .advtext { position:absolute; left:4%; right:4%; top:8%; text-align:center; font-family:Fredoka, sans-serif; font-size:clamp(13px, 3.6cqw, 22px); font-weight:600; text-shadow:0 2px 0 #000, 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000; opacity:0; transition:opacity .15s; pointer-events:none; z-index:6; line-height:1.25; }
@@ -201,7 +201,7 @@
   .advtoast.show { opacity:1; }
   body.adv .cam .caption { display:none; }
   body.adv .info { flex:none !important; }
-  body.adv.land .advverbs button { padding:4px 2px; font-size:13px; } body.adv.land .advline { font-size:12px; min-height:14px; margin-bottom:2px; }
+  body.adv.land .advverbs { grid-template-columns:repeat(8,1fr); } body.adv.land .advinv { grid-template-columns:repeat(8,1fr); } body.adv.land .advverbs button { padding:5px 2px; font-size:13px; } body.adv.land .advline { font-size:12px; min-height:14px; margin-bottom:2px; }
   .outfit { fill:var(--outfit); }
   .sleeveU { fill:var(--sleeveU, var(--outfit)); } .sleeveF { fill:var(--sleeveF, var(--outfit)); } .cuff { display:var(--cuff, inline); } .legs { fill:var(--legs, var(--pants)); } .shin { fill:var(--shin, var(--pants)); } .skirtc { fill:var(--skirt, var(--pants)); } .iris { fill:var(--iris, #3b2a20); }
   #hol :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]), #npcs :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]) { stroke:rgba(35,20,10,.62); stroke-width:1.15; paint-order:stroke; stroke-linejoin:round; }
@@ -3303,7 +3303,7 @@ $('f').addEventListener('submit', async e=>{
 /* ================= AVVENTURA OFFLINE (punta e clicca) ================= */
 const AV = { verb:null, item:null, busy:false, npcs:[], st:null, dlg:null, skip:null };
 const AVT=(it,en)=>LANG==='it'?it:en;
-const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','🗺️ Mappa','🗺️ Map'],['menu','☰','☰']];
+const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','🗺️ Mappa','🗺️ Map']];
 const AV_ITEMS={
   radiomsg:['📻','Annuncio','Notice'], acciuga:['🐟','Acciuga','Anchovy'], torcia:['🔦','Torcia','Torch'], retino:['🥅','Retino','Fishing net'],
   grappa:['🍶','Grappa del nonno','Grandpa\'s grappa'], biglietto:['🎫','Mezza parola d\'ordine','Half a password'], pettine:['🪮','Pettine portafortuna','Lucky comb'],
@@ -3355,7 +3355,7 @@ function avDel(i){ AV.st.inv=AV.st.inv.filter(x=>x!==i); if (AV.item===i) AV.ite
 function avOpen(r){ if (!AV.st.open.includes(r)){ AV.st.open.push(r); avSave(); avToast('🗺️ '+AVT('Nuovo luogo: ','New place: ')+AV_PLACES[r][LANG==='it'?1:2]); } }
 function avToast(t){ const el=$('advToast'); el.textContent=t; el.classList.add('show'); clearTimeout(avToast.t); avToast.t=setTimeout(()=>el.classList.remove('show'),2600); }
 const avName=t=>{ if (!t) return ''; if (t.type==='item') return AV_ITEMS[t.id][LANG==='it'?1:2].toLowerCase(); if (t.type==='self') return AVT('te stesso','yourself'); if (t.type==='npc') return AV_CAST[t.id].name[LANG==='it'?0:1]; return t.n[LANG==='it'?0:1]; };
-function avSentence(extra){ const v=AV_VERBS.find(x=>x[0]===(AV.verb||'walk')); let s=v[LANG==='it'?1:2];
+function avSentence(extra){ if (!AV.verb){ $('advLine').textContent=extra?extra:AVT('Scegli un\'azione, poi tocca qualcosa','Pick an action, then tap something'); return; } const v=AV_VERBS.find(x=>x[0]===AV.verb); let s=v[LANG==='it'?1:2];
   if (AV.item) s+=' '+avName({type:'item',id:AV.item})+' '+(AV.verb==='give'?AVT('a','to'):AVT('con','with'));
   if (extra) s+=' '+extra; $('advLine').textContent=s; }
 function avRender(){
@@ -3797,21 +3797,27 @@ function avFinale(){
   $('avEndOk').onclick=()=>closeSheet();
 }
 /* tap on the scene */
+function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${x}" y="${Math.max(12,y-h/2-4)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
+function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>e.remove()); }
+function avHighlight(t){ avClearMarks(); let m; if (t.type==='hs'){ const h=(AV_HS[H.room]||[]).find(x=>x.id===t.id); m=avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=AV.npcs.find(x=>x.avId===t.id); m=avMark(n.X,STAND-60,56,130,avName(t)); } else { m=avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,1800); }
+function avRevealAll(){ avClearMarks(); (AV_HS[H.room]||[]).forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,AV_CAST[n.avId].name[LANG==='it'?0:1])); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
 function avHsAt(x,y){ return (AV_HS[H.room]||[]).find(h=>Math.abs(x-h.x)<=h.w/2+6 && Math.abs(y-h.y)<=h.h/2+6); }
 async function avTap(e){
   if (AV.dlg) return;
   if (AV.busy){ if (AV.skip) AV.skip(); return; }
   if (e.target.closest('.mini')){ avMap(); return; }
-  if (!e.target.closest('#cam')) return;
+  if (!e.target.closest('#cam')) return; avClearMarks();
   const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
   const n=AV.npcs.find(x=>x.room===H.room && x.g.contains(e.target));
   let t=null;
   if (n) t={type:'npc', id:n.avId, x:n.X};
   else if (holG.contains(e.target)) t={type:'self', id:'me', x:H.X};
   else { const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
-  const verb=AV.verb||'walk';
-  if (!t){ AV.item=null; avRender(); const id=++runId; walkTo(clamp(sp.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
-  let v=verb; if (v==='walk') v='look';
+  const verb=AV.verb;
+  if (!verb){ if (t){ avHighlight(t); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase()); } else { avRevealAll(); $('advLine').textContent=AVT('Scegli un\'azione','Pick an action'); } return; }
+  if (verb==='walk'){ AV.item=null; AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t?t.x:sp.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
+  if (!t){ avRevealAll(); return; }
+  let v=verb;
   if ((v==='use'||v==='give') && !AV.item && t.type!=='self' && v==='give'){ avSentence(avName(t)); return avSay('me', AVT('Dare cosa? Scegli prima un oggetto.','Give what? Pick an item first.')); }
   avSentence(avName(t));
   AV.busy=true;
@@ -4457,7 +4463,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='42';
+const BUILD='43';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
