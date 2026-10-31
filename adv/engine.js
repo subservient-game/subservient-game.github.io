@@ -5,6 +5,9 @@ const AVT=T;
 const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','🗺️ Mappa','🗺️ Map']];
 /* content tables, filled by the chapter files */
 const AV_ITEMS={}, AV_PLACES={}, AV_HS={}, AV_CAST={}, AV_S={}, AV_HINTS=[], AV_ENTER={}, AV_COINS={};
+const AV_HS2={}, AV_CAST2={}, AV_HINTS2=[], AV_ENTER2={}; let AV_INTRO2=null, AV_TITLE2=['',''], AV_START2={room:'bedroom', open:[], keep:[]};
+const CH2=()=>AV.st && AV.st.ch===2;
+function avOn2(keys, fn){ keys.trim().split(/\s+/).forEach(k=>AV_S['c2|'+k]=fn); }
 let AV_START={room:'living', open:[]};
 function avOn(keys, fn){ keys.trim().split(/\s+/).forEach(k=>AV_S[k]=fn); }
 /* ---------- state ---------- */
@@ -71,7 +74,7 @@ async function meAct(pose, ms){ setPose(pose); await avWait(ms||1500); setPose('
 /* ---------- rooms ---------- */
 function avSpawn(r){
   AV.npcs.forEach(n=>removeNPC(n)); AV.npcs=[];
-  for (const [id,c] of Object.entries(AV_CAST)){ if (c.room!==r) continue; if (c.gone && c.gone()) continue;
+  for (const [id,c] of Object.entries(CH2()?AV_CAST2:AV_CAST)){ if (c.room!==r) continue; if (c.gone && c.gone()) continue;
     const n=makeNPC({name:c.name[LANG==='it'?0:1], kind:c.kind, room:r, x:c.x}); n.avId=id; n.look={...c.look, kind:c.kind}; npcLook(n, n.look); n.dir=c.dir||-1; npcPose(n,c.pose||'idle'); if (c.pose) n.keep=1; AV.npcs.push(n); }
 }
 function avApplyLook(){ const f=F();
@@ -80,11 +83,12 @@ function avApplyLook(){ const f=F();
   try { if (f.slick){ const L={...(H.look||{}), hair:'slick'}; J.hairBack.innerHTML=hairSVG(L,'back'); J.hairFront.innerHTML=hairSVG(L,'front'); } } catch(e){} }
 async function avGo(r, first){
   if (AV.busy && !first) return;
-  const gate=AV_ENTER[r] && AV_ENTER[r].before; if (!first && gate){ AV.busy=true; let ok; try{ ok=await gate(); } finally{ AV.busy=false; } if (ok===false) return; }
-  setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=(AV_ENTER[r]&&AV_ENTER[r].x)||60; H.destX=null; camX=H.X; avSpawn(r); avApplyLook(); closeSheet(); avRender();
+  const EN=CH2()?AV_ENTER2:AV_ENTER; const gate=EN[r] && EN[r].before; if (!first && gate){ AV.busy=true; let ok; try{ ok=await gate(); } finally{ AV.busy=false; } if (ok===false) return; }
+  setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=(EN[r]&&EN[r].x)||60; H.destX=null; camX=H.X; avSpawn(r); avApplyLook(); closeSheet(); avRender();
   if (first) return;
-  const after=AV_ENTER[r] && AV_ENTER[r].after; if (after){ AV.busy=true; try{ await after(); } catch(e){ console.log(e); } finally{ AV.busy=false; avRender(); } }
+  const after=EN[r] && EN[r].after; if (after){ AV.busy=true; try{ await after(); } catch(e){ console.log(e); } finally{ AV.busy=false; avRender(); } }
 }
+function avGoLater(r){ const t=setInterval(()=>{ if (!AV.busy && !AV.dlg){ clearInterval(t); avGo(r); } },80); }
 function avKick(r){ setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyLook(); avRender(); }
 function avMap(){
   const it=LANG==='it';
@@ -94,7 +98,7 @@ function avMap(){
 }
 function avMenu(){
   const it=LANG==='it', st=AV.st, mins=Math.round((st.play||0)/60000);
-  sheet(`<h3 style="margin:0 0 6px">🗺️ ${AV_TITLE[it?0:1]}</h3>
+  sheet(`<h3 style="margin:0 0 6px">🗺️ ${(CH2()?AV_TITLE2:AV_TITLE)[it?0:1]}</h3>${(!CH2() && AV.st.f.endDone && AV_INTRO2)?`<button type="button" id="avCh2" style="width:100%;margin-bottom:10px;background:#c9a227">▶️ ${it?'Inizia il Capitolo 2':'Start Chapter 2'}</button>`:''}
    <p style="opacity:.8;font-size:14px;margin:0 0 8px">${it?'Tocca un\'azione, poi una cosa o una persona. Senza azione, toccando la scena vedi cosa si può usare. Per "Usa" e "Dai" scegli prima un oggetto; "Usa" + oggetto + altro oggetto li combina.':'Tap an action, then a thing or person. With no action, tapping the scene shows what you can use. For "Use" and "Give" pick an item first; "Use" + item + another item combines them.'}</p>
    <p style="font-size:13px;margin:0 0 10px">⏱️ ${mins} min · 🪙 ${st.coins.length}/${Object.keys(AV_COINS).length} · 🏆 ${st.tro.length}</p>
    <button type="button" id="avHint" style="width:100%;margin-bottom:8px">💡 ${it?'Suggerimento':'Hint'}</button>
@@ -102,18 +106,19 @@ function avMenu(){
    <button type="button" id="avRestart" class="ghost" style="width:100%;margin-bottom:8px;color:#ff8a80">${it?'Ricomincia l\'avventura':'Restart the adventure'}</button>
    <button type="button" id="avExit" class="ghost" style="width:100%">🌐 ${it?'Torna al gioco online':'Back to the online game'}</button>
    <button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:8px">✕ ${it?'Chiudi':'Close'}</button>`);
-  $('avClose').onclick=()=>closeSheet();
+  $('avClose').onclick=()=>closeSheet(); if ($('avCh2')) $('avCh2').onclick=()=>{ closeSheet(); avStartCh2(); };
   $('avHint').onclick=()=>{ closeSheet(); st.hints=(st.hints||0)+1; avSave(); avSay('me', avHint()); };
   $('avTro').onclick=()=>{ sheet(`<h3>🏆 ${it?'Trofei':'Trophies'}</h3>${AV_TROPHIES.map(t=>`<p style="margin:6px 0;${st.tro.includes(t[0])?'':'opacity:.35'}">${st.tro.includes(t[0])?'🏆':'🔒'} ${it?t[1]:t[2]}</p>`).join('')}<button type="button" class="ghost close" id="avClose2" style="width:100%;margin-top:8px">✕ ${it?'Chiudi':'Close'}</button>`); $('avClose2').onclick=()=>closeSheet(); };
   $('avRestart').onclick=()=>{ sheet(`<p>${it?'Sicuro? Perdi tutti i progressi dell\'avventura.':'Sure? You lose all adventure progress.'}</p><button type="button" id="avRy" style="width:100%;margin-bottom:8px;background:#c0392b">${it?'Sì, ricomincia':'Yes, restart'}</button><button type="button" class="ghost" id="avRn" style="width:100%">${it?'No':'No'}</button>`); $('avRy').onclick=()=>{ try{ localStorage.removeItem('vainAdv1'); }catch(e){} location.reload(); }; $('avRn').onclick=()=>closeSheet(); };
   $('avExit').onclick=()=>{ location.hash=''; location.reload(); };
 }
-function avHint(){ const x=AV_HINTS.find(h=>h[0]()); return x? T(x[1],x[2]) : T('Non ho idee. Guarda tutto, parla con tutti, prova a combinare le cose.','No ideas. Look at everything, talk to everyone, try combining things.'); }
+function avHint(){ const x=(CH2()?AV_HINTS2:AV_HINTS).find(h=>h[0]()); return x? T(x[1],x[2]) : T('Non ho idee. Guarda tutto, parla con tutti, prova a combinare le cose.','No ideas. Look at everything, talk to everyone, try combining things.'); }
 const AV_NOPE=[['Non credo funzioni.','I don\'t think that works.'],['Preferirei di no.','I\'d rather not.'],['Non ha senso nemmeno per me.','That makes no sense even to me.'],['Sì, e poi? No.','Sure, and then? No.'],['Mia madre non approverebbe. Mia madre non approva niente, comunque.','My mother wouldn\'t approve. She approves of nothing anyway.'],['Bella idea. Sbagliata, ma bella.','Nice idea. Wrong, but nice.'],['Neanche da ubriaco.','Not even drunk.'],['Il mio cervello dice no. Il mio fegato pure.','My brain says no. So does my liver.']];
 function avNope(){ const x=AV_NOPE[Math.floor(Math.random()*AV_NOPE.length)]; return me(x[0],x[1]); }
 async function avDo(verb, t, item){
   const id=t.id;
   const keys = item ? [verb+':'+id+':'+item, (t.type==='item'?verb+':'+item+':'+id:null), verb+':'+id+':*', '*:'+id+':'+item] : [verb+':'+id, '*:'+id];
+  if (CH2()) for (const k of keys){ if (k && AV_S['c2|'+k]) return AV_S['c2|'+k](t, item, verb); }
   for (const k of keys){ if (k && AV_S[k]) return AV_S[k](t, item, verb); }
   if (verb==='look'){ const L=[['Niente di speciale. Come la mia vita sentimentale.','Nothing special. Like my love life.'],['Lo guardo. Mi guarda. Nessuno dei due ne esce bene.','I look at it. It looks back. Neither of us comes out well.'],['Interessante quanto una riunione di condominio.','As interesting as a residents\' meeting.']]; const x=L[Math.floor(Math.random()*L.length)]; return me(x[0],x[1]); }
   if (verb==='talk' && t.type==='npc') return np(id,'Non ho tempo per le cazzate. Torna quando hai qualcosa di utile.','No time for bullshit. Come back with something useful.');
@@ -126,7 +131,7 @@ async function avDo(verb, t, item){
 /* ---------- taps ---------- */
 function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${x}" y="${Math.max(14,y-h/2-4)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
 function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>e.remove()); }
-function avHsList(){ return (AV_HS[H.room]||[]).filter(h=>!h.when||h.when()); }
+function avHsList(){ const base=AV_HS[H.room]||[], extra=CH2()?(AV_HS2[H.room]||[]):[]; const ids=new Set(extra.map(h=>h.id)); return extra.concat(base.filter(h=>!ids.has(h.id))).filter(h=>!h.when||h.when()); }
 function avHighlight(t){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t)); } else { avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,1800); }
 function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,AV_CAST[n.avId].name[LANG==='it'?0:1])); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
 function avHsAt(x,y){ return avHsList().find(h=>Math.abs(x-h.x)<=h.w/2+6 && Math.abs(y-h.y)<=h.h/2+6); }
@@ -175,6 +180,7 @@ function avCode(len, title){ return new Promise(res=>{ const d=Array(len).fill(0
     $('sheetBody').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ d[+b.dataset.d]=(d[+b.dataset.d]+9)%10; draw(); });
     $('avCodeOk').onclick=()=>{ closeSheet(); res(d.join('')); }; $('avCodeNo').onclick=()=>{ closeSheet(); res(null); }; };
   draw(); }); }
+async function avStartCh2(){ const st=AV.st; st.ch1=JSON.parse(JSON.stringify({f:st.f, inv:st.inv})); st.ch=2; st.f={c1end:1, intro:1}; st.inv=st.inv.filter(i=>AV_START2.keep.includes(i)); st.open=AV_START2.open.slice(); st.room=AV_START2.room; st.hints=0; st.play2=0; avSave(); await avGo(st.room, true); avRender(); if (AV_INTRO2){ AV.busy=true; try{ await AV_INTRO2(); } finally { AV.busy=false; avRender(); } } }
 async function avStart(){
   document.body.classList.add('adv'); avLoad(); avBar(); try{ $('advMusic').textContent=MUS.on?'🎵':'🔇'; $('advMusic').onclick=e=>{ e.stopPropagation(); musToggle(); }; }catch(x){}
   $('title').innerHTML=`vAIn <span>${T('Avventura','Adventure')}</span>`;

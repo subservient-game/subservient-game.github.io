@@ -395,17 +395,18 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=50"></script>
-<script src="adv/icons.js?v=50"></script>
-<script src="adv/engine.js?v=50"></script>
-<script src="adv/minigames.js?v=50"></script>
-<script src="adv/c1-data.js?v=50"></script>
-<script src="adv/c1-story-a.js?v=50"></script>
-<script src="adv/c1-story-b.js?v=50"></script>
-<script src="adv/c1-story-c.js?v=50"></script>
-<script src="adv/c1-story-d.js?v=50"></script>
-<script src="adv/c1-story-e.js?v=50"></script>
-<script src="adv/c1-story-f.js?v=50"></script>
+<script src="adv/music.js?v=52"></script>
+<script src="adv/icons.js?v=52"></script>
+<script src="adv/engine.js?v=52"></script>
+<script src="adv/minigames.js?v=52"></script>
+<script src="adv/c1-data.js?v=52"></script>
+<script src="adv/c1-story-a.js?v=52"></script>
+<script src="adv/c1-story-b.js?v=52"></script>
+<script src="adv/c1-story-c.js?v=52"></script>
+<script src="adv/c1-story-d.js?v=52"></script>
+<script src="adv/c1-story-e.js?v=52"></script>
+<script src="adv/c1-story-f.js?v=52"></script>
+<script src="adv/c2.js?v=52"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -444,6 +445,9 @@ const ROOMS = {
   faro:    { name:'FARO',        cam:23, mx:82, my:48, mw:20, mh:20, out:1, locked:1 },
   municipio:{ name:'MUNICIPIO',  cam:24, mx:42, my:48, mw:19, mh:20, out:1, locked:1, secret:1 },
   cimitero:{ name:'CIMITERO',   cam:25, mx:62, my:48, mw:19, mh:20, out:1, locked:1, secret:1 },
+  campanile:{ name:'CAMPANILE', cam:26, mx:82, my:48, mw:20, mh:20, out:1, locked:1, secret:1 },
+  stazione:{ name:'STAZIONE',   cam:27, mx:82, my:48, mw:20, mh:20, out:1, locked:1, secret:1 },
+  archivio:{ name:'ARCHIVIO',   cam:28, mx:54, my:2, mw:24, mh:21, locked:1, secret:1 },
   hospital:{ name:'HOSPITAL',    cam:18, mx:42, my:25, mw:19, mh:21, out:1 },
   gym:     { name:'GYM',         cam:19, mx:62, my:25, mw:19, mh:21, out:1 },
   karaoke: { name:'KARAOKE',     cam:20, mx:82, my:25, mw:20, mh:21, out:1 },
@@ -813,7 +817,7 @@ function drawRoom(r){
     <g transform="translate(370 22)"><rect width="90" height="96" fill="#1d2a4f"/><circle cx="66" cy="24" r="9" fill="#fff3b0"/><g fill="#fff" opacity=".7">${[[14,20],[30,40],[50,64],[76,50]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1"/>`).join('')}</g><path d="M0 0 L0 96 M45 0 L45 96 M0 48 L90 48" stroke="#5a3520" stroke-width="4"/><path d="M-8 -4 Q10 50 -6 100 L-14 100 L-14 -4Z M98 -4 Q80 50 96 100 L104 100 L104 -4Z" fill="#9b2226"/></g>
     <g transform="translate(290 186)"><rect width="140" height="12" fill="#5a3520"/><rect x="4" y="12" width="132" height="34" fill="#6b3f24"/><rect x="58" y="16" width="24" height="10" rx="2" fill="#c9a227"/><rect x="18" y="-8" width="22" height="8" fill="#eceff2" transform="rotate(-6 29 -4)"/><rect x="100" y="-14" width="6" height="14" fill="#2b2d31"/><circle cx="103" cy="-16" r="4" fill="#d64545"/></g>
     <g transform="translate(40 158)"><rect width="66" height="70" rx="4" fill="#5c636b" stroke="#3a3f45" stroke-width="3"/><rect x="6" y="6" width="54" height="58" rx="3" fill="#6c737b"/><circle cx="33" cy="32" r="13" fill="#3a3f45"/><circle cx="33" cy="32" r="8" fill="#9aa1a8"/><path d="M33 20 L33 26" stroke="#fff" stroke-width="2"/><rect x="50" y="26" width="6" height="14" rx="2" fill="#c9a227"/>${AV&&AV.st&&AV.st.f&&AV.st.f.safeOpen?`<rect x="6" y="6" width="54" height="58" fill="#1a1a1a"/>`:''}</g>
-    <g transform="translate(150 200)"><path d="M0 28 L4 0 L14 0 L18 28Z" fill="#c9a227"/><path d="M9 0 Q-8 -30 9 -44 Q26 -30 9 0" fill="#4f9a4a"/></g>`;
+    <g transform="translate(150 200)"><path d="M0 28 L4 0 L14 0 L18 28Z" fill="#c9a227"/><path d="M9 0 Q-8 -30 9 -44 Q26 -30 9 0" fill="#4f9a4a"/></g>${(typeof AV!=='undefined'&&AV.st&&AV.st.ch===2)?`<g transform="translate(240 160)"><rect x="-34" y="40" width="68" height="30" fill="#6b3f24" stroke="#2b2b2b" stroke-width="2"/><rect x="-30" y="-6" width="60" height="46" fill="#bfe3f0" fill-opacity=".35" stroke="#2b2b2b" stroke-width="2.5"/><path d="M14 -2 L2 24" stroke="#2b2b2b" stroke-width="6" stroke-linecap="round"/><path d="M14 -2 L2 24" stroke="#f4d03f" stroke-width="3" stroke-linecap="round"/><ellipse cx="-2" cy="30" rx="9" ry="6" fill="#f4d03f" stroke="#2b2b2b" stroke-width="2"/><path d="M-26 0 L-14 0" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><text y="62" text-anchor="middle" font-size="6" fill="#f4d03f" font-family="Fredoka, sans-serif">MESTOLO D'ORO</text></g>`:''}`;
   }
   if (r==='cimitero'){
     b+=`<rect width="480" height="232" fill="url(#gSky)"/><path d="M0 150 Q80 120 160 140 T320 130 T480 140 L480 232 L0 232Z" fill="#6f8f7a" opacity=".55"/>
@@ -829,6 +833,35 @@ function drawRoom(r){
       <path d="M-18 162 L-18 112 Q0 92 18 112 L18 162Z" fill="#5a3a22"/><circle cx="12" cy="136" r="2" fill="#c9a227"/><text x="0" y="66" text-anchor="middle" font-size="8" font-weight="700" fill="#8a6a40" font-family="Fredoka, sans-serif">PAPPALARDO</text>
       <g fill="#ccc"><circle cx="-36" cy="60" r="7"/><path d="M-44 60 Q-50 50 -44 46 M-28 60 Q-22 50 -28 46" stroke="#ccc" stroke-width="3"/><circle cx="36" cy="60" r="7"/><path d="M28 60 Q22 50 28 46 M44 60 Q50 50 44 46" stroke="#ccc" stroke-width="3"/></g></g>
     <g class="fly1"><path d="M0 0 q5 -5 10 0 q5 -5 10 0" stroke="#111" stroke-width="2" fill="none" transform="translate(250 50)"/></g>`;
+  }
+  if (r==='campanile'){
+    b+=`<rect width="480" height="300" fill="#8a7a66"/>${Array.from({length:70},(_,i)=>`<rect x="${(i%10)*48+(Math.floor(i/10)%2)*24}" y="${Math.floor(i/10)*34}" width="46" height="32" rx="2" fill="${i%3?'#9a8a74':'#8f7f6a'}"/>`).join('')}
+    <rect x="160" y="20" width="160" height="120" rx="80" fill="#9fd3e0"/><path d="M160 80 H320 M240 20 V140" stroke="#5a4a3a" stroke-width="6"/><rect x="156" y="16" width="168" height="128" rx="84" fill="none" stroke="#5a4a3a" stroke-width="8"/>
+    <rect y="232" width="480" height="68" fill="#6b5a46"/>${Array.from({length:12},(_,i)=>`<rect x="${i*40}" y="232" width="39" height="68" fill="${i%2?'#735f4a':'#665240'}"/>`).join('')}
+    <path d="M0 40 H480" stroke="#4a3a2a" stroke-width="12"/>
+    ${[[70,'#c9a227',34],[150,'#b8902a',26],[330,'#c9a227',30],[410,'#a88020',22]].map(([x,c,r])=>`<g><line x1="${x}" y1="46" x2="${x}" y2="60" stroke="#333" stroke-width="3"/><path d="M${x-r} ${60+r*1.6} Q${x-r} 60 ${x} 60 Q${x+r} 60 ${x+r} ${60+r*1.6}Z" fill="${c}" stroke="#2b2b2b" stroke-width="2.5"/><rect x="${x-r-3}" y="${58+r*1.6}" width="${r*2+6}" height="5" rx="2" fill="${c}" stroke="#2b2b2b" stroke-width="2"/><circle cx="${x}" cy="${66+r*1.7}" r="4" fill="#5a4a3a"/><path d="M${x-r/2} ${70+r*0.4} Q${x-r/3} ${68} ${x-r/6} ${66}" stroke="#fff" stroke-opacity=".5" stroke-width="2" fill="none"/><line x1="${x}" y1="${70+r*1.7}" x2="${x}" y2="226" stroke="#c9a77a" stroke-width="2.5"/><ellipse cx="${x}" cy="226" rx="4" ry="6" fill="#b5835a"/></g>`).join('')}
+    <g transform="translate(240 160)"><circle r="34" fill="#f4efe6" stroke="#2b2b2b" stroke-width="4"/>${Array.from({length:12},(_,i)=>`<line x1="0" y1="-28" x2="0" y2="-24" stroke="#2b2b2b" stroke-width="2" transform="rotate(${i*30})"/>`).join('')}<path d="M0 0 L0 -20 M0 0 L14 6" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/><rect x="-10" y="38" width="20" height="14" rx="2" fill="#5a4a3a" stroke="#2b2b2b" stroke-width="2"/><circle cx="0" cy="45" r="2" fill="#c9a227"/></g>
+    <g class="fly2"><path d="M0 0 q4 -4 8 0 q4 -4 8 0" stroke="#2b2b2b" stroke-width="2" fill="none" transform="translate(200 60)"/></g>`;
+  }
+  if (r==='stazione'){
+    b+=`<rect width="480" height="170" fill="url(#gSky)"/><path d="M0 150 Q100 120 200 140 T480 130 L480 170 L0 170Z" fill="#7aa874" opacity=".6"/>
+    <rect y="150" width="480" height="40" fill="#8a8578"/>${Array.from({length:24},(_,i)=>`<rect x="${i*20}" y="176" width="14" height="5" fill="#5a3a22"/>`).join('')}<path d="M0 174 H480 M0 184 H480" stroke="#aab2bd" stroke-width="3"/>
+    <g transform="translate(250 104)"><rect width="210" height="66" rx="10" fill="#d64545" stroke="#2b2b2b" stroke-width="3"/><rect x="0" y="44" width="210" height="8" fill="#eceff2"/>${[14,64,114,164].map(x=>`<rect x="${x}" y="10" width="36" height="26" rx="4" fill="#9fd3e0" stroke="#2b2b2b" stroke-width="2"/>`).join('')}<circle cx="40" cy="68" r="9" fill="#333"/><circle cx="170" cy="68" r="9" fill="#333"/><text x="105" y="62" text-anchor="middle" font-size="8" font-weight="700" fill="#2b2b2b" font-family="Fredoka, sans-serif">LITTORINA 1987</text></g>
+    <rect y="190" width="480" height="110" fill="#b8b0a0"/><rect y="188" width="480" height="6" fill="#f4d03f"/>${Array.from({length:16},(_,i)=>`<rect x="${i*30}" y="196" width="29" height="104" fill="${i%2?'#aea694':'#b8b0a0'}"/>`).join('')}
+    <g transform="translate(20 60)"><rect width="190" height="140" fill="#e9dcc0" stroke="#8a7a66" stroke-width="3"/><path d="M-10 0 H200 L190 -20 H0Z" fill="#9b2226" stroke="#2b2b2b" stroke-width="2"/><rect x="20" y="30" width="44" height="50" fill="#9fd3e0" stroke="#5a3a22" stroke-width="3"/><rect x="120" y="70" width="44" height="70" fill="#5a3a22" stroke="#2b2b2b" stroke-width="2"/><text x="95" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#5a3a22" font-family="Fredoka, sans-serif">STAZIONE</text></g>
+    <g transform="translate(110 92)"><circle r="14" fill="#fff" stroke="#2b2b2b" stroke-width="3"/><path d="M0 0 L0 -9 M0 0 L7 3" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round"/></g>
+    <g transform="translate(250 196)"><rect width="80" height="56" fill="#7a828c" stroke="#2b2b2b" stroke-width="2.5"/>${[0,1,2,3,4,5].map(i=>`<rect x="${4+(i%3)*25}" y="${4+Math.floor(i/3)*26}" width="22" height="22" fill="#9aa1a8" stroke="#2b2b2b" stroke-width="1.5"/><text x="${15+(i%3)*25}" y="${18+Math.floor(i/3)*26}" text-anchor="middle" font-size="7" font-weight="700" fill="#2b2b2b">${[84,85,86,87,88,89][i]}</text>`).join('')}</g>
+    <g transform="translate(420 200)"><rect x="-3" y="-40" width="6" height="70" fill="#2b2d31"/><rect x="-26" y="-60" width="52" height="20" rx="3" fill="#2b3a67" stroke="#2b2b2b" stroke-width="2"/><text y="-46" text-anchor="middle" font-size="8" fill="#fff" font-family="Fredoka, sans-serif">BINARIO 1</text></g>
+    <g transform="translate(190 222)"><rect x="-30" y="0" width="60" height="6" fill="#6b4a2b"/><rect x="-26" y="6" width="4" height="14" fill="#4a3220"/><rect x="22" y="6" width="4" height="14" fill="#4a3220"/></g>`;
+  }
+  if (r==='archivio'){
+    b+=`<rect width="480" height="300" fill="#4a4d50"/><g stroke="#3e4144" stroke-width="2">${Array.from({length:8},(_,j)=>`<line x1="0" y1="${j*30}" x2="480" y2="${j*30}"/>`).join('')}</g><rect y="232" width="480" height="68" fill="#3a3d40"/>
+    <circle cx="240" cy="22" r="7" fill="#fff3b0"/><ellipse cx="240" cy="140" rx="200" ry="120" fill="#fff3b0" opacity=".08"/>
+    ${[30,110].map(x=>`<g transform="translate(${x} 60)"><rect width="70" height="172" fill="#5c636b" stroke="#2b2b2b" stroke-width="2.5"/>${[0,1,2,3].map(j=>`<rect x="6" y="${8+j*40}" width="58" height="32" fill="#6c737b" stroke="#2b2b2b" stroke-width="1.5"/><rect x="28" y="${20+j*40}" width="14" height="5" rx="2" fill="#c9a227"/>`).join('')}</g>`).join('')}
+    <g transform="translate(200 40)"><rect width="110" height="80" fill="#e9dcc0" stroke="#6b4a2b" stroke-width="4"/><path d="M14 56 Q30 30 50 40 T96 30" stroke="#2a6f97" stroke-width="3" fill="none"/><path d="M60 50 L70 30 L80 50Z" fill="#7a6a52"/><text x="75" y="64" font-size="10" fill="#c0504d" font-weight="700">X</text><path d="M20 20 L34 20 M20 26 L30 26" stroke="#7a6a52" stroke-width="2"/><g opacity=".85">${[[0,0],[55,0],[0,40],[55,40]].map(([x,y],i)=>`<rect x="${x}" y="${y}" width="55" height="40" fill="${i===0?'none':'#2b2b2b'}" opacity="${i===0?0:.55}"/>`).join('')}</g></g>
+    <g transform="translate(340 46)"><rect width="70" height="90" fill="#c9a227" stroke="#2b2b2b" stroke-width="3"/><rect x="6" y="6" width="58" height="78" fill="#2b3a4f"/><circle cx="35" cy="34" r="13" fill="#eab48a"/><path d="M22 28 Q35 14 48 28" fill="#eee"/><path d="M26 40 Q35 46 44 40" fill="#eee"/><circle cx="30" cy="32" r="4" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="40" cy="32" r="4" fill="none" stroke="#222" stroke-width="1.5"/><path d="M18 84 Q35 56 52 84Z" fill="#8a5a3a"/><text x="35" y="98" text-anchor="middle" font-size="7" fill="#e9dcc0" font-family="Fredoka, sans-serif">ERNESTO</text></g>
+    <g transform="translate(230 186)"><rect x="-70" y="0" width="140" height="10" fill="#6b4a2b" stroke="#2b2b2b" stroke-width="2"/><rect x="-64" y="10" width="6" height="36" fill="#4a3220"/><rect x="58" y="10" width="6" height="36" fill="#4a3220"/><rect x="-50" y="-14" width="36" height="14" fill="#8a2f2c" stroke="#2b2b2b" stroke-width="1.5"/><rect x="0" y="-8" width="30" height="8" fill="#f4efe6" stroke="#2b2b2b" stroke-width="1.5"/><rect x="40" y="-22" width="16" height="22" fill="#2b2d31"/><circle cx="48" cy="-25" r="6" fill="#fff3b0" opacity=".9"/></g>
+    <g transform="translate(440 140)"><rect x="-26" y="-80" width="52" height="172" fill="#555" stroke="#2b2b2b" stroke-width="3"/><circle r="16" fill="none" stroke="#999" stroke-width="4"/><text y="-60" text-anchor="middle" font-size="9" fill="#ddd" font-family="Fredoka, sans-serif">S.d.P.</text></g>`;
   }
   if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
   b+=roomDetails(r);
@@ -3958,7 +3991,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='50';
+const BUILD='52';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
