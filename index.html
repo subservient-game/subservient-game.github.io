@@ -114,6 +114,7 @@
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
   #stats { font-size:.95em; opacity:.95; }
+  #camName, #clock { display:none !important; }
   .rain line { stroke:#cfe6ff; stroke-width:1.2; opacity:.55; animation:rain .5s linear infinite; } @keyframes rain { to { transform:translate(-8px,26px); } }
   .snow circle { fill:#fff; opacity:.85; animation:snow 4s linear infinite; } @keyframes snow { to { transform:translate(10px,40px); } }
   .jobbar { position:absolute; left:6px; right:6px; bottom:6px; display:none; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; z-index:8; }
@@ -224,7 +225,9 @@
       <rect id="darkOv" width="480" height="300" fill="#070b18" opacity="0" pointer-events="none"/>
       <ellipse id="shadow" cx="240" cy="258" rx="26" ry="5" fill="#000" opacity=".28" filter="url(#soft)"/>
       <g id="npcs"></g>
+      <g id="vehB"></g>
       <g id="hol"></g>
+      <g id="vehF"></g>
       <g id="front"></g>
       <g id="spawnF"></g>
       <g id="wx" pointer-events="none"></g>
@@ -312,27 +315,34 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 
 /* ================= WORLD STATE ================= */
 const ST = {
-  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false,woods:false,disco:false,pizzeria:false,bisca:false,prive:false,bunker:false},
+  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false,woods:false,disco:false,pizzeria:false,bisca:false,prive:false,bunker:false,attic:false,garage:false,cellar:false,hospital:false,gym:false,karaoke:false,barber:false},
   o:{ tv:{on:false}, radio:{on:false}, plant:{grow:1}, fridge:{open:false}, stove:{on:false}, kitchen_sink:{on:false}, coffee:{on:false},
       cushion:{on:true}, toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
 };
 const on=id=>ST.o[id]&&ST.o[id].on;
 
 const ROOMS = {
-  living:  { name:'LIVING ROOM', cam:1, mx:2,  my:36, mw:32, mh:32 },
-  kitchen: { name:'KITCHEN',     cam:2, mx:36, my:36, mw:32, mh:32 },
-  bathroom:{ name:'BATHROOM',    cam:3, mx:36, my:2,  mw:32, mh:32 },
-  bedroom: { name:'BEDROOM',     cam:4, mx:2,  my:2,  mw:32, mh:32 },
-  garden:  { name:'GARDEN',      cam:5, mx:70, my:2,  mw:32, mh:66 },
-  park:    { name:'PARK',        cam:6,  mx:2,  my:2,  mw:24, mh:32, out:1 },
-  piazza:  { name:'PIAZZA',      cam:7,  mx:28, my:2,  mw:24, mh:32, out:1 },
-  beach:   { name:'BEACH',       cam:8,  mx:54, my:2,  mw:24, mh:32, out:1 },
-  woods:   { name:'WOODS',       cam:9,  mx:80, my:2,  mw:22, mh:32, out:1 },
-  disco:   { name:'DISCO',       cam:10, mx:28, my:36, mw:24, mh:32, out:1 },
-  pizzeria:{ name:'PIZZA',       cam:11, mx:54, my:36, mw:24, mh:32, out:1 },
-  bunker:  { name:'BUNKER',      cam:14, mx:2,  my:52, mw:32, mh:16, secret:1 },
-  bisca:   { name:'???',         cam:13, mx:80, my:36, mw:22, mh:16, out:1, secret:1 },
-  prive:   { name:'PRIVÉ',       cam:12, mx:80, my:52, mw:22, mh:16, out:1, secret:1 }
+  bedroom: { name:'BEDROOM',     cam:4,  mx:2,  my:2,  mw:24, mh:21 },
+  bathroom:{ name:'BATHROOM',    cam:3,  mx:28, my:2,  mw:24, mh:21 },
+  attic:   { name:'ATTIC',       cam:15, mx:54, my:2,  mw:24, mh:21 },
+  living:  { name:'LIVING ROOM', cam:1,  mx:2,  my:25, mw:24, mh:21 },
+  kitchen: { name:'KITCHEN',     cam:2,  mx:28, my:25, mw:24, mh:21 },
+  garage:  { name:'GARAGE',      cam:16, mx:54, my:25, mw:24, mh:21 },
+  cellar:  { name:'CELLAR',      cam:17, mx:2,  my:48, mw:24, mh:20 },
+  bunker:  { name:'BUNKER',      cam:14, mx:28, my:48, mw:24, mh:20, secret:1 },
+  garden:  { name:'GARDEN',      cam:5,  mx:80, my:2,  mw:22, mh:66 },
+  park:    { name:'PARK',        cam:6,  mx:2,  my:2,  mw:19, mh:21, out:1 },
+  piazza:  { name:'PIAZZA',      cam:7,  mx:22, my:2,  mw:19, mh:21, out:1 },
+  beach:   { name:'BEACH',       cam:8,  mx:42, my:2,  mw:19, mh:21, out:1 },
+  woods:   { name:'WOODS',       cam:9,  mx:62, my:2,  mw:19, mh:21, out:1 },
+  disco:   { name:'DISCO',       cam:10, mx:82, my:2,  mw:20, mh:21, out:1 },
+  pizzeria:{ name:'PIZZA',       cam:11, mx:22, my:25, mw:19, mh:21, out:1 },
+  hospital:{ name:'HOSPITAL',    cam:18, mx:42, my:25, mw:19, mh:21, out:1 },
+  gym:     { name:'GYM',         cam:19, mx:62, my:25, mw:19, mh:21, out:1 },
+  karaoke: { name:'KARAOKE',     cam:20, mx:82, my:25, mw:20, mh:21, out:1 },
+  barber:  { name:'BARBER',      cam:21, mx:2,  my:48, mw:19, mh:20, out:1 },
+  bisca:   { name:'???',         cam:13, mx:22, my:48, mw:19, mh:20, out:1, secret:1 },
+  prive:   { name:'PRIVÉ',       cam:12, mx:42, my:48, mw:19, mh:20, out:1, secret:1 }
 };
 /* x = where the tenant stands to use it (beside it, so they don't hide it); sy = standing depth; seat/lie = hip position */
 const OBJ = {
@@ -378,6 +388,17 @@ const OBJ = {
   dancefloor:{room:'disco',x:200,fx:{x:200,y:250},desc:'light-up dance floor (dance, disco)'},
   oven:{room:'pizzeria',x:340,fx:{x:390,y:200},desc:'wood-fired pizza oven (cook pizza)'},
   pizza_table:{room:'pizzeria',x:150,seat:{x:100,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:155,y:196},desc:'table with chair (sit and eat pizza)'},
+  pingpong:{room:'attic',x:240,fx:{x:240,y:200},desc:'ping-pong table (play)'},
+  telescope:{room:'attic',x:400,fx:{x:420,y:150},desc:'telescope at the round window (look at the stars)'},
+  old_trunk:{room:'attic',x:90,fx:{x:80,y:226},desc:'old trunk full of grandma\'s clothes (dress up)'},
+  workbench:{room:'garage',x:390,fx:{x:420,y:190},desc:'workbench with tools (fix things)'},
+  barrels:{room:'cellar',x:120,fx:{x:100,y:200},desc:'wine barrels (taste the wine)'},
+  cheese:{room:'cellar',x:330,fx:{x:340,y:170},desc:'hanging cheeses and salami (eat)'},
+  hosp_bed:{room:'hospital',x:330,seat:{x:330,y:204,legs:{lL:18,kL:-10,lR:-18,kR:10}},lie:{x:340,y:198,bend:90},desc:'hospital bed (lie down, get treated)'},
+  treadmill:{room:'gym',x:120,fx:{x:110,y:200},desc:'treadmill (run)'},
+  weights:{room:'gym',x:330,fx:{x:340,y:220},desc:'barbell and weights (lift)'},
+  stage:{room:'karaoke',x:240,fx:{x:240,y:150},desc:'karaoke stage with mic and screen (sing)'},
+  barber_chair:{room:'barber',x:150,seat:{x:150,y:204,legs:{lL:16,kL:-8,lR:-16,kR:8}},desc:'barber chair (sit for a cut)'},
   cans:{room:'bunker',x:120,fx:{x:90,y:150},desc:'shelves full of canned food (eat for free)'},
   cot:{room:'bunker',x:330,seat:{x:330,y:206,legs:{lL:18,kL:-10,lR:-18,kR:10}},lie:{x:340,y:200,bend:90},desc:'army cot (sit / lie)'},
   bunker_radio:{room:'bunker',x:230,fx:{x:240,y:180},desc:'shortwave radio (listen: news and gossip about friends)'},
@@ -577,6 +598,47 @@ function drawRoom(r){
     <rect x="118" y="196" width="76" height="8" fill="#fff"/><g fill="#d64545">${Array.from({length:7},(_,i)=>`<rect x="${118+i*11}" y="196" width="5" height="8"/>`).join('')}</g><rect x="152" y="204" width="5" height="44" fill="#5a3a22"/><ellipse cx="160" cy="194" rx="14" ry="3.5" fill="#f2c14e"/><g fill="#d64545"><circle cx="155" cy="193" r="1.6"/><circle cx="163" cy="194" r="1.6"/><circle cx="160" cy="192" r="1.4"/></g>
     <rect x="84" y="166" width="5" height="82" fill="#5a3a22"/><rect x="84" y="200" width="32" height="6" rx="2" fill="#7a4a2c"/><rect x="111" y="206" width="4" height="42" fill="#5a3a22"/>`;
   }
+  if (r==='attic'){
+    b+=`<rect width="480" height="232" fill="#c9a77a"/><path d="M0 0 L0 120 L120 0Z M480 0 L480 120 L360 0Z" fill="#8b6b4a"/><g stroke="#a88760" stroke-width="2">${Array.from({length:12},(_,i)=>`<line x1="${i*40}" y1="0" x2="${i*40}" y2="232"/>`).join('')}</g>
+    <rect y="232" width="480" height="68" fill="#8b5a2b"/><rect y="222" width="480" height="11" fill="#6b4a2b"/><circle cx="420" cy="90" r="30" fill="#2b3a67"/><circle cx="420" cy="90" r="30" fill="none" stroke="#6b4a2b" stroke-width="6"/><circle cx="410" cy="80" r="2" fill="#fff"/><circle cx="430" cy="98" r="1.5" fill="#fff"/>
+    <path d="M396 210 L408 150 L416 150 L412 210" stroke="#555" stroke-width="3" fill="none"/><rect x="402" y="138" width="34" height="10" rx="4" fill="#333" transform="rotate(-25 418 143)"/>
+    <rect x="170" y="196" width="140" height="10" fill="#2a9d8f"/><line x1="240" y1="186" x2="240" y2="206" stroke="#fff" stroke-width="2"/><rect x="176" y="206" width="5" height="40" fill="#333"/><rect x="300" y="206" width="5" height="40" fill="#333"/>
+    <rect x="50" y="206" width="66" height="40" rx="4" fill="#7a4a24"/><rect x="50" y="200" width="66" height="10" rx="4" fill="#8b5a2b"/><rect x="78" y="208" width="10" height="8" fill="#d4af37"/>`;
+  }
+  if (r==='garage'){
+    b+=`<rect width="480" height="232" fill="#a9adb5"/><g stroke="#979ba3" stroke-width="1.5">${Array.from({length:8},(_,j)=>`<line x1="0" y1="${j*30}" x2="480" y2="${j*30}"/>`).join('')}</g><rect y="232" width="480" height="68" fill="#6b6f76"/><ellipse cx="220" cy="270" rx="60" ry="8" fill="#000" opacity=".15"/>
+    <rect x="30" y="40" width="160" height="150" fill="#d0d4da" stroke="#888"/>${Array.from({length:6},(_,j)=>`<line x1="30" y1="${65+j*25}" x2="190" y2="${65+j*25}" stroke="#999"/>`).join('')}
+    <rect x="360" y="180" width="110" height="10" fill="#7a4a24"/><rect x="366" y="190" width="6" height="56" fill="#5a3a22"/><rect x="458" y="190" width="6" height="56" fill="#5a3a22"/><rect x="360" y="80" width="110" height="90" fill="#8b6b4a"/>
+    <g stroke="#333" stroke-width="3">${[380,400,420,440,460].map((x,i)=>`<line x1="${x}" y1="92" x2="${x}" y2="${120+i*6}"/>`).join('')}</g>
+    ${(LIFE.vehicles||[]).includes('car')?`<g transform="translate(240 262) scale(1.15)">${VEH_SVG.car.b}${VEH_SVG.car.f}</g>`:(LIFE.vehicles||[]).includes('scooter')?`<g transform="translate(240 262)">${VEH_SVG.scooter.b}${VEH_SVG.scooter.f}</g>`:(LIFE.vehicles||[]).includes('bike')?`<g transform="translate(240 262)">${VEH_SVG.bike.b}</g>`:''}`;
+  }
+  if (r==='cellar'){
+    b+=`<rect width="480" height="232" fill="#7a5a44"/><g fill="#6a4c38">${Array.from({length:60},(_,i)=>`<rect x="${(i%12)*40+(Math.floor(i/12)%2)*20}" y="${Math.floor(i/12)*46}" width="38" height="44" rx="6"/>`).join('')}</g><rect y="232" width="480" height="68" fill="#4a3424"/>
+    ${[60,150].map(x=>`<ellipse cx="${x}" cy="200" rx="40" ry="44" fill="#8b5a2b"/><ellipse cx="${x}" cy="200" rx="40" ry="44" fill="none" stroke="#3a2414" stroke-width="4"/><line x1="${x-40}" y1="186" x2="${x+40}" y2="186" stroke="#3a2414" stroke-width="3"/><line x1="${x-40}" y1="214" x2="${x+40}" y2="214" stroke="#3a2414" stroke-width="3"/><circle cx="${x}" cy="200" r="5" fill="#3a2414"/>`).join('')}
+    <line x1="260" y1="100" x2="420" y2="100" stroke="#3a2414" stroke-width="3"/>${[280,310,340,370,400].map((x,i)=>i%2?`<ellipse cx="${x}" cy="128" rx="9" ry="22" fill="#b5651d"/>`:`<path d="M${x-12} 108 L${x+12} 108 L${x+10} 140 L${x-10} 140Z" fill="#f2c14e"/>`).join('')}
+    <rect x="420" y="150" width="50" height="96" fill="#5a3a22"/>${Array.from({length:12},(_,i)=>`<circle cx="${430+(i%3)*15}" cy="${162+Math.floor(i/3)*20}" r="5" fill="${i%2?'#6a0d25':'#2d6a4f'}"/>`).join('')}`;
+  }
+  if (r==='hospital'){
+    b+=`<rect width="480" height="232" fill="#e8f1f2"/><rect y="150" width="480" height="82" fill="#cfe1e3"/><rect y="232" width="480" height="68" fill="#b8c9cc"/><rect x="40" y="40" width="70" height="70" rx="6" fill="#fff" stroke="#d64545" stroke-width="3"/><path d="M68 54 h14 v14 h14 v14 h-14 v14 h-14 v-14 h-14 v-14 h14z" fill="#d64545"/>
+    <rect x="270" y="196" width="140" height="12" rx="4" fill="#fff" stroke="#aab"/><rect x="272" y="188" width="30" height="10" rx="4" fill="#dfe8f2"/><rect x="276" y="208" width="5" height="40" fill="#999"/><rect x="400" y="208" width="5" height="40" fill="#999"/>
+    <line x1="430" y1="120" x2="430" y2="248" stroke="#999" stroke-width="3"/><path d="M420 120 h20 v24 h-20z" fill="#9fd3e0" opacity=".8"/><rect x="150" y="70" width="80" height="50" rx="4" fill="#222"/><path d="M155 98 l15 0 l6 -14 l8 26 l6 -12 l35 0" stroke="#4ade80" stroke-width="2" fill="none"/>`;
+  }
+  if (r==='gym'){
+    b+=`<rect width="480" height="232" fill="#3d4a5c"/><rect y="232" width="480" height="68" fill="#2b2d31"/><g fill="#ffd166"><text x="240" y="60" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="26" font-weight="700">GYM 💪</text></g>
+    <rect x="300" y="40" width="160" height="110" fill="#9fd3e0" opacity=".25" stroke="#888"/><path d="M60 246 L60 200 L150 200 L170 246Z" fill="#222"/><rect x="60" y="196" width="100" height="8" fill="#555"/><line x1="150" y1="200" x2="160" y2="150" stroke="#555" stroke-width="4"/><rect x="150" y="140" width="24" height="14" rx="3" fill="#333"/>
+    <line x1="290" y1="226" x2="400" y2="226" stroke="#aaa" stroke-width="5"/><rect x="290" y="208" width="10" height="36" rx="3" fill="#222"/><rect x="390" y="208" width="10" height="36" rx="3" fill="#222"/><rect x="300" y="214" width="6" height="24" rx="2" fill="#d64545"/><rect x="384" y="214" width="6" height="24" rx="2" fill="#d64545"/>`;
+  }
+  if (r==='karaoke'){
+    b+=`<rect width="480" height="300" fill="#1a0b2e"/><rect y="232" width="480" height="68" fill="#2b1748"/><path d="M120 232 L130 200 L350 200 L360 232Z" fill="#5a189a"/><rect x="170" y="40" width="140" height="80" rx="6" fill="#111" stroke="#c77dff" stroke-width="3"/><text x="240" y="76" text-anchor="middle" font-size="16" fill="#ffd166">♪ ♫ ♪</text><text x="240" y="102" text-anchor="middle" font-size="9" fill="#fff" font-family="Fredoka, sans-serif">KARAOKE</text>
+    <line x1="240" y1="200" x2="240" y2="150" stroke="#999" stroke-width="3"/><circle cx="240" cy="146" r="5" fill="#333"/>${['#ff5c86','#4cc9f0','#ffd166'].map((c,i)=>`<path d="M${120+i*120} 0 L${90+i*120} 200 L${150+i*120} 200Z" fill="${c}" opacity=".12"/>`).join('')}`;
+  }
+  if (r==='barber'){
+    b+=`<rect width="480" height="232" fill="#f1e3d3"/><g stroke="#e2cdb6" stroke-width="2">${Array.from({length:16},(_,i)=>`<line x1="${i*30}" y1="0" x2="${i*30}" y2="232"/>`).join('')}</g><rect y="232" width="480" height="68" fill="url(#checker)"/>
+    <rect x="110" y="70" width="90" height="110" rx="8" fill="#cfe8ef" stroke="#c9a227" stroke-width="5"/><path d="M128 86 L150 76" stroke="#fff" stroke-width="3"/>
+    <rect x="130" y="196" width="44" height="12" rx="4" fill="#9b2226"/><rect x="128" y="160" width="10" height="44" rx="3" fill="#9b2226"/><rect x="148" y="208" width="8" height="30" fill="#333"/><ellipse cx="152" cy="244" rx="20" ry="4" fill="#333"/>
+    <rect x="420" y="80" width="18" height="110" rx="9" fill="#fff" stroke="#ccc"/><g><path d="M420 90 L438 80 M420 110 L438 100 M420 130 L438 120 M420 150 L438 140 M420 170 L438 160" stroke="#d64545" stroke-width="6"/></g>
+    <text x="300" y="60" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="20" font-weight="700" fill="#9b2226">BARBIERE 💈</text>`;
+  }
   if (r==='bunker'){
     b+=`<rect width="480" height="300" fill="#6b6f73"/><g stroke="#5a5e62" stroke-width="2">${Array.from({length:8},(_,j)=>`<line x1="0" y1="${j*30}" x2="480" y2="${j*30}"/>`).join('')}</g>
     <rect y="232" width="480" height="68" fill="#4a4d50"/><path d="M0 0 L480 0 L480 18 L0 18Z" fill="#3e4144"/><circle cx="240" cy="30" r="8" fill="#fff3b0"/><ellipse cx="240" cy="120" rx="160" ry="100" fill="#fff3b0" opacity=".07"/>
@@ -602,7 +664,7 @@ function drawRoom(r){
     <path d="M346 236 L374 236 L370 200 L350 200Z" fill="#c0c7d0"/><path d="M354 200 L356 172 L362 172 L364 200Z" fill="#1b4332"/><rect x="355" y="168" width="8" height="5" fill="#d4af37"/>
     ${['#ff5c86','#ffd166','#4cc9f0'].map((c,i)=>`<circle cx="${280+i*60}" cy="20" r="6" fill="${c}"/><path d="M${280+i*60} 26 L${250+i*60} 232 L${310+i*60} 232Z" fill="${c}" opacity=".08"/>`).join('')}`;
   }
-  if (r==='piazza') b+=sagraDecor();
+  if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
   b=decorate(r,b);
   backL.innerHTML=b; frontL.innerHTML=frontFor(r);
   darkOv.setAttribute('opacity', dark ? (r==='garden'?.55:.66) : 0);
@@ -627,12 +689,12 @@ function frontFor(r){
 function drawMini(){
   let s='';
   const town=!!ROOMS[H.room].out;
-  if (town){ s+=`<rect x="2" y="36" width="24" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="91" y="${LIFE.bisca||LIFE.prive?66:54}" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text><text x="14" y="50" text-anchor="middle" font-size="4.4" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
-  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue; if (R.secret && !cur) continue;
-    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='woods'?'#24513a':k==='disco'?'#4a2a6e':k==='pizzeria'?'#a0522d':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
-    ${R.secret?'':`<text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-6)}" font-size="${R.out?4.4:5.2}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`}`;
+  if (town){ s+=`<rect x="2" y="25" width="19" height="21" rx="3" fill="#3a3f48" stroke="#596170"/><text x="11.5" y="37" text-anchor="middle" font-size="3.6" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text><text x="82" y="62" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text>`; }
+  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue; if (R.secret && !cur) continue; if (EXTRA_ROOMS[k] && !hasRoom(k) && !cur) continue;
+    s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='hospital'?'#8aa1b1':k==='gym'?'#5c677d':k==='karaoke'?'#7b2cbf':k==='barber'?'#9b2226':k==='attic'?'#6b4a2b':k==='garage'?'#4a4e57':k==='cellar'?'#5a3a22':k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='woods'?'#24513a':k==='disco'?'#4a2a6e':k==='pizzeria'?'#a0522d':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
+    ${R.secret?'':`<text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-4)}" font-size="${R.out?3.5:4}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`}`;
   }
-  const R=ROOMS[H.room]; const dx=R.mx+clamp(H.X/480*R.mw,2,R.mw-2), dy=R.my+R.mh*(H.room==='garden'?0.8:0.72);
+  const R=ROOMS[H.room]; const dx=R.mx+clamp(H.X/480*R.mw,2,R.mw-2), dy=R.my+R.mh*(H.room==='garden'?0.8:0.75);
   s+=`<circle cx="${dx}" cy="${dy}" r="2.8" fill="#ff5c86" stroke="#fff" stroke-width=".8"/>`;
   $('mini').innerHTML=s;
 }
@@ -662,7 +724,7 @@ const bodyMarkup = () => `
     <path class="outfitD" d="M-7 -41.5 L-1.2 3 L-3.4 3 L-9 -40 Z"/><path class="outfitD" d="M7 -41.5 L1.2 3 L3.4 3 L9 -40 Z"/>
     <g fill="#6b4a2a"><circle cx="-3.6" cy="-16" r="1.2"/><circle cx="-2.6" cy="-8" r="1.2"/><circle cx="-1.8" cy="-1" r="1.2"/></g>
     <rect class="outfitD" x="-14" y="-14" width="7" height="7" rx="1.5"/><rect class="outfitD" x="7" y="-14" width="7" height="7" rx="1.5"/></g>
-    <g id="cTorso"></g>
+    <g id="cTorso"></g><g id="phys"></g>
     <rect x="-4" y="-47" width="8" height="7" class="skinD"/>
     <g id="propB"></g>
     <g id="head">
@@ -676,7 +738,7 @@ const bodyMarkup = () => `
       <g id="glasses"><g fill="rgba(255,255,255,.16)" stroke="#2b2b2b" stroke-width="1.4"><circle cx="-6.6" cy="-17" r="6"/><circle cx="6.6" cy="-17" r="6"/></g>
       <path d="M-.7 -18 Q0 -19.4 .7 -18" stroke="#2b2b2b" stroke-width="1.2" fill="none"/><line x1="-12.6" y1="-17.5" x2="-15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/><line x1="12.6" y1="-17.5" x2="15.5" y2="-18" stroke="#2b2b2b" stroke-width="1.1"/></g>
       <g id="brows"></g>
-      <g id="mouth"></g>
+      <g id="mouth"></g><g id="tattoo"></g><g id="beard"></g>
       <g id="hairFront"></g>
       <g id="cFace"></g>
       <g id="cHat"></g>
@@ -688,7 +750,7 @@ const bodyMarkup = () => `
   </g>
 </g>`;
 holG.innerHTML = bodyMarkup();
-const J = {}; ['hips','legL','thL','thL2','knL','legR','thR','thR2','knR','tor','head','armL','elL','armR','elR','propR','propB','eyes','brows','mouth','handR','hairBack','hairFront','lashes','cBack','cTorso','cFace','cHat','cardi'].forEach(k=>J[k]=$(k));
+const J = {}; ['hips','legL','thL','thL2','knL','legR','thR','thR2','knR','tor','head','armL','elL','armR','elR','propR','propB','eyes','brows','mouth','handR','hairBack','hairFront','lashes','cBack','cTorso','cFace','cHat','cardi','glasses','beard','tattoo','phys'].forEach(k=>J[k]=$(k));
 
 function setColors(outfit, pants, skin){
   holG.style.setProperty('--outfit',outfit); holG.style.setProperty('--outfitD',shade(outfit,.78));
@@ -995,7 +1057,7 @@ let pose=POSES.idle, poseStart=performance.now(), last=performance.now();
 function setPose(nameOrPose, face){
   const p = typeof nameOrPose==='object' ? nameOrPose : (POSES[nameOrPose]||POSES.idle);
   pose=p; H.pose = typeof nameOrPose==='string' && POSES[nameOrPose] ? nameOrPose : 'custom'; poseStart=performance.now();
-  setFace(face || p.face || 'normal');
+  setFace(face || p.face || ((p===POSES.idle||p===POSES.drink) && typeof moodFace==='function' ? moodFace() : 'normal'));
 }
 function samplePose(p, t){
   const fr=p.frames, n=fr.length; if(n===1) return fr[0];
@@ -1018,6 +1080,7 @@ function frame(now){
   apply();
   if (curFace==='normal' && now>blinkT){ J.eyes.setAttribute('transform','translate(0 -17) scale(1 .12) translate(0 17)'); setTimeout(()=>J.eyes.removeAttribute('transform'),120); blinkT=now+rnd(2500,5000); }
   updateNPCs(dt, now);
+  try{ drawVehicle(); }catch(e){}
   updateCamera(dt);
   positionBubble();
   requestAnimationFrame(frame);
@@ -1179,7 +1242,7 @@ async function walkTo(x, id, fast, sy){
   x=clamp(x,-90,570); x=freeSpot(x,'me'); H.destX=x; const endY = sy ?? STAND;
   const dx=x-H.X; if (Math.abs(dx)<4 && Math.abs(H.Y-endY)<2) return;
   H.dir = dx>=0?1:-1;
-  setPose(fast?'run':'walk', fast?'focused':undefined);
+  setPose(H.riding?'ride':(fast?'run':'walk'), (fast||H.riding)?'focused':undefined);
   const long = Math.abs(dx)>40;
   if (long && H.Y<LANE-1) await tween({Y:LANE}, 180, id);
   const speed=fast?260:150, ms=Math.max(60,Math.abs(dx)/speed*1000), t0=performance.now(), x0=H.X;
@@ -1382,7 +1445,7 @@ TOWN (outside the house, public): park, beach, piazza, woods, disco, pizzeria. G
 Objects (id [room] description):
 ${objs}
 
-NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}Money: ${LIFE.pippi} Pippi. Trophies: ${(LIFE.trophies||[]).length}. Police record: ${LIFE.record||0}.${EV.kind?` Event in the piazza now: ${EV.kind==='rissa'?'a street fight (the tenant can break it up)':'village fair with lucky dip'}.`:''} Hunger ${Math.round(100-LIFE.food)}%, hygiene ${Math.round(LIFE.clean)}% (${LIFE.clean<30?'smelly, flies around':'ok'}). Weather outside: ${weatherNow()}. Phone time ${new Date().toTimeString().slice(0,5)}${isNight()?' (night: it stays daylight, but night things happen)':''}. ${peopleHere().length?` People in this scene: ${peopleHere().map(describePerson).join('; ')}. The tenant is at x=${Math.round(H.X)}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
+NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}Money: ${LIFE.pippi} Pippi. Mood ${Math.round(LIFE.mood||70)}/100${LIFE.sick?', feeling sick (ate bad mushrooms)':''}. Fitness ${LIFE.fit||0}%${physOf()!=='normal'?' ('+physOf()+')':''}. Vehicles: ${(LIFE.vehicles||[]).join(', ')||'none'}.${PARTY?' A house party is going on right now!':''} Trophies: ${(LIFE.trophies||[]).length}. Police record: ${LIFE.record||0}.${EV.kind?` Event in the piazza now: ${EV.kind==='rissa'?'a street fight (the tenant can break it up)':'village fair with lucky dip'}.`:''} Hunger ${Math.round(100-LIFE.food)}%, hygiene ${Math.round(LIFE.clean)}% (${LIFE.clean<30?'smelly, flies around':'ok'}). Weather outside: ${weatherNow()}. Phone time ${new Date().toTimeString().slice(0,5)}${isNight()?' (night: it stays daylight, but night things happen)':''}. ${peopleHere().length?` People in this scene: ${peopleHere().map(describePerson).join('; ')}. The tenant is at x=${Math.round(H.X)}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
 
 STEPS (JSON objects, run in order)
 {"do":"goto","object":"<id>"} | {"do":"goto","room":"<room>","x":0-480} (x<0 or >480 = off camera). Add "run":true to run.
@@ -1665,6 +1728,7 @@ const LOOKS = {
   outfit:['#d9a93b','#3f9a8c','#d64545','#3f6fd1','#e87aa8','#4f9a4a','#8a5ac8','#2b2d31','#eceff2'],
   pants:['#8fa9c9','#2b2d31','#3f6fd1','#8a5a3a','#4f9a4a','#d64545','#eceff2','#e87aa8']
 };
+function lookOut(){ return {...(H.look||{}), phys: (typeof physOf==='function'?physOf():'normal')}; }
 function defaultLook(kind){ return {hair: kind==='f'?'bun':'short', hairColor:'#c8642a', skin:'#f6cfa7', glasses:true, outfit:null, pants:null}; }
 H.look = (()=>{ try { return JSON.parse(localStorage.getItem('subservientLook')||'null'); } catch(e){ return null; } })();
 function saveLook(){ try{ localStorage.setItem('subservientLook', JSON.stringify(H.look)); }catch(e){} }
@@ -1673,7 +1737,7 @@ function applyLook(){
   if (!H.look) H.look=defaultLook(H.kind);
   J.hairBack.innerHTML=hairSVG(H.look,'back'); J.hairFront.innerHTML=hairSVG(H.look,'front');
   if (J.glasses) J.glasses.style.display = H.look.glasses===false ? 'none' : '';
-  applyCostume(H.lastCostume || 'pajamas');
+  applyCostume(H.lastCostume || 'pajamas'); try{ applyExtras(); }catch(e){}
 }
 function npcLook(n, look){
   if (!n || !look) return; n.look=look;
@@ -1683,6 +1747,7 @@ function npcLook(n, look){
   const o=normColor(look.outfit)||(n.kind==='f'?'#3f9a8c':'#d9a93b'), p=normColor(look.pants)||'#8fa9c9';
   n.outfit=o; n.g.style.setProperty('--outfit',o); n.g.style.setProperty('--outfitD',shade(o,.78)); n.g.style.setProperty('--pants',p);
   [n.P.thL2,n.P.thR2].forEach(e=>e.style.display = p!=='#8fa9c9'?'none':'');
+  try{ npcExtras(n, look); }catch(e){}
 }
 function setLook(k, v){ H.look={...(H.look||defaultLook(H.kind)), [k]:v}; saveLook(); applyLook(); try{ shareLook(); }catch(e){} }
 
@@ -1714,6 +1779,7 @@ const DECOR = {
   snowman:{it:['pupazzo di neve'],en:['snowman'],out:1,only:'out', svg:`<circle cy="-11" r="12" fill="#fff"/><circle cy="-30" r="8" fill="#fff"/><path d="M0 -30 l8 1 l-8 1z" fill="#f77f00"/><circle cx="-3" cy="-32" r="1" fill="#222"/><circle cx="3" cy="-32" r="1" fill="#222"/><rect x="-6" y="-44" width="12" height="7" fill="#222"/>`}
 };
 const HOUSE_ROOMS=['living','kitchen','bathroom','bedroom','garden'];
+(function(){ try { const L=JSON.parse(localStorage.getItem('subservientLife')||'{}'); (L.rooms||[]).forEach(k=>{ if (!HOUSE_ROOMS.includes(k)) HOUSE_ROOMS.push(k); }); } catch(e){} })();
 let DECO={}; try { DECO=JSON.parse(localStorage.getItem('subservientDeco')||'{}')||{}; } catch(e){}
 function saveDeco(){ try{ localStorage.setItem('subservientDeco', JSON.stringify(DECO)); }catch(e){} }
 function decoSrc(){ return H.visit ? (H.visitDeco||{}) : DECO; }
@@ -1805,7 +1871,7 @@ function openCustom(tab){
     h+=`<div class="chips"><button type="button" class="${L.glasses!==false?'on':''}" data-act="glasses">👓 ${it?'Occhiali':'Glasses'}</button></div>`;
   } else {
     const r = HOUSE_ROOMS.includes(window.__decoRoom)?window.__decoRoom:(HOUSE_ROOMS.includes(H.room)?H.room:'living'); window.__decoRoom=r;
-    const names={living:it?'Soggiorno':'Living',kitchen:it?'Cucina':'Kitchen',bathroom:it?'Bagno':'Bathroom',bedroom:it?'Camera':'Bedroom',garden:it?'Giardino':'Garden'};
+    const names={attic:it?'Mansarda':'Attic',garage:'Garage',cellar:it?'Cantina':'Cellar',living:it?'Soggiorno':'Living',kitchen:it?'Cucina':'Kitchen',bathroom:it?'Bagno':'Bathroom',bedroom:it?'Camera':'Bedroom',garden:it?'Giardino':'Garden'};
     const d=DECO[r]||{}; const out=r==='garden';
     h+=`<div class="chips">${HOUSE_ROOMS.map(k=>`<button type="button" class="${k===r?'on':''}" data-act="room:${k}">${names[k]}</button>`).join('')}</div>`;
     const wc=['#e6d8ba','#f4f1ea','#f2a7c3','#9ccfe8','#7cbf7a','#f2d95c','#b79ce0','#f4a261','#a9adb5','#2b2d31'];
@@ -1821,6 +1887,8 @@ function openCustom(tab){
   $('shClose').onclick=closeSheet;
   $('sheetBody').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openCustom(b.dataset.tab));
   $('sheetBody').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ buy(b.dataset.buy); openCustom('shop'); });
+  $('sheetBody').querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{ closeSheet(); buyRoom(b.dataset.room); });
+  $('sheetBody').querySelectorAll('[data-veh]').forEach(b=>b.onclick=()=>{ buyVehicle(b.dataset.veh); openCustom('shop'); });
   $('sheetBody').querySelectorAll('[data-ins]').forEach(b=>b.onclick=()=>{ buyInsurance(); openCustom('shop'); });
   $('sheetBody').querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{ closeSheet(); runDeco({add:b.dataset.place}); });
   $('sheetBody').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
@@ -1844,6 +1912,10 @@ const PLACES = {
   disco: { it:['discoteca','disco','a ballare','in pista'], en:['disco','club','nightclub','dancing'] },
   pizzeria:{ it:['pizzeria','pizza'], en:['pizzeria','pizza place'] },
   bisca:{ it:['bisca'], en:['gambling den','den'] },
+  hospital:{ it:['ospedale','pronto soccorso'], en:['hospital','er'] },
+  gym:{ it:['palestra'], en:['gym'] },
+  karaoke:{ it:['karaoke'], en:['karaoke'] },
+  barber:{ it:['barbiere','parrucchiere','barberia'], en:['barber','hairdresser'] },
   prive:{ it:['privé','prive'], en:['privé','vip room'] }
 };
 /* operational bots: they have a job and a post, and serve you when you ask */
@@ -1870,6 +1942,12 @@ const BOTS = {
          {name:'Tony', kind:'m', role:L2('barman','bartender'), post:60, work:['cook','present'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#2b2d31',pants:'#2b2d31'},
          sells:[{re:/(cocktail|drink|shot|birra|beer|mojito|gin|vodka|spritz)/, prop:'glass', it:'cocktail', en:'cocktail', price:5, food:3}],
          lines:L2(['Cosa ti preparo?','Analcolico? Ma sei serio?'],['What can I get you?','Alcohol-free? Seriously?'])}],
+  hospital:[{name:'Dott. Bisturi', kind:'m', role:L2('medico','doctor'), post:230, work:['think','look'], look:{hair:'bald',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#eceff2',pants:'#9fd3e0'}, lines:L2(['Respiri. Non respiri. Ok.','Lei ha qualcosa. Forse.','Sono 30 Pippi solo per guardarla.'],['Breathe. Don\'t. Okay.','You\'ve got something. Maybe.','That\'s 30 Pippi just to look at you.'])},
+         {name:'Rosy', kind:'f', role:L2('infermiera','nurse'), post:110, work:['present','idle'], look:{hair:'bun',hairColor:'#6b3e26',skin:'#c98b5e',glasses:false,outfit:'#9fd3e0',pants:'#9fd3e0'}, lines:L2(['Ha mangiato i funghi del bosco, vero?','Si sieda. Anzi no, si sdrai.'],['You ate the forest mushrooms, didn\'t you?','Sit. No, lie down.'])}],
+  gym:[{name:'Rocky', kind:'m', role:L2('personal trainer','personal trainer'), post:210, work:['flex','pushup','jacks'], look:{hair:'bald',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#d64545',pants:'#2b2d31'}, lines:L2(['Ancora dieci! Forza!','No pain no gain!','Scrivi “allenati”, pappamolle.'],['Ten more! Come on!','No pain no gain!','Type “work out”, softie.'])}],
+  karaoke:[{name:'Rocco', kind:'m', role:L2('presentatore','host'), post:400, work:['present','clap'], look:{hair:'short',hairColor:'#e8c36a',skin:'#eab48a',glasses:true,outfit:'#c77dff',pants:'#2b2d31'}, lines:L2(['Chi canta? Scrivi “canta” e il titolo!','Applausi per il prossimo!'],['Who\'s singing? Type “sing” and a title!','Applause for the next one!'])},
+         {name:'Pina', kind:'f', role:L2('pubblico','audience'), post:90, work:['clap','laugh','look'], look:{hair:'curly',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#e87aa8',pants:'#2b2d31'}, lines:L2(['Ho portato i pomodori. Per sicurezza.','Canta Albano!'],['I brought tomatoes. Just in case.','Sing something classic!'])}],
+  barber:[{name:'Salvatore', kind:'m', role:L2('barbiere','barber'), post:260, work:['present','cook','look'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#eceff2',pants:'#2b2d31',beard:'mustache'}, lines:L2(['Taglio, colore, barba, tatuaggi. Siediti.','Scrivi “barbiere” per il listino.','Fidati, ti sta benissimo.'],['Cut, colour, beard, tattoos. Sit down.','Type “barber” for the price list.','Trust me, it suits you.'])}],
   bisca:[{name:'Ercole', kind:'m', role:L2('croupier','croupier'), post:290, work:['present','look'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#2b2d31',pants:'#2b2d31'},
          lines:L2(['Fate il vostro gioco.','Qui si gioca pulito. Niente bari.','Rien ne va plus.'],['Place your bets.','Clean games here. No cheats.','Rien ne va plus.'])},
          {name:'Gina', kind:'f', role:L2('giocatrice','gambler'), post:110, work:['think','cheer','cry'], look:{hair:'curly',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#c77dff',pants:'#2b2d31'},
@@ -1954,8 +2032,8 @@ const PL={ topic:null, es:null, hb:null, sweep:null, wander:null, peers:{}, bots
 const cleanTxt=t=>String(t||'').slice(0,140);
 function placeFromText(t){ t=String(t).toLowerCase(); for (const k in PLACES) for (const w of [...PLACES[k].it,...PLACES[k].en]) if (new RegExp('(^|[^a-zà-ú])'+w+'([^a-zà-ú]|$)').test(t)) return k; return null; }
 function postPlace(msg){ if (!PL.topic) return; fetch(`${NTFY}/${PL.topic}`,{method:'POST',body:JSON.stringify({...msg, sid:PL.sid})}).catch(()=>{}); }
-function myPublic(){ return {topic:topicOf(H.name,H.code), code:H.code, name:H.name, kind:H.kind, look:H.look, x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
-function shareLook(){ if (PL.topic) postPlace({t:'here', ...myPublic()}); const t=otherTopic(); if (t) sendTo(t,{t:'look', look:H.look}); }
+function myPublic(){ return {topic:topicOf(H.name,H.code), code:H.code, name:H.name, kind:H.kind, look:lookOut(), x:Math.round(H.X), costume:H.costume==='custom'?null:H.costume}; }
+function shareLook(){ if (PL.topic) postPlace({t:'here', ...myPublic()}); const t=otherTopic(); if (t) sendTo(t,{t:'look', look:lookOut()}); }
 function enterPlace(r){
   leavePlace(true);
   PL.topic='subservient-game-v2-place-'+r;
@@ -2052,7 +2130,11 @@ async function goPlace(r){
   const id=++runId;
   if (H.visit){ sendTo(H.visit.topic,{t:'leave'}); if (hostNPC){ removeNPC(hostNPC); hostNPC=null; } H.visit=null; }
   if (r===H.room) return;
-  await gotoRoom(r, 240, id);
+  const v = window.__noRide ? null : (window.__rideWant && (LIFE.vehicles||[]).includes(window.__rideWant) ? window.__rideWant : bestVehicle()); window.__noRide=false; window.__rideWant=null;
+  const far = !!(ROOMS[r].out || ROOMS[H.room].out) && r!==H.room;
+  if (v && far){ H.riding=v; say(v==='car'?'🚗 PIII PIII!':v==='scooter'?'🛵 Brum brum!':'🚲 Dlin dlin!',1500); }
+  try { await gotoRoom(r, 240, id, !!(v&&far)); } finally { H.riding=null; }
+  if (v==='car' && far && r==='piazza' && Math.random()<.3) setTimeout(()=>maybeCop('smash speeding'), 500);
   if (alive(id)){ setPose('wave'); say(LANG==='it'?({park:'Al parco! Aria fresca.',beach:'Al mare! Finalmente.',piazza:'In piazza. Vediamo chi c\'è.',woods:'Nel bosco. Spero niente orsi.',disco:'Discoteca! Alla mia età...',pizzeria:'Pizzeria. Ora si ragiona.',living:'Casa dolce casa.'}[r]||'Eccomi.'):({park:'The park! Fresh air.',beach:'The beach! Finally.',piazza:'The square. Let\'s see who\'s around.',woods:'The woods. Hopefully no bears.',disco:'The disco! At my age...',pizzeria:'Pizza time. Now we\'re talking.',living:'Home sweet home.'}[r]||'Here I am.'),2500); setTimeout(()=>{ if(alive(id)) setPose('idle'); },1600); }
 }
 
@@ -2062,11 +2144,12 @@ function openMap(){
   const it=LANG==='it';
   const tiles=[
     ['living','🛋️',it?'Soggiorno':'Living'],['kitchen','🍳',it?'Cucina':'Kitchen'],['bathroom','🛁',it?'Bagno':'Bathroom'],['bedroom','🛏️',it?'Camera':'Bedroom'],['garden','🌳',it?'Giardino':'Garden'],
-    ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria']];
+    ['attic','🏓',it?'Mansarda':'Attic'],['garage','🚗','Garage'],['cellar','🍷',it?'Cantina':'Cellar'],
+    ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria'],['hospital','🏥',it?'Ospedale':'Hospital'],['gym','🏋️',it?'Palestra':'Gym'],['karaoke','🎤','Karaoke'],['barber','💈',it?'Barbiere':'Barber']];
   const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
   sheet(`<h3>🗺️ ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
-    <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,5).map(tile).join('')}${LIFE.bunker?tile(['bunker','☢️','Bunker']):''}</div>
-    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(5).map(tile).join('')}${LIFE.bisca?tile(['bisca','🎲',it?'Bisca':'Den']):''}${LIFE.prive?tile(['prive','🍾','Privé']):''}</div>
+    <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,8).filter(t=>hasRoom(t[0])).map(tile).join('')}${LIFE.bunker?tile(['bunker','☢️','Bunker']):''}</div>
+    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(8).map(tile).join('')}${LIFE.bisca?tile(['bisca','🎲',it?'Bisca':'Den']):''}${LIFE.prive?tile(['prive','🍾','Privé']):''}</div>
     <button class="ghost close" id="shClose">${tr('c_close')}</button>`);
   $('shClose').onclick=closeSheet;
   $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r===H.room) return; if (r==='bunker'){ if (H.visit){ say(LANG==='it'?'Non da qui.':'Not from here.',2000); return; } openBunker(); return; } if (r==='bisca') enterHidden('bisca'); else if (r==='prive'){ if (isNight()){ goPlace('disco').then(()=>{ const id=++runId; setRoom('prive'); H.X=-40; walkTo(180,id); }); } else say(LANG==='it'?'Il privé apre alle 22.':'The privé opens at 10pm.',2500); } else goPlace(r); });
@@ -2076,10 +2159,10 @@ const LIFE = (()=>{ let d=null; try { d=JSON.parse(localStorage.getItem('subserv
 function saveLife(){ LIFE.t=Date.now(); try{ localStorage.setItem('subservientLife', JSON.stringify(LIFE)); }catch(e){} renderStats(); }
 (function decayOffline(){ const mins=Math.min(600,(Date.now()-(LIFE.t||Date.now()))/60000); LIFE.food=Math.max(0,LIFE.food-mins/3); LIFE.clean=Math.max(0,LIFE.clean-mins/4); })();
 function addPippi(n){ LIFE.pippi=Math.max(0,Math.round(LIFE.pippi+n)); saveLife(); if (n) txt(clamp(H.X,30,450), STAND-150, (n>0?'+':'')+n+' 🪙', n>0?'#ffd166':'#ff453a', 16); }
-function feed(n){ LIFE.food=clamp(LIFE.food+n,0,100); saveLife(); }
+function feed(n){ LIFE.food=clamp(LIFE.food+n,0,100); if (n>0) LIFE.mood=clamp((LIFE.mood||70)+2,0,100); saveLife(); try{ applyExtras(); }catch(e){} }
 function wash(n){ LIFE.clean=clamp(LIFE.clean+n,0,100); saveLife(); if (LIFE.clean>=30) clearFlies(); }
 function renderStats(){ const e=$('stats'); if(!e) return; const f=Math.round(LIFE.food), c=Math.round(LIFE.clean);
-  e.innerHTML=`🪙 ${LIFE.pippi} · <span style="color:${f<25?'#ff6b6b':''}">🍔 ${f}%</span> · <span style="color:${c<30?'#ff6b6b':''}">🧼 ${c}%</span> · ${WX_ICON[weatherNow()]}${isNight()?' 🌙':''}`; }
+  e.innerHTML=`🪙 ${LIFE.pippi} · <span style="color:${f<25?'#ff6b6b':''}">🍔 ${f}%</span> · <span style="color:${c<30?'#ff6b6b':''}">🧼 ${c}%</span> · ${typeof moodIcon==='function'?moodIcon():''} · ${WX_ICON[weatherNow()]}${isNight()?' 🌙':''}${LIFE.sick?' · 🤢':''}${H.visit?' · 🏠 '+esc(H.visit.name):''}`; }
 const FOOD_PROPS={sandwich:20, apple:10, banana:10, icecream:15, pizza:35, cake:25};
 function lifeFromSteps(steps){
   let ate=0, washed=0;
@@ -2196,7 +2279,9 @@ function buy(k){ const D=PREMIUM[k]; const it=LANG==='it'; if (!D) return false;
 function shopHTML(){ const it=LANG==='it';
   const rows=Object.entries(PREMIUM).filter(([k,D])=>!D.night).map(([k,D])=>`<div class="req"><div><svg viewBox="-40 -90 80 96" width="34" height="40">${D.svg}</svg> ${(it?D.it:D.en)[0]}</div><div class="btns">${LIFE.owned.includes(k)?`<button type="button" data-place="${k}">${it?'Metti':'Place'}</button>`:`<button type="button" data-buy="${k}">${D.p} 🪙</button>`}</div></div>`).join('');
   const ins=(LIFE.insuredUntil||0)>Date.now();
-  return `<p class="lbl">🪙 ${LIFE.pippi} Pippi</p>${rows}<div class="req"><div>🛡️ ${it?'Assicurazione anti-scherzo 24h':'Prank insurance 24h'}</div><div class="btns">${ins?`<button type="button" disabled>${it?'Attiva':'Active'}</button>`:`<button type="button" data-ins="1">30 🪙</button>`}</div></div>${trophiesHTML()}<p class="muted small">${it?'I Pippi si guadagnano scrivendo “lavora” al bar, in pizzeria, in spiaggia, in disco, al parco o nel bosco. E poi c\'è chi dice che nel bosco si vinca di più...':'Earn Pippi by typing “work” at the café, pizzeria, beach, disco, park or woods. Rumour has it the woods pay better...'}</p>`; }
+  const rooms=Object.entries(EXTRA_ROOMS).map(([k,R])=>`<div class="req"><div>${R.e} ${R.name[it?0:1]}</div><div class="btns">${(LIFE.rooms||[]).includes(k)?`<button type="button" disabled>${it?'Tua':'Yours'}</button>`:`<button type="button" data-room="${k}">${R.p} 🪙</button>`}</div></div>`).join('');
+  const vehs=Object.entries(VEHICLES).map(([k,V])=>`<div class="req"><div>${V.e} ${V.name[it?0:1]}</div><div class="btns">${(LIFE.vehicles||[]).includes(k)?`<button type="button" disabled>${it?'Tuo':'Yours'}</button>`:`<button type="button" data-veh="${k}">${V.p} 🪙</button>`}</div></div>`).join('');
+  return `<p class="lbl">🪙 ${LIFE.pippi} Pippi</p><p class="lbl">🏠 ${it?'Casa più grande':'Bigger house'}</p>${rooms}<p class="lbl">🚗 ${it?'Mezzi':'Vehicles'}</p>${vehs}<p class="lbl">🛋️ ${it?'Oggetti':'Items'}</p>${rows}<div class="req"><div>🛡️ ${it?'Assicurazione anti-scherzo 24h':'Prank insurance 24h'}</div><div class="btns">${ins?`<button type="button" disabled>${it?'Attiva':'Active'}</button>`:`<button type="button" data-ins="1">30 🪙</button>`}</div></div>${trophiesHTML()}<p class="muted small">${it?'I Pippi si guadagnano scrivendo “lavora” al bar, in pizzeria, in spiaggia, in disco, al parco o nel bosco. E poi c\'è chi dice che nel bosco si vinca di più...':'Earn Pippi by typing “work” at the café, pizzeria, beach, disco, park or woods. Rumour has it the woods pay better...'}</p>`; }
 
 /* ================= SECRET: the gambling den in the woods ================= */
 let knocks=[];
@@ -2230,7 +2315,7 @@ function playGame(game, bet, choice){
     if (/^\d+$/.test(c)) { if (+c===n) win=bet*36; } else { const want=/ner|black/.test(c)?'nero':'rosso'; if (col===want) win=bet*2; } }
   else { const me=[1,2].map(()=>1+Math.floor(Math.random()*6)), hs=[1,2].map(()=>1+Math.floor(Math.random()*6)); const a=me[0]+me[1], b=hs[0]+hs[1];
     show=`${it?'Tu':'You'} 🎲${me.join('+')}=${a} · ${it?'Banco':'House'} 🎲${hs.join('+')}=${b}`; if (a>b) win=bet*2; else if (a===b) win=bet; }
-  if (win) addPippi(win); if (win>=bet*20){ award('jackpot'); gossip(`${H.name} ha sbancato alla bisca! ${win} Pippi!`, `${H.name} hit the jackpot at the den! ${win} Pippi!`); } else if (win-bet<=-50) gossip(`${H.name} ha perso ${bet} Pippi in una botta sola. Poveraccio.`, `${H.name} lost ${bet} Pippi in one go. Poor thing.`);
+  if (win) addPippi(win); try{ mood(win>bet?8:win<bet?-6:0); }catch(e){} if (win>=bet*20){ award('jackpot'); gossip(`${H.name} ha sbancato alla bisca! ${win} Pippi!`, `${H.name} hit the jackpot at the den! ${win} Pippi!`); } else if (win-bet<=-50) gossip(`${H.name} ha perso ${bet} Pippi in una botta sola. Poveraccio.`, `${H.name} lost ${bet} Pippi in one go. Poor thing.`);
   const id=++runId; const net=win-bet;
   if (net>0){ setPose('cheer','happy'); startFx('confetti'); setTimeout(stopFx,1800); } else if (net<0){ setPose('cry','sad'); } else setPose('shrug');
   setTimeout(()=>{ if (alive(id)) setPose('idle'); }, 2200);
@@ -2320,7 +2405,7 @@ async function maybeCop(cmd){
     n.dir=H.X>n.X?1:-1; npcPose(n,'point');
     LIFE.record=(LIFE.record||0)+1; const fine=Math.min(80, 10*LIFE.record);
     npcSay(n, it?`Alt! Disturbo della quiete pubblica. Multa: ${fine} Pippi.`:`Stop! Disturbing the peace. Fine: ${fine} Pippi.`, 3500);
-    await sleep(1500); addPippi(-Math.min(fine, LIFE.pippi)); setPose('cry','sad'); award('fined');
+    await sleep(1500); addPippi(-Math.min(fine, LIFE.pippi)); setPose('cry','sad'); award('fined'); mood(-10);
     gossip(`${H.name} è stato multato dal vigile (${fine} Pippi).`, `${H.name} got fined by the police (${fine} Pippi).`);
     await sleep(2500); npcPose(n,'idle'); if (LIFE.record>=3) npcSay(n, it?'E sei già schedato, eh.':'And you\'re on file already.'); await sleep(1500);
     await npcWalk(n, n.X<240?-60:540); removeNPC(n); setPose('idle');
@@ -2349,7 +2434,7 @@ window.onPrankMsg=d=>{
   if ((LIFE.insuredUntil||0)>Date.now()){ saveLife(); fetch(`${NTFY}/${d.fromTopic}-db`,{method:'POST',body:JSON.stringify({t:'prankfail', id:d.id, from:H.name})}).catch(()=>{}); setTimeout(()=>say(it?`${d.from} ha provato a farmi uno scherzo, ma sono assicurato. Ah!`:`${d.from} tried to prank me, but I'm insured. Ha!`,3500),1500); return; }
   if (d.kind==='pink'){ if (!LIFE.pinkBackup) LIFE.pinkBackup=JSON.parse(JSON.stringify(DECO)); for (const r of HOUSE_ROOMS){ DECO[r]=DECO[r]||{}; DECO[r].wall=r==='garden'?'#ff8fc7':'#ff9ad0'; } }
   if (d.kind==='gnome'){ DECO.garden=DECO.garden||{}; DECO.garden.items=DECO.garden.items||[]; if (DECO.garden.items.length<12) DECO.garden.items.push({k:'rudegnome', x:freeX('garden')}); }
-  saveDeco(); saveLife(); if (HOUSE_ROOMS.includes(H.room) && !H.visit) drawRoom(H.room);
+  saveDeco(); saveLife(); mood(-10); if (HOUSE_ROOMS.includes(H.room) && !H.visit) drawRoom(H.room);
   setTimeout(()=>{ const id=++runId; setPose('angry','angry'); say(it?`${d.from} mi ha fatto uno scherzo: ${PRANKS[d.kind].it}! Me la paga. (“ripulisci la casa” per sistemare)`:`${d.from} pranked me: ${PRANKS[d.kind].en}! Revenge time. (“clean up the house” to fix it)`, 5000); setTimeout(()=>{ if(alive(id)) setPose('idle'); },2500); }, 1500);
 };
 function cleanHouse(){ const it=LANG==='it';
@@ -2396,6 +2481,167 @@ async function stopFight(){ const it=LANG==='it'; if (EV.kind!=='rissa' || EV.st
   setPose('present'); say(it?'Pace! Il sindaco mi premia con 15 Pippi.':'Peace! The mayor rewards me with 15 Pippi.',3000); addPippi(15); award('peace');
   gossip(`${H.name} ha fermato una rissa in piazza. Un eroe!`, `${H.name} broke up a fight in the square. A hero!`);
   setTimeout(()=>{ EV.npcs.forEach(n=>npcWalk(n, n.X<240?-60:540).then(()=>removeNPC(n))); EV.npcs=[]; if (alive(id)) setPose('idle'); }, 2500); }
+
+/* ================= MOOD ================= */
+if (LIFE.mood==null) LIFE.mood=70;
+function mood(n){ LIFE.mood=clamp((LIFE.mood||70)+n,0,100); saveLife(); }
+const moodFace=()=> (LIFE.mood<30?'sad':LIFE.mood>80?'happy':'normal');
+const moodIcon=()=> (LIFE.mood<30?'😞':LIFE.mood>80?'😁':'🙂');
+setInterval(()=>{ if (LIFE.food<20) mood(-1); if (LIFE.clean<30) mood(-.5); if (LIFE.sick) mood(-1); }, 20000);
+
+/* ================= LOOK EXTRAS: beard, tattoos, physique ================= */
+const BEARDS={ none:['Niente','None'], stubble:['Barba di 3 giorni','Stubble'], full:['Barba lunga','Full beard'], goatee:['Pizzetto','Goatee'], mustache:['Baffi','Mustache'] };
+const TATTOOS={ none:['Niente','None'], tear:['Lacrima','Teardrop'], star:['Stella','Star'], heart:['Cuore sul collo','Neck heart'], mamma:['MAMMA sul collo','MOM on the neck'], web:['Ragnatela','Spider web'] };
+function beardSVG(L){ const c=L.hairColor||'#c8642a';
+  return {none:'', stubble:`<path d="M-14 -12 Q-12 2 0 3 Q12 2 14 -12 Q8 -4 0 -4 Q-8 -4 -14 -12Z" fill="${c}" opacity=".38"/>`,
+    full:`<path d="M-15.5 -15 Q-16 8 0 10 Q16 8 15.5 -15 Q11 -6 5 -6.5 Q0 -4 -5 -6.5 Q-11 -6 -15.5 -15Z" fill="${c}"/><path d="M-8 -9 Q-4 -12 0 -9.5 Q4 -12 8 -9 Q4 -7 0 -8 Q-4 -7 -8 -9Z" fill="${c}"/>`,
+    goatee:`<path d="M-4.5 -4 Q0 7 4.5 -4 Q0 -2 -4.5 -4Z" fill="${c}"/><path d="M-8 -9 Q-4 -12 0 -9.5 Q4 -12 8 -9 Q4 -7 0 -8 Q-4 -7 -8 -9Z" fill="${c}"/>`,
+    mustache:`<path d="M-9 -9 Q-4 -13 0 -9.5 Q4 -13 9 -9 Q4 -6.5 0 -8 Q-4 -6.5 -9 -9Z" fill="${c}"/>`}[L.beard||'none']||''; }
+function tattooSVG(L){ const k='#1d3557';
+  return {none:'', tear:`<path d="M-7 -12 q1.6 3 0 4.2 q-1.6 -1.2 0 -4.2z" fill="${k}"/>`, star:`<path d="M10 -13 l1 2.4 2.6 .2 -2 1.6 .7 2.5 -2.3 -1.4 -2.3 1.4 .7 -2.5 -2 -1.6 2.6 -.2z" fill="${k}"/>`,
+    heart:`<path d="M0 6 l-3 -3 a1.8 1.8 0 0 1 3 -2 a1.8 1.8 0 0 1 3 2z" fill="#c1121f"/>`, mamma:`<text x="0" y="4.5" text-anchor="middle" font-size="3.6" font-weight="700" fill="${k}" font-family="Fredoka, sans-serif">MAMMA</text>`,
+    web:`<g stroke="${k}" stroke-width=".5" fill="none"><path d="M6 -6 L14 -14 M6 -6 L15 -7 M6 -6 L9 -15"/><path d="M9 -8 Q10 -10 11 -11 M11 -6.5 Q12 -9 13 -11"/></g>`}[L.tattoo||'none']||''; }
+function physOf(){ const f=LIFE.fit||0; return f>=60?'muscle':(LIFE.food>=90 && f<25 ? 'belly' : 'normal'); }
+function physSVG(p){ return p==='muscle'?`<circle cx="-13" cy="-36" r="6" class="outfit"/><circle cx="13" cy="-36" r="6" class="outfit"/><path d="M-6 -30 Q0 -26 6 -30" stroke="#000" stroke-opacity=".15" fill="none"/>`
+  : p==='belly'?`<ellipse cx="0" cy="-12" rx="15" ry="10" class="outfit"/><ellipse cx="0" cy="-12" rx="15" ry="10" fill="#000" opacity=".06"/>` : ''; }
+function applyExtras(){ const L=H.look||{}; if (J.beard) J.beard.innerHTML=beardSVG(L); if (J.tattoo) J.tattoo.innerHTML=tattooSVG(L); if (J.phys) J.phys.innerHTML=physSVG(physOf()); }
+function npcExtras(n, L){ if (!n||!L) return; if (n.P.beard) n.P.beard.innerHTML=beardSVG(L); if (n.P.tattoo) n.P.tattoo.innerHTML=tattooSVG(L); if (n.P.phys) n.P.phys.innerHTML=physSVG(L.phys||'normal'); }
+
+/* ================= BIGGER HOUSE ================= */
+const EXTRA_ROOMS={ attic:{p:150, it:['mansarda','soffitta'], en:['attic','loft'], name:['Mansarda','Attic'], e:'🏓'}, garage:{p:120, it:['garage','box'], en:['garage'], name:['Garage','Garage'], e:'🚗'}, cellar:{p:100, it:['cantina'], en:['cellar','wine cellar'], name:['Cantina','Cellar'], e:'🍷'} };
+const hasRoom=r=>!EXTRA_ROOMS[r] || (LIFE.rooms||[]).includes(r);
+function buyRoom(k){ const R=EXTRA_ROOMS[k], it=LANG==='it'; if (!R) return; LIFE.rooms=LIFE.rooms||[]; if (LIFE.rooms.includes(k)){ say(it?'Ce l\'ho già.':'Already have it.',2000); return; }
+  if (LIFE.pippi<R.p){ say(it?`La ${R.name[0]} costa ${R.p} Pippi. Ne ho ${LIFE.pippi}.`:`The ${R.name[1]} costs ${R.p} Pippi. I have ${LIFE.pippi}.`,3000); return; }
+  addPippi(-R.p); LIFE.rooms.push(k); saveLife(); if (!HOUSE_ROOMS.includes(k)) HOUSE_ROOMS.push(k); drawMini(); mood(10);
+  say(it?`Casa più grande! Ora ho la ${R.name[0].toLowerCase()}.`:`Bigger house! Now I have a ${R.name[1].toLowerCase()}.`,3000); setTimeout(()=>{ const id=++runId; gotoRoom(k,240,id); },1500); }
+
+/* ================= VEHICLES ================= */
+const VEHICLES={ bike:{p:40, it:['bici','bicicletta'], en:['bike','bicycle'], name:['Bici','Bike'], e:'🚲', speed:1.6},
+  scooter:{p:120, it:['motorino','scooter','vespa'], en:['scooter','moped'], name:['Motorino','Scooter'], e:'🛵', speed:2.4},
+  car:{p:300, it:['macchina','auto','automobile'], en:['car'], name:['Auto','Car'], e:'🚗', speed:3.2} };
+const VEH_SVG={
+  bike:{b:`<g stroke="#222" stroke-width="2.6" fill="none"><circle cx="-20" cy="-13" r="13"/><circle cx="22" cy="-13" r="13"/></g><path d="M-20 -13 L-2 -13 L12 -40 M-2 -13 L-8 -44 M-14 -45 L-2 -45 M22 -13 L12 -40 L16 -50 L8 -52" stroke="#e63946" stroke-width="3.4" fill="none" stroke-linecap="round"/>`, f:''},
+  scooter:{b:`<circle cx="-22" cy="-10" r="10" fill="#222"/><circle cx="24" cy="-10" r="10" fill="#222"/><path d="M-34 -14 Q-36 -40 -10 -40 L4 -40 L8 -18 L24 -18 L30 -58 L36 -58" stroke="#2a9d8f" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-32 -22 Q-30 -42 -6 -42 L4 -42 L6 -20 Z" fill="#2a9d8f"/>`, f:`<path d="M20 -20 L30 -60" stroke="#2a9d8f" stroke-width="7" stroke-linecap="round"/><circle cx="36" cy="-60" r="3" fill="#ffd166"/>`},
+  car:{b:`<path d="M-40 -60 L-26 -96 L28 -96 L44 -60 Z" fill="#9fd3e0" opacity=".55"/>`, f:`<path d="M-64 -16 L-64 -52 Q-62 -62 -48 -62 L56 -62 Q68 -60 70 -48 L70 -16 Z" fill="#d64545"/><path d="M-40 -60 L-26 -96 L28 -96 L44 -60" stroke="#b33a3a" stroke-width="5" fill="none"/><circle cx="-38" cy="-14" r="13" fill="#222"/><circle cx="-38" cy="-14" r="5" fill="#bbb"/><circle cx="44" cy="-14" r="13" fill="#222"/><circle cx="44" cy="-14" r="5" fill="#bbb"/><rect x="62" y="-46" width="8" height="6" rx="2" fill="#ffd166"/><rect x="-66" y="-44" width="6" height="6" rx="2" fill="#ff8f8f"/>`}
+};
+function bestVehicle(){ const v=LIFE.vehicles||[]; return v.includes('car')?'car':v.includes('scooter')?'scooter':v.includes('bike')?'bike':null; }
+function buyVehicle(k){ const V=VEHICLES[k], it=LANG==='it'; LIFE.vehicles=LIFE.vehicles||[]; if (LIFE.vehicles.includes(k)){ say(it?'Ce l\'ho già.':'Already got one.',2000); return; }
+  if (LIFE.pippi<V.p){ say(it?`${V.name[0]}: ${V.p} Pippi. Non ci arrivo.`:`${V.name[1]}: ${V.p} Pippi. Can't afford it.`,3000); return; }
+  addPippi(-V.p); LIFE.vehicles.push(k); saveLife(); mood(12); say(it?`${V.e} ${V.name[0]} nuova! Ora per spostarmi la uso sempre (o scrivi “vai a piedi”).`:`${V.e} New ${V.name[1].toLowerCase()}! I'll ride it everywhere (or say “walk”).`,3500); }
+function drawVehicle(){ const vb=$('vehB'), vf=$('vehF'); if (!vb) return; if (!H.riding){ if (vb.innerHTML) { vb.innerHTML=''; vf.innerHTML=''; } return; }
+  const S=VEH_SVG[H.riding]; if (vb.dataset.k!==H.riding){ vb.innerHTML=`<g class="vin">${S.b}</g>`; vf.innerHTML=`<g class="vin">${S.f}</g>`; vb.dataset.k=H.riding; }
+  const vs=H.riding==='car'?1.55:1.1; const t=`translate(${H.X.toFixed(1)} ${H.Y.toFixed(1)}) scale(${H.dir*H.size*vs} ${H.size*vs})`; vb.firstChild.setAttribute('transform',t); vf.firstChild.setAttribute('transform',t); }
+
+/* ================= NEW TOWN PLACES: hospital, gym, karaoke, barber ================= */
+async function getSick(){ if (LIFE.sick) return; LIFE.sick=true; saveLife(); mood(-20); const it=LANG==='it';
+  await sleep(3500); const id=++runId; setPose('sad','sick'); say(it?'Ugh... quei funghi... mi gira tutto 🤢':'Ugh... those mushrooms... everything\'s spinning 🤢',3000);
+  startFx('sweat'); await sleep(3000); stopFx(); flash(); say(it?'🚑 Ambulanza! Mi portano in ospedale.':'🚑 Ambulance! They\'re taking me to hospital.',2500);
+  await sleep(1500); setRoom('hospital'); H.X=-40; H.Y=LANE; await walkTo(130, id); hospitalCure(); }
+async function hospitalCure(){ const it=LANG==='it'; const doc=PL.bots.find(b=>b.name==='Dott. Bisturi');
+  if (!LIFE.sick){ if (doc) npcSay(doc, it?'Lei sta benissimo. Sono 10 Pippi per la visita.':'You\'re perfectly fine. That\'s 10 Pippi for the visit.'); addPippi(-Math.min(10,LIFE.pippi)); return; }
+  const id=++runId; await walkTo(330, id); setPose('liefloor'); if (doc) npcSay(doc, it?'Lavanda gastrica! Ticket: 30 Pippi.':'Stomach pump! Fee: 30 Pippi.');
+  await sleep(3000); addPippi(-Math.min(30,LIFE.pippi)); LIFE.sick=false; saveLife(); mood(10); setPose('cheer'); say(it?'Guarito. Mai più funghi del bosco.':'Cured. No more forest mushrooms.',3000);
+  gossip(`${H.name} ha mangiato i funghi del bosco ed è finito all'ospedale.`, `${H.name} ate the forest mushrooms and ended up in hospital.`); setTimeout(()=>{ if(alive(id)) setPose('idle'); },2500); }
+async function workout(){ const it=LANG==='it'; if (H.room!=='gym'){ say(it?'Per allenarmi devo andare in palestra.':'I need the gym for that.',2500); return; }
+  if (LIFE.pippi<5){ say(it?'L\'ingresso costa 5 Pippi.':'Entry is 5 Pippi.',2000); return; }
+  addPippi(-5); const id=++runId; await walkTo(230,id);
+  for (const p of ['pushup','jacks','squat','flex']){ if (!alive(id)) return; setPose(p,'focused'); startFx('sweat'); await sleep(1700); stopFx(); }
+  const before=physOf(); LIFE.fit=clamp((LIFE.fit||0)+12,0,100); LIFE.food=Math.max(0,LIFE.food-8); LIFE.clean=Math.max(0,LIFE.clean-15); saveLife(); mood(6); applyExtras(); try{ shareLook(); }catch(e){}
+  setPose('flex','happy'); say(physOf()!==before&&physOf()==='muscle'?(it?'Guarda che bicipiti! 💪':'Look at these biceps! 💪'):(it?`Allenamento fatto. Forma: ${LIFE.fit}%`:`Workout done. Fitness: ${LIFE.fit}%`),3000);
+  setTimeout(()=>{ if(alive(id)) setPose('idle'); },2500); }
+setInterval(()=>{ if ((LIFE.fit||0)>0){ LIFE.fit=Math.max(0,LIFE.fit-1); saveLife(); } }, 3600000);
+async function karaoke(song){ const it=LANG==='it'; if (H.room!=='karaoke'){ say(it?'Per cantare devo andare al karaoke.':'I need the karaoke bar.',2500); return; }
+  const id=++runId; await walkTo(240,id); setProp('mic'); setPose('sing','happy'); startFx('notes');
+  say(`🎤 «${String(song||(it?'una a caso':'a random one')).slice(0,40)}»`, 4000); await sleep(4500); stopFx(); if (!alive(id)) return;
+  const fans=PL.bots.filter(b=>b.room==='karaoke'); const good=Math.random()<.6;
+  if (good){ fans.forEach(n=>{ npcPose(n,'clap','happy'); }); if (fans[0]) npcSay(fans[0], it?'Bravooo! Bis!':'Bravo! Encore!'); const tip=rnd(4,12)|0; addPippi(tip); mood(10); setPose('bow'); }
+  else { fans.forEach(n=>{ npcPose(n,'angry','angry'); }); if (fans[0]) npcSay(fans[0], it?'Stonato! Scendi da lì!':'Off-key! Get off the stage!'); for (let i=0;i<6;i++) setTimeout(()=>txt(H.X+rnd(-20,20), STAND-rnd(90,140), '🍅', '#d00', 16), i*200); mood(-8); setPose('scared');
+    gossip(`${H.name} al karaoke si è preso i pomodori in faccia.`, `${H.name} got pelted with tomatoes at karaoke.`); }
+  setTimeout(()=>{ fans.forEach(n=>npcPose(n,'idle')); if (alive(id)){ setPose('idle'); setProp('mug'); } },3000); }
+const BARBER_PRICES={ cut:10, color:8, beard:6, tattoo:15, untattoo:25 };
+function barberDo(kind, val){ const it=LANG==='it'; if (H.room!=='barber'){ say(it?'Devo andare dal barbiere.':'I need the barber.',2500); return; }
+  const price=BARBER_PRICES[kind]; if (LIFE.pippi<price){ say(it?`Costa ${price} Pippi.`:`It's ${price} Pippi.`,2000); return; }
+  addPippi(-price); const sal=PL.bots.find(b=>b.name==='Salvatore'); const id=++runId;
+  (async()=>{ await walkTo(150,id); if (sal){ sal.busy=true; await npcWalk(sal, 210); sal.dir=-1; npcPose(sal,'cook'); }
+    await sleep(2200); let v=val, botch=false;
+    if ((kind==='cut'||kind==='color') && Math.random()<.12){ botch=true; v= kind==='cut' ? ['mohawk','bald','curly'][Math.floor(Math.random()*3)] : ['#3f6fd1','#e87aa8','#4f9a4a'][Math.floor(Math.random()*3)]; }
+    const L={...(H.look||defaultLook(H.kind))}; if (kind==='cut') L.hair=v; if (kind==='color') L.hairColor=v; if (kind==='beard') L.beard=v; if (kind==='tattoo') L.tattoo=v; if (kind==='untattoo') L.tattoo='none';
+    H.look=L; saveLook(); applyLook(); applyExtras(); try{ shareLook(); }catch(e){}
+    if (sal){ npcPose(sal, botch?'facepalm':'present'); npcSay(sal, botch?(it?'Ops... mi è scappata la mano. È di moda, giuro.':'Oops... slipped. It\'s trendy, I swear.'):(it?'Ecco fatto. Un capolavoro.':'Done. A masterpiece.')); sal.busy=false; }
+    if (botch){ setPose('cry','sad'); mood(-10); gossip(`Il barbiere ha rovinato i capelli a ${H.name}. Andate a vedere, si ride.`, `The barber ruined ${H.name}'s hair. Go see, it's hilarious.`); } else { setPose('cheer','happy'); mood(6); }
+    setTimeout(()=>{ if(alive(id)) setPose('idle'); },2500); })(); }
+function openBarber(){ const it=LANG==='it'; const L=H.look||{};
+  const ch=(kind,obj,cur)=>Object.entries(obj).map(([k,v])=>`<button type="button" class="${cur===k?'on':''}" data-bk="${kind}" data-bv="${k}">${v[it?0:1]}</button>`).join('');
+  sheet(`<h3>💈 ${it?'Barbiere Salvatore':'Salvatore the barber'}</h3><p class="lbl">🪙 ${LIFE.pippi} Pippi</p>
+  <p class="lbl">${it?'Taglio':'Cut'} (${BARBER_PRICES.cut} 🪙)</p><div class="chips">${ch('cut',LOOKS.hair,L.hair)}</div>
+  <p class="lbl">${it?'Colore':'Colour'} (${BARBER_PRICES.color} 🪙)</p><div class="sws">${LOOKS.hairColor.map(c=>`<button type="button" class="sw${L.hairColor===c?' on':''}" style="background:${c}" data-bk="color" data-bv="${c}"></button>`).join('')}</div>
+  <p class="lbl">${it?'Barba':'Beard'} (${BARBER_PRICES.beard} 🪙)</p><div class="chips">${ch('beard',BEARDS,L.beard||'none')}</div>
+  <p class="lbl">${it?'Tatuaggi':'Tattoos'} (${BARBER_PRICES.tattoo} 🪙 · ${it?'rimozione':'removal'} ${BARBER_PRICES.untattoo} 🪙)</p><div class="chips">${ch('tattoo',TATTOOS,L.tattoo||'none')}</div>
+  <p class="muted small">${it?'Salvatore è bravo. Quasi sempre.':'Salvatore is good. Almost always.'}</p><button class="ghost close" id="shClose">${tr('c_close')}</button>`);
+  $('shClose').onclick=closeSheet;
+  $('sheetBody').querySelectorAll('[data-bk]').forEach(b=>b.onclick=()=>{ let k=b.dataset.bk, v=b.dataset.bv; if (k==='tattoo' && v==='none') k='untattoo'; closeSheet(); barberDo(k,v); }); }
+
+/* ================= MARKET & GIFTS between friends ================= */
+function friendSend(name, code, msg){ fetch(`${NTFY}/${topicOf(name,code)}-db`,{method:'POST',body:JSON.stringify({...msg, id:msg.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6), from:H.name, fromTopic:topicOf(H.name,H.code)})}).catch(()=>{}); }
+function findItemKey(t){ t=String(t).toLowerCase(); const all={...PREMIUM}; return Object.keys(all).find(k=>[...all[k].it,...all[k].en].some(w=>t.includes(w))); }
+function dropItem(k){ LIFE.owned=(LIFE.owned||[]).filter(x=>x!==k); for (const r of HOUSE_ROOMS){ const d=DECO[r]; if (d&&d.items) d.items=d.items.filter(x=>x.k!==k); } saveDeco(); saveLife(); if (HOUSE_ROOMS.includes(H.room)&&!H.visit) drawRoom(H.room); }
+function giftCmd(cmd){ const it=LANG==='it';
+  const m=cmd.match(/(?:regala|regalo|dona|manda|gift|give|send)\s+(.+?)\s+(?:a|ad|to)\s+([A-Za-zÀ-ÿ']{1,18})\s+(\d{3})\b/i); if (!m) return false;
+  const what=m[1], name=m[2], code=m[3]; const n=what.match(/(\d+)\s*(pippi)?/i);
+  if (n && /pippi|^\d+$/i.test(what.trim())){ const a=+n[1]; if (a<=0) return true; if (LIFE.pippi<a){ say(it?`Non ho ${a} Pippi.`:`I don't have ${a} Pippi.`,2500); return true; }
+    addPippi(-a); friendSend(name,code,{t:'gift', amount:a}); say(it?`Mandati ${a} Pippi a ${name}. Che cuore.`:`Sent ${a} Pippi to ${name}. What a heart.`,3000); setPose('present'); gossip(`${H.name} ha regalato ${a} Pippi a ${name}. Sospetto...`, `${H.name} gave ${a} Pippi to ${name}. Suspicious...`); return true; }
+  const k=findItemKey(what); if (!k || !LIFE.owned.includes(k)){ say(it?'Non ce l\'ho, quello.':'I don\'t own that.',2500); return true; }
+  dropItem(k); friendSend(name,code,{t:'gift', item:k}); say(it?`Regalato ${PREMIUM[k].it[0]} a ${name}. 🎁`:`Gave ${PREMIUM[k].en[0]} to ${name}. 🎁`,3000); setPose('present'); return true; }
+function sellCmd(cmd){ const it=LANG==='it';
+  let m=cmd.match(/(?:vendi|vendo|sell)\s+(.+?)\s+(?:a|ad|to)\s+([A-Za-zÀ-ÿ']{1,18})\s+(\d{3})\s+(?:per|a|for)\s+(\d+)/i);
+  if (m){ const k=findItemKey(m[1]); if (!k||!LIFE.owned.includes(k)){ say(it?'Non posso vendere quello che non ho.':'Can\'t sell what I don\'t own.',2500); return true; }
+    const price=Math.max(1,+m[4]); friendSend(m[2],m[3],{t:'offer', item:k, price}); say(it?`Offerta mandata a ${m[2]}: ${PREMIUM[k].it[0]} per ${price} Pippi.`:`Offer sent to ${m[2]}: ${PREMIUM[k].en[0]} for ${price} Pippi.`,3000); return true; }
+  m=cmd.match(/^\s*(?:vendi|vendo|sell)\s+(.+)$/i); if (!m) return false;
+  const k=findItemKey(m[1]); if (!k||!LIFE.owned.includes(k)){ say(it?'Non ce l\'ho.':'Don\'t own it.',2000); return true; }
+  const val=Math.floor(PREMIUM[k].p/2); dropItem(k); addPippi(val); say(it?`Il rigattiere me l'ha preso per ${val} Pippi. Ladro.`:`The junk dealer gave me ${val} Pippi. Thief.`,3000); return true; }
+function friendMsg(d){ const it=LANG==='it'; LIFE.seenMsgs=LIFE.seenMsgs||[]; if (LIFE.seenMsgs.includes(d.t+d.id)) return; LIFE.seenMsgs.push(d.t+d.id); if (LIFE.seenMsgs.length>120) LIFE.seenMsgs.splice(0,40); saveLife();
+  if (d.t==='gift'){ if (d.amount){ addPippi(+d.amount||0); say(it?`🎁 ${d.from} mi ha regalato ${d.amount} Pippi!`:`🎁 ${d.from} gave me ${d.amount} Pippi!`,4000); } else if (PREMIUM[d.item]){ if (!LIFE.owned.includes(d.item)) LIFE.owned.push(d.item); saveLife(); say(it?`🎁 ${d.from} mi ha regalato: ${PREMIUM[d.item].it[0]}! È nel negozio, “Metti”.`:`🎁 ${d.from} gave me: ${PREMIUM[d.item].en[0]}! Find it in the shop, “Place”.`,4500); } mood(10); return; }
+  if (d.t==='offer' && PREMIUM[d.item]){ const P=PREMIUM[d.item];
+    sheet(`<h3>🛒 ${it?'Mercatino':'Market'}</h3><p>${esc(d.from)} ${it?'ti vende':'offers you'} <b>${(it?P.it:P.en)[0]}</b> ${it?'per':'for'} <b>${+d.price} Pippi</b>. (${it?'Hai':'You have'} ${LIFE.pippi})</p><div class="col"><button type="button" id="ofYes">${it?'Compra':'Buy'}</button><button class="ghost" type="button" id="ofNo">${it?'No grazie':'No thanks'}</button></div>`);
+    $('ofNo').onclick=()=>{ closeSheet(); fetch(`${NTFY}/${d.fromTopic}-db`,{method:'POST',body:JSON.stringify({t:'nodeal', id:d.id, from:H.name})}).catch(()=>{}); };
+    $('ofYes').onclick=()=>{ closeSheet(); if (LIFE.pippi<+d.price){ say(it?'Non ho abbastanza Pippi.':'Not enough Pippi.',2500); return; } addPippi(-(+d.price)); if (!LIFE.owned.includes(d.item)) LIFE.owned.push(d.item); saveLife();
+      fetch(`${NTFY}/${d.fromTopic}-db`,{method:'POST',body:JSON.stringify({t:'paid', id:d.id, item:d.item, price:+d.price, from:H.name, fromTopic:topicOf(H.name,H.code)})}).catch(()=>{}); say(it?`Comprato! Ora è mio.`:`Bought! It's mine.`,2500); };
+    return; }
+  if (d.t==='paid'){ if ((LIFE.owned||[]).includes(d.item)){ dropItem(d.item); addPippi(+d.price||0); say(it?`💰 ${d.from} ha comprato il mio ${PREMIUM[d.item]?PREMIUM[d.item].it[0]:'oggetto'}: +${d.price} Pippi.`:`💰 ${d.from} bought my ${PREMIUM[d.item]?PREMIUM[d.item].en[0]:'item'}: +${d.price} Pippi.`,4000); }
+    else fetch(`${NTFY}/${d.fromTopic}-db`,{method:'POST',body:JSON.stringify({t:'refund', id:d.id, price:d.price, item:d.item, from:H.name})}).catch(()=>{}); return; }
+  if (d.t==='refund'){ addPippi(+d.price||0); LIFE.owned=(LIFE.owned||[]).filter(x=>x!==d.item); saveLife(); say(it?`${d.from} non aveva più l'oggetto: Pippi restituiti.`:`${d.from} no longer had it: refunded.`,3500); return; }
+  if (d.t==='nodeal'){ say(it?`${d.from} ha rifiutato l'offerta. Tirchio.`:`${d.from} turned down the offer. Cheapskate.`,3000); return; }
+}
+
+/* ================= PIAZZA NOTICE BOARD (posts last 12 hours) ================= */
+const BOARD_TOPIC='subservient-game-v2-board'; const BOARD=[]; let boardES=null;
+function startBoard(){ try{ if (boardES) boardES.close(); boardES=new EventSource(`${NTFY}/${BOARD_TOPIC}/sse?since=12h`); boardES.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return; let d; try{ d=JSON.parse(m.message); }catch(e){ return; }
+  if (d.t!=='post' || !d.text) return; BOARD.push({name:String(d.name||'?').slice(0,18), text:String(d.text).slice(0,160), at:m.time*1000}); while (BOARD.length>40) BOARD.shift(); if ($('sheet').classList.contains('show') && $('boardList')) openBoard(); }; } catch(e){} }
+function postBoard(text){ text=String(text||'').trim().slice(0,160); if (!text) return; fetch(`${NTFY}/${BOARD_TOPIC}`,{method:'POST',body:JSON.stringify({t:'post', name:H.name, text})}).catch(()=>{}); say(LANG==='it'?'Appeso in bacheca.':'Pinned on the board.',2000); }
+function openBoard(){ const it=LANG==='it';
+  sheet(`<h3>📌 ${it?'Bacheca della piazza':'Square notice board'}</h3><div id="boardList">${BOARD.length?BOARD.slice().reverse().map(p=>`<div class="req"><div><b>${esc(p.name)}</b> <small>${new Date(p.at).toTimeString().slice(0,5)}</small><br>${esc(p.text)}</div></div>`).join(''):`<p class="muted">${it?'Bacheca vuota.':'Board is empty.'}</p>`}</div>
+   <div class="row" style="margin-top:10px"><input id="boardIn" maxlength="160" placeholder="${it?'Scrivi un messaggio per tutti...':'Write something for everyone...'}"><button type="button" id="boardGo">📌</button></div><p class="muted small">${it?'I messaggi restano 12 ore.':'Posts last 12 hours.'}</p><button class="ghost close" id="shClose">${tr('c_close')}</button>`);
+  $('shClose').onclick=closeSheet; $('boardGo').onclick=()=>{ postBoard($('boardIn').value); $('boardIn').value=''; }; }
+
+/* ================= HOUSE PARTY ================= */
+let PARTY=null;
+async function startParty(invites){ const it=LANG==='it'; if (H.visit){ say(it?'La festa si fa a casa mia.':'Parties happen at my place.',2500); return; }
+  if (PARTY){ say(it?'La festa è già in corso!':'The party is already on!',2000); return; }
+  const id=++runId; await gotoRoom('living',240,id);
+  PARTY={until:Date.now()+8*60000, npcs:[], dj:null}; mood(15);
+  const names=['Ciccio','Tamara','Il Rosso','Jenny','Bruno','Lola']; 
+  for (let i=0;i<3;i++){ const k=i%2?'f':'m'; const n=makeNPC({name:names[(Date.now()/1000+i)%names.length|0], kind:k, room:'living', x:i%2?530:-50}); npcLook(n, randomLook(k)); n.bot=true; n.role={it:'invitato',en:'guest'}; PARTY.npcs.push(n); npcWalk(n, [110,330,420][i]); }
+  (invites||[]).forEach(([nm,cd])=>{ sendTo(topicOf(nm,cd), {t:'chat', text: it?`🎉 FESTA a casa mia adesso! Scrivi: vai a casa di ${H.name} ${H.code}`:`🎉 PARTY at my place now! Type: go to ${H.name}'s house ${H.code}`}); });
+  say(it?`🎉 Festa! ${(invites||[]).length?'Invitati: '+invites.map(x=>x[0]).join(', ')+'. ':''}Scrivi “chiama il DJ” (20 Pippi).`:`🎉 Party! ${(invites||[]).length?'Invited: '+invites.map(x=>x[0]).join(', ')+'. ':''}Type “call the DJ” (20 Pippi).`,4500);
+  gossip(`Stasera festa a casa di ${H.name}!`, `Party tonight at ${H.name}'s!`);
+  PARTY.t=setInterval(()=>{ if (!PARTY) return; if (Date.now()>PARTY.until){ endParty(); return; }
+    if (H.room==='living'){ txt(rnd(40,440), rnd(60,150), Math.random()<.5?'♪':'♫', ['#ff5c86','#ffd166','#4cc9f0'][rnd(0,2.99)|0], rnd(14,22)); PARTY.npcs.forEach(n=>{ if (!n.busy) npcPose(n, ['dance','disco','twist','robot','cheer'][Math.floor(Math.random()*5)]); }); } }, 1500);
+  PARTY.cop=setTimeout(async()=>{ if (!PARTY || Math.random()>.4) return; const n=makeNPC({name:it?'Vigile Gennaro':'Officer Gennaro', kind:'m', room:'living', x:530}); npcLook(n,{hair:'short',hairColor:'#6b3e26',skin:'#eab48a',glasses:true,outfit:'#1d3557',pants:'#1d3557'}); n.bot=true;
+    await npcWalk(n, 400); npcSay(n, it?'I vicini si lamentano. Schiamazzi: 20 Pippi.':'The neighbours complained. Noise: 20 Pippi.',3500); addPippi(-Math.min(20,LIFE.pippi)); LIFE.record=(LIFE.record||0)+1; saveLife(); award('fined'); await sleep(3500); await npcWalk(n,540); removeNPC(n); }, rnd(150000,300000)); }
+function endParty(){ if (!PARTY) return; clearInterval(PARTY.t); clearTimeout(PARTY.cop); PARTY.npcs.forEach(n=>npcWalk(n, n.X<240?-60:540).then(()=>removeNPC(n))); if (PARTY.dj) npcWalk(PARTY.dj,540).then(()=>removeNPC(PARTY.dj)); PARTY=null; say(LANG==='it'?'Festa finita. Che casino in casa.':'Party\'s over. What a mess.',3000); LIFE.clean=Math.max(0,LIFE.clean-10); saveLife(); }
+async function hireDJ(){ const it=LANG==='it'; if (!PARTY){ say(it?'Prima organizza una festa.':'Throw a party first.',2000); return; } if (PARTY.dj){ say(it?'Il DJ c\'è già.':'DJ\'s already here.',2000); return; }
+  if (LIFE.pippi<20){ say(it?'Il DJ costa 20 Pippi.':'The DJ costs 20 Pippi.',2000); return; } addPippi(-20);
+  const d=makeNPC({name:'DJ Max', kind:'m', room:'living', x:530}); npcLook(d,BOTS.disco[0].look); d.bot=true; d.role={it:'DJ',en:'DJ'}; PARTY.dj=d; PARTY.npcs.push(d); await npcWalk(d, 260); npcPose(d,'conduct'); npcSay(d, it?'Mani in alto, salotto!':'Hands up, living room!'); PARTY.until+=3*60000; mood(8); }
 
 /* ================= VISITS: go to a friend's house (they must open the door) ================= */
 H.visit=null;      // when I'm a guest: {topic, name, kind}
@@ -2447,7 +2693,7 @@ async function goVisit(name, code){
   const id=++runId; await gotoRoom('living', -60, id);
   H.pendingVisit={topic:topicOf(name,code), name:String(name).slice(0,18)};
   say(LANG==='it'?`Din don! Busso da ${name}…`:`Ding dong! Knocking at ${name}'s…`, 4000);
-  const ok=await sendTo(H.pendingVisit.topic, {t:'knock', code:H.code, kind:H.kind, look:H.look});
+  const ok=await sendTo(H.pendingVisit.topic, {t:'knock', code:H.code, kind:H.kind, look:lookOut()});
   if (!ok){ H.pendingVisit=null; say(tr('nosignal')); }
   const ref=H.pendingVisit; setTimeout(()=>{ if (H.pendingVisit===ref){ H.pendingVisit=null; H.X=-60; walkTo(240, ++runId); say(LANG==='it'?'Non c\'è nessuno. Torno a casa.':'Nobody home. Going back.',3000); } }, 30000);
 }
@@ -2501,7 +2747,7 @@ function openDoor(){
   const n=makeNPC({name:k.name, kind:k.kind, room:H.room, x:-60}); n.dir=1; if (k.look) npcLook(n,k.look);
   n.topic=k.topic; H.guest={topic:k.topic, name:k.name, kind:k.kind, npc:n};
   npcWalk(n, 150).then(()=>npcSay(n, LANG==='it'?'Ciao!':'Hi!'));
-  sendTo(k.topic, {t:'enter', room:H.room, x:Math.round(H.X), kind:H.kind, costume:H.costume==='custom'?null:H.costume, look:H.look, deco:DECO});
+  sendTo(k.topic, {t:'enter', room:H.room, x:Math.round(H.X), kind:H.kind, costume:H.costume==='custom'?null:H.costume, look:lookOut(), deco:DECO});
   openChatWith(k.topic, k.name);
   say(LANG==='it'?`Benvenuto ${k.name}!`:`Welcome ${k.name}!`,2500);
 }
@@ -2529,6 +2775,22 @@ $('f').addEventListener('submit', async e=>{
   if (H.room==='prive' && /^\s*(esci|vai via|torna in pista|leave|exit|go out)\b/i.test(cmd)){ i.value=''; const id=++runId; (async()=>{ await walkTo(-50,id); setRoom('disco'); H.X=20; await walkTo(90,id); })(); return; }
   if (H.room==='bisca' && /(gioca|slot|roulette|dadi|punta|scommett|play|bet|dice|casino|casinò)/i.test(cmd)){ i.value=''; const m=cmd.match(/(\d+)/); if (m) window.__bet=+m[1]; if (/roulette/i.test(cmd)) window.__game='roulette'; else if (/dad|dice/i.test(cmd)) window.__game='dice'; else if (/slot/i.test(cmd)) window.__game='slot'; if (/ner|black/i.test(cmd)) window.__col='nero'; else if (/ross|red/i.test(cmd)) window.__col='rosso'; openCasino(); return; }
   if (/^\s*(lavora|lavoro|vai a lavorare|fai un turno|turno|work|get a job|do a shift)\b/i.test(cmd)){ i.value=''; startJob(); return; }
+  if (giftCmd(cmd)){ i.value=''; return; }
+  if (/^\s*(vendi|vendo|sell)\b/i.test(cmd) && sellCmd(cmd)){ i.value=''; return; }
+  { const bm=cmd.match(/^\s*(?:compra|comprare|buy|voglio)\s+(.+)$/i); if (bm){ const t=bm[1].toLowerCase();
+      const rk=Object.keys(EXTRA_ROOMS).find(k=>[...EXTRA_ROOMS[k].it,...EXTRA_ROOMS[k].en].some(w=>t.includes(w))); if (rk){ i.value=''; buyRoom(rk); return; }
+      const vk=Object.keys(VEHICLES).find(k=>[...VEHICLES[k].it,...VEHICLES[k].en].some(w=>new RegExp('\\b'+w+'\\b').test(t))); if (vk){ i.value=''; buyVehicle(vk); return; } } }
+  if (/^\s*(bacheca|notice ?board|board)\s*$/i.test(cmd)){ i.value=''; openBoard(); return; }
+  { const bp=cmd.match(/^\s*(?:scrivi in bacheca|appendi in bacheca|post on the board|post)\s*:?\s*(.+)$/i); if (bp){ i.value=''; postBoard(bp[1]); return; } }
+  if (/(chiama il dj|chiamate il dj|call the dj|hire the dj)/i.test(cmd)){ i.value=''; hireDJ(); return; }
+  if (/(fine festa|basta festa|finisci la festa|end (the )?party|stop the party)/i.test(cmd)){ i.value=''; endParty(); return; }
+  if (/(organizza una festa|fai una festa|facciamo festa|^\s*festa\b|throw a party|^\s*party\b)/i.test(cmd)){ i.value=''; const inv=[...cmd.matchAll(/([A-Za-zÀ-ÿ']{2,18})\s+(\d{3})\b/g)].map(m=>[m[1],m[2]]); startParty(inv); return; }
+  if (H.room==='gym' && /(allena|pesi|tapis|corri|addominali|flessioni|work ?out|train|lift|exercise)/i.test(cmd)){ i.value=''; workout(); return; }
+  if (H.room==='karaoke' && /^\s*(canta|cantare|sing)\b/i.test(cmd)){ i.value=''; karaoke(cmd.replace(/^\s*(canta|cantare|sing)\s*/i,'')); return; }
+  if (H.room==='barber' && /(barbiere|listino|menu|taglio|capelli|barba|baffi|pizzetto|tatuagg|tattoo|haircut|beard|cut)/i.test(cmd)){ i.value=''; openBarber(); return; }
+  if (H.room==='hospital' && /(cura|curami|visita|dottore|medico|guarisci|cure|doctor|treat)/i.test(cmd)){ i.value=''; hospitalCure(); return; }
+  if (/^\s*(umore|come stai|come ti senti|how are you|mood)\s*\??\s*$/i.test(cmd)){ i.value=''; const m=LIFE.mood; say(LANG==='it'?(m<30?'Uno schifo. Grazie per aver chiesto.':m>80?'Alla grande! Mai stato meglio.':'Si tira avanti.'):(m<30?'Awful. Thanks for asking.':m>80?'Great! Never better.':'Getting by.'),2500); return; }
+  if (H.room==='woods' && /(mangia|assaggia|eat|taste).*(fung|mushroom)/i.test(cmd)) setTimeout(getSick, 100);
   if (/(apriti sesamo|open sesame)/i.test(cmd)){ i.value=''; if (H.visit){ say(LANG==='it'?'Non è casa mia.':'Not my house.',2000); return; } openBunker(); return; }
   if (H.room==='bunker' && /^\s*(esci|sali|torna su|leave|exit|go up)\b/i.test(cmd)){ i.value=''; const id=++runId; (async()=>{ await walkTo(60,id); setRoom('living'); H.X=330; H.Y=LANE; await walkTo(300,id); })(); return; }
   if (H.room==='bunker' && /(radio|notizie|news)/i.test(cmd) && !/spegni|off/i.test(cmd)){ i.value=''; const id=++runId; (async()=>{ await walkTo(240,id); setPose('look'); bunkerRadio(); await sleep(3000); if(alive(id)) setPose('idle'); })(); return; }
@@ -2546,8 +2808,11 @@ $('f').addEventListener('submit', async e=>{
   if (H.room==='disco' && await tryPrive(cmd)){ i.value=''; return; }
   const plc0 = placeFromText(cmd); if ((plc0==='bisca' && !LIFE.bisca) || (plc0==='prive' && !LIFE.prive)){ i.value=''; say(LANG==='it'?'Bisca? Privé? Non so di cosa parli.':'A den? Privé? No idea what you mean.',2500); return; }
   if (plc0==='bisca' && H.room!=='bisca' && /(vai|torna|andiamo|go)/i.test(cmd)){ i.value=''; enterHidden('bisca'); return; }
+  { const hk=Object.keys(EXTRA_ROOMS).find(k=>[...EXTRA_ROOMS[k].it,...EXTRA_ROOMS[k].en].some(w=>new RegExp('\\b'+w+'\\b','i').test(cmd))); if (hk && /(vai|andiamo|\bva\b|scendi|sali|entra|go|take me|head)/i.test(cmd) && !/(compra|buy)/i.test(cmd)){ i.value=''; if (!hasRoom(hk)){ say(LANG==='it'?'Non ce l\'ho. Si compra nel negozio 🎨.':'I don\'t have that. Buy it in the 🎨 shop.',2500); return; } if (H.visit){ say(LANG==='it'?'Non è casa mia.':'Not my house.',2000); return; } goPlace(hk); return; } }
   const plc = placeFromText(cmd);
-  if (plc && /(vai|andiamo|\bva\b|andare|portami|corri|usciamo|esci|go|take me|walk|run|head|let'?s)/i.test(cmd) && !/casa (di|da)/i.test(cmd)){ i.value=''; goPlace(plc); return; }
+  if (plc && /(vai|andiamo|\bva\b|andare|portami|corri|usciamo|esci|go|take me|walk|run|head|let'?s|ride|drive|guida)/i.test(cmd) && !/casa (di|da)/i.test(cmd)){ i.value='';
+    if (/(a piedi|on foot|walk)/i.test(cmd)) window.__noRide=true; else { const vk=Object.keys(VEHICLES).find(k=>[...VEHICLES[k].it,...VEHICLES[k].en].some(w=>new RegExp('\\b'+w+'\\b','i').test(cmd))); if (vk) window.__rideWant=vk; }
+    goPlace(plc); return; }
   if (PLACES[H.room] && /^\s*(torna a casa|vai a casa|torna indietro|go home|go back home|casa)\s*[.!]*$/i.test(cmd)){ i.value=''; goPlace('living'); return; }
   if (/^\s*(personalizza|aspetto|cambia aspetto|look|customi[sz]e|outfit)\s*$/i.test(cmd)){ i.value=''; openCustom('look'); return; }
   if (/^\s*(mappa|map|apri la mappa|open the map)\s*$/i.test(cmd)){ i.value=''; openMap(); return; }
@@ -2604,7 +2869,7 @@ function moveIn(kind, name, code){
   if (!H.look || H.look.kind!==kind){ H.look={...defaultLook(kind), kind}; saveLook(); }
   applyKind(); applyCostume('pajamas'); setProp('mug');
   $('setup').classList.add('hide');
-  showNumber(); initPeer(); try{ startGossip(); }catch(e){}
+  showNumber(); initPeer(); try{ startGossip(); startBoard(); applyExtras(); }catch(e){}
   if (C.ready) updateIdentity(); else if (window.FB) communityStart(); else { renderSocial(); window.addEventListener('fb-ready', communityStart, {once:true}); }
   say(tr('hello'), 2500);
 }
@@ -2711,7 +2976,7 @@ async function npcWalk(n, x, id, again){
     es2.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return;
       try{ localStorage.setItem('subservientDBsince', String(m.time)); }catch(e){}
       let d; try{ d=JSON.parse(m.message); }catch(e){ return; }
-      if (d.t==='db' && merge(d.doc)) notify(); else if ((d.t==='prank'||d.t==='prankfail') && window.onPrankMsg) window.onPrankMsg(d); };
+      if (d.t==='db' && merge(d.doc)) notify(); else if ((d.t==='prank'||d.t==='prankfail') && window.onPrankMsg) window.onPrankMsg(d); else if (d.t && typeof friendMsg==='function') friendMsg(d); };
   }
   window.FB={
     local:true,
@@ -3062,6 +3327,9 @@ applyLang();
   });
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
     if (e.target.closest('.mini')){ openMap(); return; }
+    if (H.room==='piazza' || H.room==='barber'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
+      if (H.room==='piazza' && sp.x>290 && sp.x<348 && sp.y>145 && sp.y<200){ openBoard(); return; }
+      if (H.room==='barber' && sp.x>120 && sp.x<190 && sp.y>150 && sp.y<250){ openBarber(); return; } } catch(err){} }
     if (H.room==='woods' || H.room==='bisca'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
       if (H.room==='woods' && sp.x<72 && sp.y>70 && sp.y<255){ knockTree(); focusCmd(); return; }
       if (H.room==='bisca' && ((sp.x>380 && sp.y>130 && sp.y<245) || (sp.x>140 && sp.x<320 && sp.y>185 && sp.y<250))){ if (sp.x>380) window.__game='slot'; openCasino(); return; } } catch(err){} }
@@ -3113,7 +3381,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='26';
+const BUILD='27';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
