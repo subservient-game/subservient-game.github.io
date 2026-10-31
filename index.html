@@ -113,6 +113,9 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  .objmenu { position:absolute; display:none; flex-direction:column; gap:4px; z-index:9; background:rgba(20,24,30,.94); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:6px; min-width:130px; max-width:62%; box-shadow:0 8px 24px rgba(0,0,0,.45); }
+  .objmenu.show { display:flex; } .objmenu .omt { color:var(--accent); font-weight:700; font-size:13px; padding:2px 6px 4px; }
+  .objmenu button { background:#2a2f37; color:#eef0f3; font-size:13px; font-weight:500; padding:7px 10px; text-align:left; border-radius:8px; }
   .fly1 { animation:fly1 22s linear infinite; } @keyframes fly1 { from { transform:translate(-80px,10px); } 50% { transform:translate(260px,-14px); } to { transform:translate(600px,6px); } }
   .fly2 { animation:fly2 31s linear infinite; } @keyframes fly2 { from { transform:translate(560px,0); } to { transform:translate(-120px,-20px); } }
   .flutter { animation:flutter 6s ease-in-out infinite; } @keyframes flutter { 0%,100% { transform:translate(205px,225px) scale(1,1); } 25% { transform:translate(225px,212px) scale(.4,1); } 50% { transform:translate(240px,220px) scale(1,1); } 75% { transform:translate(220px,230px) scale(.4,1); } }
@@ -274,6 +277,7 @@
     <div class="bubble" id="bubble"></div>
     <div class="caption" id="caption"></div>
     <div class="jobbar" id="jobbar"></div>
+    <div class="objmenu" id="objmenu"></div>
     <div class="incoming" id="incoming"><span id="incomingTxt">📞 Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
   </div>
   <form class="cmd" id="f" autocomplete="off">
@@ -413,7 +417,7 @@ const OBJ = {
   grill:{room:'garden',x:262,fx:{x:230,y:200},desc:'barbecue grill (on/off)'},
   bench:{room:'park',x:150,seat:{x:140,y:207,legs:{lL:16,kL:-8,lR:-16,kR:8}},desc:'park bench (sit)'},
   fountain:{room:'park',x:270,fx:{x:330,y:200},desc:'fountain in the park (fx splash)'},
-  towel:{room:'beach',x:150,fx:{x:120,y:262},desc:'beach towel (lie down on the sand: pose liefloor)'},
+  beach_towel:{room:'beach',x:150,fx:{x:120,y:262},desc:'beach towel (lie down on the sand: pose liefloor)'},
   sea:{room:'beach',x:300,fx:{x:300,y:175},desc:'the sea (pose swim, fx splash)'},
   sandcastle:{room:'beach',x:230,fx:{x:260,y:240},desc:'sandcastle'},
   cafe:{room:'piazza',x:150,seat:{x:110,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:160,y:205},desc:'café table with chair (sit, drink coffee)'},
@@ -2237,6 +2241,106 @@ function tintNow(){ const h=new Date().getHours()+new Date().getMinutes()/60;
 function applyTint(){ const el=$('tint'); if (!el) return; const [c,o]=tintNow(); if (!c){ el.setAttribute('opacity',0); return; } const out=['garden','park','beach','woods','piazza'].includes(H.room);
   el.setAttribute('fill',c); el.setAttribute('opacity', ((out?o:o*.6)*.45).toFixed(3)); }
 setInterval(applyTint, 60000);
+/* ================= TAP AN OBJECT: basic actions that work without AI ================= */
+const _A=(pose,o)=>Object.assign({do:'act',pose,ms:2600},o||{});
+const _G=obj=>({do:'goto',object:obj});
+const _S=(object,state)=>({do:'set',object,state});
+const OBJ_ACTIONS = {
+  sofa:{n:['Divano','Sofa'], a:[[['Siediti','Sit'],[_A('sit',{at:'sofa',ms:3000})]],[['Sdraiati','Lie down'],[_A('lie',{at:'sofa',ms:3500})]],[['Dormi','Sleep'],[_A('sleep',{at:'sofa',ms:5000,fx:'zzz'})]]]},
+  cushion:{n:['Cuscino','Cushion'], a:[[['Toglilo','Take it off'],[_G('sofa'),_A('hold',{ms:900}),_S('cushion','off')]],[['Rimettilo','Put it back'],[_G('sofa'),_A('hold',{ms:900}),_S('cushion','on')]],[['Abbraccialo','Hug it'],[_G('sofa'),_A('hug',{ms:2500,face:'love'})]]]},
+  bookshelf:{n:['Libreria','Bookshelf'], a:[[['Leggi un libro','Read a book'],[_G('bookshelf'),_A('read',{at:'sofa',prop:'bigbook',ms:4000})]]]},
+  window:{n:['Finestra','Window'], a:[[['Guarda fuori','Look outside'],[_G('window'),_A('look',{ms:2500})]],[['Salta fuori','Jump out'],[_G('window'),{do:'leap',object:'window'},{do:'appear',room:'garden',x:220}]]]},
+  plant:{n:['Pianta','Plant'], a:[[['Annaffia','Water it'],[_G('plant'),_A('water',{ms:2500}),_S('plant','grow')]]]},
+  tv:{n:['TV','TV'], a:[[['Guarda la TV','Watch TV'],[_G('tv'),_S('tv','on'),_A('sit',{at:'sofa',ms:4000})]],[['Accendi','Turn on'],[_G('tv'),_S('tv','on')]],[['Spegni','Turn off'],[_G('tv'),_S('tv','off')]]]},
+  radio:{n:['Radio','Radio'], a:[[['Accendi e balla','Turn on and dance'],[_G('radio'),_S('radio','on'),_A('dance',{ms:4000,fx:'notes'})]],[['Spegni','Turn off'],[_G('radio'),_S('radio','off')]]]},
+  lamp:{n:['Lampada','Lamp'], a:[[['Accendi la luce','Lights on'],[_G('lamp'),_S('lamp','on')]],[['Spegni la luce','Lights off'],[_G('lamp'),_S('lamp','off')]]]},
+  fridge:{n:['Frigo','Fridge'], a:[[['Mangia qualcosa','Eat something'],[_G('fridge'),_S('fridge','open'),_A('eat',{prop:'sandwich',ms:3000}),_S('fridge','closed')]],[['Apri','Open'],[_G('fridge'),_S('fridge','open')]],[['Chiudi','Close'],[_G('fridge'),_S('fridge','closed')]]]},
+  stove:{n:['Fornelli','Stove'], a:[[['Cucina','Cook'],[_G('stove'),_S('stove','on'),_A('cook',{prop:'pan',ms:4000}),_S('stove','off'),_A('eat',{prop:'sandwich',ms:2500})]],[['Spegni','Turn off'],[_G('stove'),_S('stove','off')]]]},
+  kitchen_sink:{n:['Lavello','Sink'], a:[[['Lava i piatti','Wash dishes'],[_G('kitchen_sink'),_S('kitchen_sink','on'),_A('scrub',{prop:'sponge',ms:3500}),_S('kitchen_sink','off')]],[['Bevi un bicchiere d\'acqua','Drink water'],[_G('kitchen_sink'),_A('drink',{prop:'glass',ms:2500})]]]},
+  coffee:{n:['Macchina del caffè','Coffee machine'], a:[[['Fatti un caffè','Make a coffee'],[_G('coffee'),_S('coffee','on'),{do:'wait',ms:1500},_A('drink',{prop:'mug',ms:2500})]]]},
+  table:{n:['Tavolo','Table'], a:[[['Siediti','Sit'],[_A('sit',{at:'table',ms:3000})]],[['Mangia a tavola','Eat at the table'],[_A('eat',{at:'table',prop:'apple',ms:3500})]]]},
+  toilet:{n:['Water','Toilet'], a:[[['Siediti','Sit'],[_A('strain',{at:'toilet',ms:3500,face:'strain'}),_S('toilet','flush')]],[['Tira lo sciacquone','Flush'],[_G('toilet'),_S('toilet','flush')]]]},
+  toilet_paper:{n:['Carta igienica','Toilet paper'], a:[[['Srotolala','Unroll it'],[_G('toilet_paper'),_A('spin',{ms:2500,face:'happy'})]]]},
+  bathroom_sink:{n:['Lavandino','Sink'], a:[[['Lavati i denti','Brush teeth'],[_G('bathroom_sink'),_S('bathroom_sink','on'),_A('brush',{prop:'toothbrush',ms:3500}),_S('bathroom_sink','off')]],[['Lavati la faccia','Wash your face'],[_G('bathroom_sink'),_S('bathroom_sink','on'),_A('scrub',{ms:2500}),_S('bathroom_sink','off')]]]},
+  shower:{n:['Doccia','Shower'], a:[[['Fai la doccia','Take a shower'],[_S('shower','on'),_A('shower',{at:'shower',ms:5000}),_S('shower','off')]]]},
+  towel:{n:['Asciugamano','Towel'], a:[[['Asciugati','Dry off'],[_G('towel'),_A('scrub',{ms:2500})]]]},
+  bathroom_window:{n:['Finestrella','Small window'], a:[[['Scappa dalla finestra','Escape through it'],[_G('bathroom_window'),{do:'leap',object:'bathroom_window'},{do:'appear',room:'garden',x:420}]]]},
+  bed:{n:['Letto','Bed'], a:[[['Dormi','Sleep'],[_A('sleep',{at:'bed',ms:6000,fx:'zzz'})]],[['Siediti','Sit'],[_A('sit',{at:'bed',ms:3000})]],[['Salta sul letto','Jump on the bed'],[_G('bed'),_A('jump',{ms:3000,face:'happy'})]]]},
+  nightlamp:{n:['Abat-jour','Bedside lamp'], a:[[['Accendi','Turn on'],[_G('nightlamp'),_S('nightlamp','on')]],[['Spegni','Turn off'],[_G('nightlamp'),_S('nightlamp','off')]]]},
+  wardrobe:{n:['Armadio','Wardrobe'], a:[[['Cambiati','Change clothes'],'costume'],[['Rimetti il pigiama','Pyjamas back on'],[_G('wardrobe'),_S('wardrobe','open'),{do:'costume',preset:'pajamas'},_S('wardrobe','closed')]],[['Nasconditi dentro','Hide inside'],[_G('wardrobe'),_S('wardrobe','open'),{do:'vanish'},{do:'wait',ms:2500},{do:'appear',x:330},_S('wardrobe','closed')]]]},
+  computer:{n:['Computer','Computer'], a:[[['Usa il computer','Use the computer'],[_S('computer','on'),_A('type',{at:'computer',ms:4000})]],[['Gioca ai videogiochi','Play games'],[_S('computer','on'),_A('play',{at:'computer',prop:'controller',ms:4000})]]]},
+  guitar:{n:['Chitarra','Guitar'], a:[[['Suona','Play'],[_G('guitar'),_A('guitar',{ms:5000,fx:'notes'})]]]},
+  bedroom_window:{n:['Finestra','Window'], a:[[['Guarda fuori','Look outside'],[_A('look',{ms:2500})]]]},
+  tree:{n:['Albero','Tree'], a:[[['Arrampicati','Climb it'],[_A('sit',{at:'tree',ms:4000,face:'happy'})]],[['Raccogli una mela','Pick an apple'],[_G('tree'),_A('eat',{prop:'apple',ms:3000})]]]},
+  flowers:{n:['Fiori','Flowers'], a:[[['Annaffia','Water them'],[_G('flowers'),_A('water',{ms:2500}),_S('flowers','grow')]],[['Annusa','Smell them'],[_G('flowers'),_A('squat',{ms:2000,face:'love'})]]]},
+  grill:{n:['Barbecue','Barbecue'], a:[[['Fai la grigliata','Have a barbecue'],[_G('grill'),_S('grill','on'),_A('cook',{prop:'spatula',ms:4500}),_A('eat',{prop:'sandwich',ms:2500}),_S('grill','off')]]]},
+  hammock:{n:['Amaca','Hammock'], a:[[['Sdraiati','Lie down'],[_A('lie',{at:'hammock',ms:4500})]],[['Dormi','Sleep'],[_A('sleep',{at:'hammock',ms:6000,fx:'zzz'})]]]},
+  bench:{n:['Panchina','Bench'], a:[[['Siediti','Sit'],[_A('sit',{at:'bench',ms:3500})]]]},
+  fountain:{n:['Fontana','Fountain'], a:[[['Bagnati','Splash'],[_G('fountain'),_A('swim',{ms:3000,fx:'water'})]],[['Lancia una moneta','Toss a coin'],[_G('fountain'),_A('point',{ms:2000,say:'Desiderio!'})]]]},
+  beach_towel:{n:['Telo','Beach towel'], a:[[['Prendi il sole','Sunbathe'],[_G('beach_towel'),_A('liefloor',{ms:5000})]]]},
+  sea:{n:['Mare','Sea'], a:[[['Fai il bagno','Go swimming'],[_G('sea'),_A('swim',{ms:4500,fx:'water'})]]]},
+  sandcastle:{n:['Castello di sabbia','Sandcastle'], a:[[['Distruggilo','Stomp it'],[_G('sandcastle'),_A('stomp',{ms:2000,face:'angry'})]],[['Costruiscine uno','Build one'],[_G('sandcastle'),_A('squat',{ms:3000})]]]},
+  cafe:{n:['Tavolino del bar','Café table'], a:[[['Siediti','Sit'],[_A('sit',{at:'cafe',ms:3500})]],[['Ordina un caffè','Order a coffee'],'order:caffè']]},
+  gelato:{n:['Carretto dei gelati','Ice-cream cart'], a:[[['Compra un gelato','Buy an ice cream'],'order:gelato']]},
+  log:{n:['Tronco','Log'], a:[[['Siediti','Sit'],[_A('sit',{at:'log',ms:3500})]]]},
+  campfire:{n:['Falò','Campfire'], a:[[['Scaldati','Warm up'],[_G('campfire'),_A('squat',{ms:3000})]],[['Abbrustolisci un marshmallow','Toast a marshmallow'],'order:marshmallow']]},
+  mushrooms:{n:['Funghi','Mushrooms'], a:[[['Mangiali','Eat them'],'mushrooms'],[['Lasciali stare','Leave them'],[_A('no',{ms:1500})]]]},
+  dj:{n:['Consolle','DJ booth'], a:[[['Fai il DJ','Be the DJ'],[_G('dj'),_A('conduct',{ms:4500,fx:'notes'})]],[['Turno da DJ (Pippi)','DJ shift (Pippi)'],'job']]},
+  dancefloor:{n:['Pista','Dance floor'], a:[[['Balla','Dance'],[_G('dancefloor'),_A('disco',{ms:5000,fx:'notes'})]],[['Ballo del robot','Robot dance'],[_G('dancefloor'),_A('robot',{ms:4000})]]]},
+  oven:{n:['Forno a legna','Pizza oven'], a:[[['Ordina una pizza','Order a pizza'],'order:pizza'],[['Lavora come pizzaiolo','Work as pizza maker'],'job']]},
+  pizza_table:{n:['Tavolo','Table'], a:[[['Siediti','Sit'],[_A('sit',{at:'pizza_table',ms:3500})]]]},
+  pingpong:{n:['Ping pong','Ping-pong'], a:[[['Gioca','Play'],[_G('pingpong'),_A('fencing',{ms:4000})]]]},
+  telescope:{n:['Telescopio','Telescope'], a:[[['Guarda le stelle','Stargaze'],[_G('telescope'),_A('look',{ms:3500,say:'Vedo... un piccione.'})]]]},
+  old_trunk:{n:['Baule della nonna','Grandma\'s trunk'], a:[[['Travestiti','Dress up'],'costume']]},
+  workbench:{n:['Banco attrezzi','Workbench'], a:[[['Ripara qualcosa','Fix something'],[_G('workbench'),_A('karate',{ms:3000,fx:'stars'})]]]},
+  barrels:{n:['Botti','Barrels'], a:[[['Assaggia il vino','Taste the wine'],[_G('barrels'),_A('drink',{prop:'glass',ms:3000,face:'happy'})]]]},
+  cheese:{n:['Formaggi e salumi','Cheese and salami'], a:[[['Mangia','Eat'],[_G('cheese'),_A('eat',{prop:'sandwich',ms:3000})]]]},
+  hosp_bed:{n:['Lettino','Hospital bed'], a:[[['Fatti visitare','Get checked'],'hospital'],[['Sdraiati','Lie down'],[_A('lie',{at:'hosp_bed',ms:4000})]]]},
+  treadmill:{n:['Tapis roulant','Treadmill'], a:[[['Allenati','Work out'],'gym']]},
+  weights:{n:['Pesi','Weights'], a:[[['Allenati','Work out'],'gym']]},
+  stage:{n:['Palco','Stage'], a:[[['Canta','Sing'],'karaoke']]},
+  barber_chair:{n:['Poltrona del barbiere','Barber chair'], a:[[['Listino del barbiere','Barber price list'],'barber'],[['Siediti','Sit'],[_A('sit',{at:'barber_chair',ms:3000})]]]},
+  cans:{n:['Scatolette','Canned food'], a:[[['Mangia una scatoletta','Eat a can'],[_G('cans'),_A('eat',{prop:'can',ms:3000})]]]},
+  cot:{n:['Branda','Cot'], a:[[['Dormi','Sleep'],[_A('sleep',{at:'cot',ms:5000,fx:'zzz'})]]]},
+  bunker_radio:{n:['Radio','Radio'], a:[[['Ascolta i pettegolezzi','Listen to the gossip'],'radio']]},
+  slot:{n:['Slot machine','Slot machine'], a:[[['Gioca','Play'],'casino:slot']]},
+  card_table:{n:['Tavolo verde','Green table'], a:[[['Roulette','Roulette'],'casino:roulette'],[['Dadi','Dice'],'casino:dice'],[['Siediti','Sit'],[_A('sit',{at:'card_table',ms:3000})]]]},
+  velvet_sofa:{n:['Divanetto','Velvet sofa'], a:[[['Siediti','Sit'],[_A('sit',{at:'velvet_sofa',ms:3500})]]]},
+  champagne:{n:['Champagne','Champagne'], a:[[['Ordina champagne','Order champagne'],'order:champagne']]}
+};
+function objCenter(o){ const p=o.fx||o.seat||o.lie||{x:o.x,y:200}; return p; }
+function objAt(x,y){ let best=null, bd=1e9; for (const o of Object.values(OBJ)){ if (o.room!==H.room || !OBJ_ACTIONS[o.id]) continue; const c=objCenter(o); const d=Math.hypot((c.x-x)*0.9, (c.y-y)*1.1); if (d<46 && d<bd){ bd=d; best=o; } } return best; }
+function decoAt(x,y){ if (H.visit || !HOUSE_ROOMS.includes(H.room)) return null; const d=DECO[H.room]; if (!d||!d.items) return null; const out=H.room==='garden';
+  for (let i=d.items.length-1;i>=0;i--){ const it=d.items[i], D=DECOR[it.k]; if (!D) continue; const yy=D.wall?(out?150:96):D.rug?262:(out?248:244); const top=D.wall?yy-28:yy-60; if (Math.abs(x-it.x)<32 && y>top && y<yy+14) return {i, it, D}; } return null; }
+function runAction(label, act, o){
+  const it=LANG==='it'; closeObjMenu();
+  if (typeof act==='string'){
+    if (act.startsWith('order:')){ const want=act.slice(6); const bot=PL.bots.find(b=>(b.sells||[]).some(s=>s.it===want)); if (bot){ const item=bot.sells.find(s=>s.it===want); serve(bot,item); } else say(it?'Non c\'è nessuno a servire.':'Nobody to serve.',2000); return; }
+    if (act==='job'){ startJob(); return; } if (act==='gym'){ workout(); return; } if (act==='karaoke'){ karaoke(it?'una a caso':'a random one'); return; }
+    if (act==='barber'){ openBarber(); return; } if (act==='hospital'){ hospitalCure(); return; } if (act==='radio'){ const id=++runId; (async()=>{ await walkTo(240,id); setPose('look'); bunkerRadio(); })(); return; }
+    if (act.startsWith('casino:')){ window.__game=act.slice(7); openCasino(); return; }
+    if (act==='mushrooms'){ const id=++runId; runScript([_G('mushrooms'),_A('eat',{ms:2500})], id); getSick(); return; }
+    if (act==='costume'){ const keys=Object.keys(COST).filter(k=>k!=='pajamas'); const k=keys[Math.floor(Math.random()*keys.length)]; const id=++runId; caption.textContent='> '+label; runScript([_G(o.id),...(o.id==='wardrobe'?[_S('wardrobe','open')]:[]),{do:'costume',preset:k},_A('present',{ms:2000})], id); return; }
+  }
+  const id=++runId; stopFx(); bubble.classList.remove('show'); caption.textContent='> '+label; runScript(JSON.parse(JSON.stringify(act)), id);
+}
+function closeObjMenu(){ const m=$('objmenu'); if (m) m.classList.remove('show'); }
+function openObjMenu(o, deco, sx, sy, clientX, clientY){
+  const it=LANG==='it', m=$('objmenu'), cr=$('cam').getBoundingClientRect();
+  let title, items=[];
+  if (o){ const A=OBJ_ACTIONS[o.id]; title=A.n[it?0:1]; items=A.a.map(([lab,act],i)=>[lab[it?0:1], i]); items.push([it?'Vai lì':'Go there', 'go']); }
+  else { title=(it?deco.D.it:deco.D.en)[0]; items=[[it?'Guardalo':'Look at it','look'],[it?'Toglilo':'Remove it','remove']]; }
+  m.innerHTML=`<div class="omt">${esc(title)}</div>`+items.map(([l,k])=>`<button type="button" data-a="${k}">${esc(l)}</button>`).join('');
+  m.classList.add('show');
+  const mw=m.offsetWidth, mh=m.offsetHeight; let L=clientX-cr.left-mw/2, T=clientY-cr.top-mh-10; if (T<4) T=clientY-cr.top+12; L=Math.max(4,Math.min(cr.width-mw-4,L)); T=Math.max(4,Math.min(cr.height-mh-4,T));
+  m.style.left=L+'px'; m.style.top=T+'px';
+  m.querySelectorAll('button').forEach(b=>b.onpointerdown=ev=>{ ev.preventDefault(); ev.stopPropagation(); const k=b.dataset.a;
+    if (o){ if (k==='go'){ closeObjMenu(); const id=++runId; caption.textContent='> '+title; runScript([_G(o.id)], id); return; } const [lab,act]=OBJ_ACTIONS[o.id].a[+k]; runAction(lab[it?0:1], act, o); return; }
+    closeObjMenu(); const id=++runId;
+    if (k==='look'){ (async()=>{ await walkTo(clamp(deco.it.x+(H.X<deco.it.x?-50:50),25,455), id); H.dir=deco.it.x>H.X?1:-1; setPose('look'); say(it?['Bello.','Che gusto.','Niente male.'][Math.floor(Math.random()*3)]:['Nice.','Classy.','Not bad.'][Math.floor(Math.random()*3)],2000); })(); }
+    if (k==='remove') runDeco({remove:deco.it.k}); });
+}
+
 /* ================= LIFE: Pippi, hunger, hygiene ================= */
 const LIFE = (()=>{ let d=null; try { d=JSON.parse(localStorage.getItem('subservientLife')||'null'); } catch(e){} return Object.assign({pippi:50, food:80, clean:80, t:Date.now(), owned:[], bisca:false, prive:false}, d||{}); })();
 function saveLife(){ LIFE.t=Date.now(); try{ localStorage.setItem('subservientLife', JSON.stringify(LIFE)); }catch(e){} renderStats(); }
@@ -3409,7 +3513,7 @@ applyLang();
     b.addEventListener('mousedown', e=>e.preventDefault());
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
-  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar')) return; e.preventDefault();
+  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar,.objmenu')) return; e.preventDefault();
     if (document.body.classList.contains('land') && e.target.closest('#cam')){ document.body.classList.add('kbhide'); setTimeout(()=>window.fitCam&&fitCam(),0); }
     if (e.target.closest('.mini')){ openMap(); return; }
     if (H.room==='piazza' || H.room==='barber'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
@@ -3423,6 +3527,9 @@ applyLang();
     if (!n && holG.contains(e.target)){ say((LANG==='it'?'Sono ':'I\'m ')+H.name+' '+H.code, 2200); focusCmd(); return; }
     if (n) { n.dir=H.X>n.X?1:-1; npcSay(n, intro(n)); }
     if (n && n.topic){ openChatWith(n.topic, n.name); if (call) call.peerName=n.name; log('sys', (LANG==='it'?'Chat con ':'Chat with ')+n.name+(n.code?' '+n.code:'')); npcPose(n,'wave'); setTimeout(()=>npcPose(n,'idle'),1500); setTimeout(()=>{ try{ $('chatIn').focus({preventScroll:true}); }catch(err){} },60); return; }
+    if (!n && e.target.closest('#cam') && !e.target.closest('.objmenu')){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
+      const dk=decoAt(sp.x,sp.y), ob=dk?null:objAt(sp.x,sp.y); if (ob||dk){ openObjMenu(ob, dk, sp.x, sp.y, e.clientX, e.clientY); return; } } catch(err){} }
+    if (!e.target.closest('.objmenu')) closeObjMenu();
     if (n && n.bot){ npcPose(n,'wave','happy'); setTimeout(()=>{ const L=n.lines&&n.lines[LANG==='it'?'it':'en']; npcSay(n, n.passer?(LANG==='it'?'Che vuoi?':'What do you want?'):(L?L[Math.floor(Math.random()*L.length)]:pickLine('reply'))); },1800); setTimeout(()=>npcPose(n,'idle'),2400); }
     focusCmd(); });
 })();
@@ -3535,7 +3642,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='31';
+const BUILD='32';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
