@@ -391,11 +391,12 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/engine.js?v=44"></script>
-<script src="adv/minigames.js?v=44"></script>
-<script src="adv/c1-data.js?v=44"></script>
-<script src="adv/c1-story-a.js?v=44"></script>
-<script src="adv/c1-story-b.js?v=44"></script>
+<script src="adv/engine.js?v=45"></script>
+<script src="adv/minigames.js?v=45"></script>
+<script src="adv/c1-data.js?v=45"></script>
+<script src="adv/c1-story-a.js?v=45"></script>
+<script src="adv/c1-story-b.js?v=45"></script>
+<script src="adv/c1-story-c.js?v=45"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -3943,7 +3944,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='44';
+const BUILD='45';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
