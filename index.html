@@ -178,6 +178,30 @@
   .callbox form button { padding:10px 14px; }
 
   .ln { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+  .advbar { display:none; }
+  body.adv .advbar { display:flex; flex-direction:column; margin-top:6px; flex:none; min-height:0; }
+  body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs { grid-auto-rows:1fr; } body.adv .advverbs button { font-size:16px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
+  body.adv form#f, body.adv #kbd, body.adv .kbbar, body.adv #callbox, body.adv .social, body.adv .mynum, body.adv #btnLook, body.adv #btnNew, body.adv .jobbar { display:none !important; }
+  .advline { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; color:#ffd166; text-align:center; min-height:18px; margin-bottom:4px; }
+  .advrow { display:flex; gap:6px; }
+  .advverbs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; flex:0 0 46%; }
+  .advverbs button { padding:9px 2px; font-size:13px; border-radius:8px; background:#2a2240; color:#c9b8ff; border:1px solid #4b3d78; font-weight:700; }
+  .advverbs button.on { background:#ffd166; color:#222; border-color:#ffd166; }
+  .advinv { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:4px; align-content:start; max-height:132px; overflow-y:auto; background:#15121f; border-radius:10px; padding:4px; }
+  .advinv button { padding:4px 2px; border-radius:8px; background:#231d33; border:1px solid #3a3054; color:#ddd; font-size:10px; line-height:1.1; display:flex; flex-direction:column; align-items:center; gap:1px; }
+  .advinv button b { font-size:20px; } .advinv button.on { border-color:#ffd166; background:#3a2f12; }
+  .aiempty { grid-column:1/-1; color:#777; font-size:12px; text-align:center; padding:14px 4px; }
+  .advdlg { flex:1; display:flex; flex-direction:column; gap:5px; }
+  .advdlg button { text-align:left; padding:10px 12px; border-radius:8px; background:#15121f; color:#c9b8ff; border:1px solid #3a3054; font-size:14px; font-weight:600; }
+  .advdlg button:active { color:#ffd166; }
+  .advtext { position:absolute; left:4%; right:4%; top:8%; text-align:center; font-family:Fredoka, sans-serif; font-size:clamp(13px, 3.6cqw, 22px); font-weight:600; text-shadow:0 2px 0 #000, 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000; opacity:0; transition:opacity .15s; pointer-events:none; z-index:6; line-height:1.25; }
+  .advtext.show { opacity:1; pointer-events:auto; } .advtext b { display:block; font-size:.7em; opacity:.85; }
+  .advtoast { position:absolute; left:50%; bottom:12%; transform:translateX(-50%); background:#ffd166; color:#222; font-weight:700; font-size:13px; padding:6px 12px; border-radius:20px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:7; white-space:nowrap; }
+  .advtoast.show { opacity:1; }
+  body.adv .cam .caption { display:none; }
+  body.adv .info { flex:none !important; }
+  body.adv.land .advverbs button { padding:4px 2px; font-size:13px; } body.adv.land .advline { font-size:12px; min-height:14px; margin-bottom:2px; }
   .outfit { fill:var(--outfit); }
   .sleeveU { fill:var(--sleeveU, var(--outfit)); } .sleeveF { fill:var(--sleeveF, var(--outfit)); } .cuff { display:var(--cuff, inline); } .legs { fill:var(--legs, var(--pants)); } .shin { fill:var(--shin, var(--pants)); } .skirtc { fill:var(--skirt, var(--pants)); } .iris { fill:var(--iris, #3b2a20); }
   #hol :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]), #npcs :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]) { stroke:rgba(35,20,10,.62); stroke-width:1.15; paint-order:stroke; stroke-linejoin:round; }
@@ -229,11 +253,12 @@
       <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="" aria-label="Name">
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
+      <button type="button" id="btnStartAdv" class="ghost" style="width:100%;margin-top:8px">🗺️ Avventura offline</button>
       <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
     </div>
   </div>
 
-  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><h1 id="title">vAIn</h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
+  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><button type="button" id="btnAdv" class="newbtn" aria-label="Adventure">🗺️</button><h1 id="title">vAIn</h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
   <div class="cam" id="cam">
     <svg class="scene" id="scene" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -291,8 +316,10 @@
     <div class="caption" id="caption"></div>
     <div class="jobbar" id="jobbar"></div>
     <div class="objmenu" id="objmenu"></div>
+    <div class="advtext" id="advText"></div><div class="advtoast" id="advToast"></div>
     <div class="incoming" id="incoming"><span id="incomingTxt">📞 Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
   </div>
+  <div class="advbar" id="advbar"><div class="advline" id="advLine"></div><div class="advrow"><div class="advverbs" id="advVerbs"></div><div class="advinv" id="advInv"></div><div class="advdlg" id="advDlg" style="display:none"></div></div></div>
   <form class="cmd" id="f" autocomplete="off">
     <input id="cmd" maxlength="200" placeholder="Tell Holgen what to do…" aria-label="Command">
     <button type="button" id="kbBack" class="kbback" aria-label="Keyboard" style="display:none">🎹</button>
@@ -312,6 +339,7 @@
 </div>
 
 <script>
+window.ADV = /avventura/i.test(location.hash);
 /* ======================= SETTINGS (edit me) =======================
    GEMINI_KEY: optional free key from https://aistudio.google.com/apikey
    (restrict it to your site's address in Google Cloud > Credentials).
@@ -391,6 +419,9 @@ const ROOMS = {
   woods:   { name:'WOODS',       cam:9,  mx:62, my:2,  mw:19, mh:21, out:1 },
   disco:   { name:'DISCO',       cam:10, mx:82, my:2,  mw:20, mh:21, out:1 },
   pizzeria:{ name:'PIZZA',       cam:11, mx:22, my:25, mw:19, mh:21, out:1 },
+  porto:   { name:'PORTO',       cam:22, mx:62, my:48, mw:19, mh:20, out:1, locked:1 },
+  faro:    { name:'FARO',        cam:23, mx:82, my:48, mw:20, mh:20, out:1, locked:1 },
+  municipio:{ name:'MUNICIPIO',  cam:24, mx:42, my:48, mw:19, mh:20, out:1, locked:1, secret:1 },
   hospital:{ name:'HOSPITAL',    cam:18, mx:42, my:25, mw:19, mh:21, out:1 },
   gym:     { name:'GYM',         cam:19, mx:62, my:25, mw:19, mh:21, out:1 },
   karaoke: { name:'KARAOKE',     cam:20, mx:82, my:25, mw:20, mh:21, out:1 },
@@ -724,6 +755,44 @@ function drawRoom(r){
     <path d="M346 236 L374 236 L370 200 L350 200Z" fill="#c0c7d0"/><path d="M354 200 L356 172 L362 172 L364 200Z" fill="#1b4332"/><rect x="355" y="168" width="8" height="5" fill="#d4af37"/>
     ${['#ff5c86','#ffd166','#4cc9f0'].map((c,i)=>`<circle cx="${280+i*60}" cy="20" r="6" fill="${c}"/><path d="M${280+i*60} 26 L${250+i*60} 232 L${310+i*60} 232Z" fill="${c}" opacity=".08"/>`).join('')}`;
   }
+  if (r==='porto'){
+    b+=`<rect width="480" height="160" fill="url(#gSky)"/><path d="M0 120 Q60 96 120 112 T260 104 T400 110 T480 100 L480 150 L0 150Z" fill="#6f8f7a" opacity=".7"/>
+    <rect y="140" width="480" height="95" fill="#2f6f9a"/><g stroke="#fff" stroke-opacity=".35" fill="none">${Array.from({length:7},(_,j)=>`<path d="M${(j*70)%480} ${152+j*11} q10 -4 20 0 t20 0"/>`).join('')}</g><g class="ripple"><path d="M0 200 Q120 194 240 200 T480 200" stroke="#9fd3e0" stroke-opacity=".4" fill="none"/></g>
+    <rect y="226" width="480" height="74" fill="#8b6b4a"/>${Array.from({length:16},(_,i)=>`<rect x="${i*30}" y="226" width="29" height="74" fill="${i%2?'#7d5f40':'#93714f'}"/><circle cx="${i*30+4}" cy="236" r="1.2" fill="#3a2614"/><circle cx="${i*30+4}" cy="290" r="1.2" fill="#3a2614"/>`).join('')}<rect y="224" width="480" height="5" fill="#5a3a22"/>
+    <g><rect x="18" y="58" width="180" height="168" fill="#a0523d"/>${Array.from({length:40},(_,i)=>`<rect x="${18+(i%8)*22+(Math.floor(i/8)%2)*11}" y="${62+Math.floor(i/8)*32}" width="20" height="6" fill="#8b4532" opacity=".6"/>`).join('')}<path d="M10 58 L108 22 L206 58Z" fill="#6b2f22"/>
+      <rect x="62" y="120" width="90" height="106" fill="#5a3a22"/><path d="M62 120 L152 226 M152 120 L62 226" stroke="#3a2614" stroke-width="4"/><rect x="60" y="116" width="94" height="8" fill="#3a2614"/>
+      <rect x="76" y="80" width="62" height="20" rx="3" fill="#2b2d31"/><text x="107" y="94" text-anchor="middle" font-size="9" font-weight="700" fill="#ffd166" font-family="Fredoka, sans-serif">MAGAZZINO 7</text>
+      ${AV&&AV.st&&AV.st.f&&AV.st.f.doorOpen?`<rect x="64" y="122" width="86" height="104" fill="#120c08"/><g fill="#c9a227">${[0,1,2].map(i=>`<ellipse cx="${84+i*22}" cy="214" rx="9" ry="3"/>`).join('')}</g>`:`<g transform="translate(107 175)"><path d="M-7 -6 Q-7 -16 0 -16 Q7 -16 7 -6" stroke="#888" stroke-width="3" fill="none"/><rect x="-9" y="-6" width="18" height="14" rx="2" fill="#c9a227"/><circle cy="1" r="2" fill="#333"/></g>`}</g>
+    <g transform="translate(250 226)">${[[0,0],[34,0],[17,-26]].map(([x,y])=>`<g transform="translate(${x-30} ${y-26})"><rect width="32" height="26" fill="#b5835a" stroke="#6b4a2b" stroke-width="2"/><path d="M0 0 L32 26 M32 0 L0 26" stroke="#6b4a2b"/></g>`).join('')}<text x="-14" y="-32" font-size="7" fill="#333" font-family="Fredoka, sans-serif">PESCE</text></g>
+    <g class="sway" style="transform-origin:390px 200px"><path d="M300 196 L470 196 L452 222 L318 222Z" fill="#d64545"/><path d="M300 196 L470 196" stroke="#fff" stroke-width="3"/><rect x="350" y="170" width="60" height="26" fill="#eceff2"/><rect x="358" y="176" width="12" height="10" fill="#9fd3e0"/><rect x="378" y="176" width="12" height="10" fill="#9fd3e0"/><line x1="400" y1="170" x2="400" y2="110" stroke="#5a3a22" stroke-width="3"/><path d="M400 112 L430 140 L400 140Z" fill="#fff" opacity=".85"/><text x="385" y="216" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">BAFFO II</text></g>
+    <g fill="#2b2d31"><rect x="214" y="214" width="12" height="14" rx="3"/><rect x="460" y="214" width="12" height="14" rx="3"/></g><path d="M220 216 Q260 236 300 206" stroke="#c9a77a" stroke-width="2" fill="none"/>
+    <g transform="translate(230 70)"><line x1="0" y1="0" x2="0" y2="156" stroke="#2b2d31" stroke-width="4"/><path d="M-10 0 L10 0 L6 -14 L-6 -14Z" fill="#2b2d31"/><circle cy="-6" r="5" fill="#fff3b0"/></g>
+    <g class="fly1"><path d="M0 0 q5 -5 10 0 q5 -5 10 0" stroke="#fff" stroke-width="2" fill="none" transform="translate(280 60)"/></g><g class="fly2"><path d="M0 0 q4 -4 8 0 q4 -4 8 0" stroke="#fff" stroke-width="2" fill="none" transform="translate(150 40)"/></g>`;
+  }
+  if (r==='faro'){
+    b+=`<rect width="480" height="170" fill="url(#gSky)"/><rect y="130" width="480" height="100" fill="#2a6f97"/><g class="ripple"><path d="M0 170 Q120 162 240 170 T480 170" stroke="#fff" stroke-opacity=".35" fill="none"/></g>
+    <g stroke="#fff" stroke-opacity=".3" fill="none">${Array.from({length:6},(_,j)=>`<path d="M${(j*83)%480} ${140+j*14} q8 -3 16 0 t16 0"/>`).join('')}</g>
+    <path d="M0 232 L0 190 Q40 176 80 186 Q120 170 170 188 Q210 178 250 192 L250 232Z" fill="#6b6f73"/><path d="M230 232 L240 180 Q300 160 380 170 Q440 160 480 182 L480 232Z" fill="#5a5e62"/>
+    <rect y="228" width="480" height="72" fill="#7a7468"/><g fill="#5a5e62" opacity=".7">${Array.from({length:14},(_,i)=>`<ellipse cx="${(i*41)%480}" cy="${250+(i*13)%40}" rx="${10+i%3*4}" ry="4"/>`).join('')}</g>
+    <g><path d="M300 228 L312 40 L364 40 L376 228Z" fill="#f4f1ea"/>${[0,1,2,3].map(i=>`<path d="M${302+i*0.4} ${200-i*48} L${306+i*1.5} ${176-i*48} L${370-i*1.5} ${176-i*48} L${374-i*0.4} ${200-i*48}Z" fill="#d64545"/>`).join('')}
+      <rect x="304" y="28" width="68" height="14" fill="#2b2d31"/><rect x="314" y="2" width="48" height="26" fill="#ffe9a8" stroke="#2b2d31" stroke-width="3"/><path d="M308 2 L338 -14 L368 2Z" fill="#2b2d31"/>
+      <g class="beam1"><path d="M338 14 L480 -20 L480 50Z" fill="#fff6c9" opacity=".25"/></g><g class="beam2"><path d="M338 14 L150 -30 L150 50Z" fill="#fff6c9" opacity=".18"/></g>
+      <path d="M326 228 L326 196 Q338 184 350 196 L350 228Z" fill="#5a3a22"/><circle cx="345" cy="212" r="1.6" fill="#c9a227"/>
+      <rect x="326" y="110" width="22" height="20" rx="10" fill="#9fd3e0" stroke="#2b2d31" stroke-width="2"/></g>
+    <g transform="translate(60 150)"><rect width="90" height="78" fill="#e9e3d5" stroke="#9a9488"/><path d="M-8 0 L45 -30 L98 0Z" fill="#9b2226"/><rect x="14" y="20" width="24" height="22" fill="#9fd3e0" stroke="#5a3a22" stroke-width="3"/><rect x="54" y="34" width="22" height="44" fill="#5a3a22"/><text x="45" y="12" text-anchor="middle" font-size="6.5" fill="#5a3a22" font-family="Fredoka, sans-serif">GUARDIANA</text></g>
+    <g transform="translate(420 200)"><circle r="16" fill="none" stroke="#d64545" stroke-width="7"/><circle r="16" fill="none" stroke="#fff" stroke-width="7" stroke-dasharray="6 6.6"/><line x1="0" y1="16" x2="0" y2="30" stroke="#5a3a22" stroke-width="3"/></g>
+    <g class="fly1"><path d="M0 0 q5 -5 10 0 q5 -5 10 0" stroke="#fff" stroke-width="2" fill="none" transform="translate(200 70)"/></g>`;
+  }
+  if (r==='municipio'){
+    b+=`<rect width="480" height="232" fill="#7a4a2c"/>${Array.from({length:12},(_,i)=>`<rect x="${4+i*40}" y="120" width="32" height="96" rx="3" fill="#6b3f24" stroke="#5a3520" stroke-width="2"/>`).join('')}<rect y="112" width="480" height="8" fill="#5a3520"/><rect width="480" height="112" fill="#e9dcc0"/><g fill="#d9c9a6">${Array.from({length:24},(_,i)=>`<circle cx="${10+(i%12)*40}" cy="${30+Math.floor(i/12)*50}" r="6"/>`).join('')}</g>
+    <rect y="226" width="480" height="74" fill="#3a2414"/><path d="M60 300 L140 232 L340 232 L420 300Z" fill="#9b2226"/><path d="M140 232 L340 232" stroke="#c9a227" stroke-width="2"/>
+    <g transform="translate(200 18)"><rect width="80" height="90" fill="#c9a227"/><rect x="6" y="6" width="68" height="78" fill="#2b3a4f"/><circle cx="40" cy="38" r="16" fill="#eab48a"/><path d="M24 30 Q40 14 56 30" fill="#eee"/><path d="M30 46 Q40 52 50 46" stroke="#333" fill="none"/><path d="M28 44 Q34 40 40 44 Q46 40 52 44" fill="#eee"/><path d="M20 84 Q40 56 60 84Z" fill="#2b2d31"/><text x="40" y="98" text-anchor="middle" font-size="6" fill="#5a3520" font-family="Fredoka, sans-serif">IL SINDACO</text></g>
+    ${['#3a8f4a','#eceff2','#d64545'].map((c,i)=>`<rect x="${110+i*10}" y="30" width="10" height="40" fill="${c}"/>`).join('')}<line x1="108" y1="26" x2="108" y2="120" stroke="#c9a227" stroke-width="2"/>
+    <g transform="translate(370 22)"><rect width="90" height="96" fill="#1d2a4f"/><circle cx="66" cy="24" r="9" fill="#fff3b0"/><g fill="#fff" opacity=".7">${[[14,20],[30,40],[50,64],[76,50]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1"/>`).join('')}</g><path d="M0 0 L0 96 M45 0 L45 96 M0 48 L90 48" stroke="#5a3520" stroke-width="4"/><path d="M-8 -4 Q10 50 -6 100 L-14 100 L-14 -4Z M98 -4 Q80 50 96 100 L104 100 L104 -4Z" fill="#9b2226"/></g>
+    <g transform="translate(290 186)"><rect width="140" height="12" fill="#5a3520"/><rect x="4" y="12" width="132" height="34" fill="#6b3f24"/><rect x="58" y="16" width="24" height="10" rx="2" fill="#c9a227"/><rect x="18" y="-8" width="22" height="8" fill="#eceff2" transform="rotate(-6 29 -4)"/><rect x="100" y="-14" width="6" height="14" fill="#2b2d31"/><circle cx="103" cy="-16" r="4" fill="#d64545"/></g>
+    <g transform="translate(40 158)"><rect width="66" height="70" rx="4" fill="#5c636b" stroke="#3a3f45" stroke-width="3"/><rect x="6" y="6" width="54" height="58" rx="3" fill="#6c737b"/><circle cx="33" cy="32" r="13" fill="#3a3f45"/><circle cx="33" cy="32" r="8" fill="#9aa1a8"/><path d="M33 20 L33 26" stroke="#fff" stroke-width="2"/><rect x="50" y="26" width="6" height="14" rx="2" fill="#c9a227"/>${AV&&AV.st&&AV.st.f&&AV.st.f.safeOpen?`<rect x="6" y="6" width="54" height="58" fill="#1a1a1a"/>`:''}</g>
+    <g transform="translate(150 200)"><path d="M0 28 L4 0 L14 0 L18 28Z" fill="#c9a227"/><path d="M9 0 Q-8 -30 9 -44 Q26 -30 9 0" fill="#4f9a4a"/></g>`;
+  }
   if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
   b+=roomDetails(r);
   b=decorate(r,b);
@@ -764,7 +833,7 @@ function drawMini(){
   let s='';
   const town=!!ROOMS[H.room].out;
   if (town){ s+=`<rect x="2" y="25" width="19" height="21" rx="3" fill="#3a3f48" stroke="#596170"/><text x="11.5" y="37" text-anchor="middle" font-size="3.6" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text><text x="82" y="62" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text>`; }
-  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue; if (R.secret && !cur) continue; if (EXTRA_ROOMS[k] && !hasRoom(k) && !cur) continue;
+  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue; if (R.secret && !cur) continue; if (R.locked && !cur && !unlockedPlaces().includes(k)) continue; if (EXTRA_ROOMS[k] && !hasRoom(k) && !cur) continue;
     s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='hospital'?'#8aa1b1':k==='gym'?'#5c677d':k==='karaoke'?'#7b2cbf':k==='barber'?'#9b2226':k==='attic'?'#6b4a2b':k==='garage'?'#4a4e57':k==='cellar'?'#5a3a22':k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='woods'?'#24513a':k==='disco'?'#4a2a6e':k==='pizzeria'?'#a0522d':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
     ${R.secret?'':`<text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-4)}" font-size="${R.out?3.5:4}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`}`;
   }
@@ -1329,7 +1398,7 @@ async function walkTo(x, id, fast, sy){
   if (alive(id)) setPose('idle');
 }
 let miniT=0; function drawMiniThrottled(){ const n=performance.now(); if(n-miniT>120){ miniT=n; drawMini(); } }
-function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); applyTint(); }catch(e){} },0); if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
+function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); applyTint(); }catch(e){} },0); if (wasRoom!==r && !window.ADV){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
 async function standUp(id){
   if (H.inShower){ H.inShower=false; drawRoom(H.room); }
   if (H.lying){ const o=OBJ[H.lying]; H.lying=null; if(o.room===H.room) drawRoom(H.room); setPose('idle'); await tween({Y:STAND, X:o.x}, 380, id); }
@@ -2248,7 +2317,7 @@ function openMap(){
   const tiles=[
     ['living','🛋️',it?'Soggiorno':'Living'],['kitchen','🍳',it?'Cucina':'Kitchen'],['bathroom','🛁',it?'Bagno':'Bathroom'],['bedroom','🛏️',it?'Camera':'Bedroom'],['garden','🌳',it?'Giardino':'Garden'],
     ['attic','🏓',it?'Mansarda':'Attic'],['garage','🚗','Garage'],['cellar','🍷',it?'Cantina':'Cellar'],
-    ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria'],['hospital','🏥',it?'Ospedale':'Hospital'],['gym','🏋️',it?'Palestra':'Gym'],['karaoke','🎤','Karaoke'],['barber','💈',it?'Barbiere':'Barber']];
+    ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria'],['hospital','🏥',it?'Ospedale':'Hospital'],['gym','🏋️',it?'Palestra':'Gym'],['karaoke','🎤','Karaoke'],['barber','💈',it?'Barbiere':'Barber']].concat([['porto','⚓',it?'Porto':'Harbour'],['faro','🗼',it?'Faro':'Lighthouse'],['municipio','🏛️',it?'Municipio':'Town Hall']].filter(x=>unlockedPlaces().includes(x[0])));
   const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
   sheet(`<h3>🗺️ ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
     <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,8).filter(t=>hasRoom(t[0])).map(tile).join('')}${LIFE.bunker?tile(['bunker','☢️','Bunker']):''}</div>
@@ -2566,7 +2635,7 @@ setInterval(()=>{
   if (LIFE.clean<30 && !flyT) flyT=setInterval(()=>{ const h=headPt(); txt(h.x+rnd(-22,22), h.y+rnd(-10,14), '🪰', '#222', 10); }, 900);
   if (LIFE.clean>=30) clearFlies();
 }, 20000);
-setInterval(()=>{ if (!H.code || caption.textContent.startsWith('>')) return; const it=LANG==='it';
+setInterval(()=>{ if (!H.code || window.ADV || caption.textContent.startsWith('>')) return; const it=LANG==='it';
   if (LIFE.food<20 && Math.random()<.5){ txt(H.X+14, STAND-70, 'GRRR', '#c0392b', 12); say(it?['Ho una fame da lupi...','Il mio stomaco sta parlando.','Datemi da mangiare o mordo.'][Math.floor(Math.random()*3)]:['Starving...','My stomach is talking.','Feed me or I bite.'][Math.floor(Math.random()*3)], 2500); }
   else if (LIFE.clean<25 && Math.random()<.4){ say(it?['Mi sa che puzzo un po\'.','Le mosche mi adorano.','Una doccia non mi farebbe male.'][Math.floor(Math.random()*3)]:['I might smell a bit.','The flies love me.','A shower wouldn\'t hurt.'][Math.floor(Math.random()*3)], 2500); }
 }, 70000);
@@ -2576,7 +2645,8 @@ const isNight=()=>{ const h=new Date().getHours(); return h>=22 || h<6; };
 const WX_ICON={sun:'☀️', cloud:'⛅', rain:'🌧️', snow:'❄️', storm:'⛈️'};
 function weatherNow(){ const slot=Math.floor(Date.now()/(20*60000)); let x=Math.sin(slot*12.9898)*43758.5453; x=x-Math.floor(x);
   return x<.5?'sun':x<.7?'cloud':x<.87?'rain':x<.93?'snow':'storm'; }
-const OUTDOOR=r=>['garden','park','beach','piazza','woods'].includes(r);
+const OUTDOOR=r=>['garden','park','beach','piazza','woods','porto','faro'].includes(r);
+function unlockedPlaces(){ try{ return JSON.parse(localStorage.getItem('vainUnlock')||'[]'); }catch(e){ return []; } }
 let wxKey='', stormT=null;
 function drawWeather(){
   const w=weatherNow(), out=OUTDOOR(H.room), key=w+(out?1:0)+H.room; if (key===wxKey) return; wxKey=key;
@@ -2833,7 +2903,7 @@ function buyInsurance(){ const it=LANG==='it'; if (LIFE.pippi<30){ say(it?'L\'as
 /* ================= PIAZZA EVENTS: fight and village fair (same for everyone) ================= */
 function piazzaEvent(){ const sl=Math.floor(Date.now()/(30*60000)); const into=(Date.now()%(30*60000))/60000; if (into>8 || srand(sl,'ev')>=.4) return null; return srand(sl,'ev',2)<.5?'sagra':'rissa'; }
 let EV={kind:null, npcs:[], sl:null, stopped:false};
-function eventTick(){
+function eventTick(){ if (window.ADV) return;
   const k = H.room==='piazza' ? piazzaEvent() : null; const sl=Math.floor(Date.now()/(30*60000));
   if (k!==EV.kind || (k && sl!==EV.sl)){ EV.npcs.forEach(removeNPC); EV={kind:k, npcs:[], sl, stopped:false, ready:false}; if (H.room==='piazza') drawRoom('piazza');
     const it=LANG==='it';
@@ -3230,6 +3300,545 @@ $('f').addEventListener('submit', async e=>{
   runScript(steps, id);
 });
 
+/* ================= AVVENTURA OFFLINE (punta e clicca) ================= */
+const AV = { verb:null, item:null, busy:false, npcs:[], st:null, dlg:null, skip:null };
+const AVT=(it,en)=>LANG==='it'?it:en;
+const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','🗺️ Mappa','🗺️ Map'],['menu','☰','☰']];
+const AV_ITEMS={
+  radiomsg:['📻','Annuncio','Notice'], acciuga:['🐟','Acciuga','Anchovy'], torcia:['🔦','Torcia','Torch'], retino:['🥅','Retino','Fishing net'],
+  grappa:['🍶','Grappa del nonno','Grandpa\'s grappa'], biglietto:['🎫','Mezza parola d\'ordine','Half a password'], pettine:['🪮','Pettine portafortuna','Lucky comb'],
+  brillantina:['🧴','Brillantina','Hair gel'], basilico:['🌿','Basilico','Basil'], pizza:['🍕','Pizza delle 3','3 a.m. pizza'], mestolo:['🥄','Mestolo d\'Oro','Golden Ladle'], baffi:['🥸','Baffi finti','Fake moustache'],
+  moka:['🫖','Moka fredda','Cold coffee pot'], caffe:['☕','Caffè bollente','Hot coffee'], chiave:['🗝️','Chiave del magazzino','Warehouse key'], etichetta:['🏷️','Etichetta','Label'], ricevuta:['🧾','Ricevuta','Receipt'], lettera:['✉️','Lettera misteriosa','Mysterious letter'], vero:['🏆','Mestolo d\'Oro (vero)','Golden Ladle (real)']
+};
+const AV_PLACES={ living:['🛋️','Soggiorno','Living'], kitchen:['🍳','Cucina','Kitchen'], garden:['🌳','Giardino','Garden'], garage:['🚗','Garage','Garage'], attic:['🏓','Mansarda','Attic'], cellar:['🍷','Cantina','Cellar'],
+  piazza:['☕','Piazza','Piazza'], beach:['🏖️','Spiaggia','Beach'], park:['⛲','Parco','Park'], barber:['💈','Barbiere','Barber'], bisca:['🃏','Bisca','Gambling den'], prive:['🥂','Privé','Privé'], pizzeria:['🍕','Pizzeria','Pizzeria'], porto:['⚓','Porto','Harbour'], faro:['🗼','Faro','Lighthouse'], municipio:['🏛️','Municipio','Town Hall'] };
+/* hotspots: x,y = centre in scene units, w,h = size */
+const AV_HS={
+  living:[ {id:'radio',x:418,y:196,w:40,h:30,n:['radio','radio']}, {id:'sofa',x:110,y:205,w:120,h:50,n:['divano','sofa']}, {id:'cushion',x:64,y:181,w:30,h:22,n:['cuscino','cushion']}, {id:'books',x:100,y:80,w:70,h:80,n:['libreria','bookshelf']}, {id:'tv',x:330,y:172,w:60,h:50,n:['televisore','TV']}, {id:'plant',x:198,y:195,w:30,h:50,n:['pianta','plant']} ],
+  kitchen:[ {id:'fridge',x:51,y:150,w:60,h:120,n:['frigo','fridge']}, {id:'coffee',x:280,y:150,w:30,h:30,n:['moka','coffee pot']}, {id:'stove',x:160,y:165,w:60,h:50,n:['fornelli','stove']}, {id:'sink',x:236,y:172,w:50,h:40,n:['lavandino','sink']} ],
+  garden:[ {id:'basil',x:178,y:238,w:60,h:30,n:['vaso di basilico','basil pot']}, {id:'grill',x:230,y:200,w:50,h:50,n:['barbecue','grill']}, {id:'hammock',x:380,y:212,w:90,h:40,n:['amaca','hammock']}, {id:'tree',x:110,y:80,w:120,h:120,n:['albero','tree']} ],
+  garage:[ {id:'bench',x:420,y:190,w:110,h:110,n:['banco attrezzi','workbench']}, {id:'tools',x:110,y:100,w:160,h:120,n:['attrezzi','tools']}, {id:'jerry',x:450,y:224,w:24,h:30,n:['tanica','jerry can']} ],
+  attic:[ {id:'trunk',x:80,y:220,w:70,h:45,n:['baule','trunk']}, {id:'telescope',x:420,y:150,w:50,h:80,n:['telescopio','telescope']}, {id:'boxes',x:350,y:185,w:50,h:35,n:['scatolone','box']}, {id:'ghost',x:34,y:220,w:30,h:50,n:['lenzuolo','sheet']} ],
+  cellar:[ {id:'barrels',x:100,y:200,w:170,h:90,n:['botti','barrels']}, {id:'cheese',x:340,y:150,w:170,h:70,n:['salumi appesi','hanging salami']}, {id:'wine',x:445,y:198,w:50,h:96,n:['bottiglie','bottles']} ],
+  piazza:[ {id:'board',x:319,y:167,w:56,h:40,n:['bacheca','notice board']}, {id:'cafe',x:160,y:205,w:80,h:60,n:['tavolino','café table']}, {id:'gelato',x:360,y:200,w:60,h:60,n:['carretto dei gelati','ice-cream cart']} ],
+  beach:[ {id:'sea',x:300,y:175,w:300,h:40,n:['mare','sea']}, {id:'castle',x:260,y:240,w:40,h:30,n:['castello di sabbia','sandcastle']}, {id:'towel',x:120,y:262,w:80,h:20,n:['telo','towel']} ],
+  park:[ {id:'fountain',x:330,y:200,w:100,h:80,n:['fontana','fountain']}, {id:'pbench',x:140,y:207,w:120,h:60,n:['panchina','bench']} ],
+  barber:[ {id:'chair',x:150,y:204,w:70,h:80,n:['poltrona','barber chair']}, {id:'mirror',x:265,y:130,w:70,h:100,n:['specchio','mirror']}, {id:'poster',x:58,y:95,w:56,h:70,n:['poster','poster']} ],
+  bisca:[ {id:'table',x:230,y:200,w:170,h:50,n:['tavolo verde','card table']}, {id:'slot',x:410,y:180,w:56,h:100,n:['slot machine','slot machine']}, {id:'rules',x:330,y:120,w:60,h:40,n:['cartello','sign']} ],
+  prive:[ {id:'vsofa',x:120,y:205,w:130,h:50,n:['divanetto','velvet sofa']}, {id:'champagne',x:360,y:200,w:40,h:70,n:['champagne','champagne']}, {id:'chandelier',x:240,y:40,w:80,h:70,n:['lampadario','chandelier']} ],
+  pizzeria:[ {id:'oven',x:390,y:200,w:120,h:120,n:['forno','oven']}, {id:'ptable',x:155,y:200,w:90,h:50,n:['tavolo','table']} ],
+  porto:[ {id:'warehouse',x:107,y:172,w:96,h:110,n:['porta del magazzino','warehouse door']}, {id:'crates',x:250,y:205,w:70,h:50,n:['casse','crates']}, {id:'boat',x:385,y:200,w:170,h:60,n:['barca','boat']}, {id:'lamp',x:230,y:120,w:24,h:110,n:['lampione','lamp post']} ],
+  faro:[ {id:'lhdoor',x:338,y:210,w:30,h:40,n:['porta del faro','lighthouse door']}, {id:'lantern',x:338,y:16,w:60,h:40,n:['lanterna','lantern']}, {id:'hut',x:105,y:190,w:96,h:80,n:['casetta','hut']}, {id:'buoy',x:420,y:205,w:40,h:50,n:['salvagente','life buoy']}, {id:'rocks',x:130,y:200,w:200,h:30,n:['scogli','rocks']} ],
+  municipio:[ {id:'safe',x:73,y:193,w:70,h:74,n:['cassaforte','safe']}, {id:'desk',x:360,y:200,w:140,h:50,n:['scrivania','desk']}, {id:'portrait',x:240,y:63,w:80,h:90,n:['ritratto','portrait']}, {id:'window',x:415,y:70,w:90,h:96,n:['finestra','window']}, {id:'flag',x:125,y:50,w:36,h:44,n:['bandiera','flag']} ]
+};
+/* characters of the story */
+const AV_CAST={
+  sindaco:{room:'piazza', x:250, name:['Il Sindaco','The Mayor'], kind:'m', col:'#ffd166', look:{hair:'receding',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#2b2d31',pants:'#2b2d31',top:'jacket',bottom:'pants',beard:'mustache',phys:'belly'}},
+  peppe:{room:'piazza', x:90, name:['Nonno Peppe','Grandpa Peppe'], kind:'m', col:'#9be7ff', look:{hair:'bald',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#8a5a3a',pants:'#5a5048',top:'cardigan',bottom:'pants'}},
+  baffo:{room:'beach', x:380, name:['Baffo il Contrabbandiere','Baffo the Smuggler'], kind:'m', col:'#ff9f6e', look:{hair:'bald',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#2b2d31',pants:'#3f5f8a',top:'tank',bottom:'jeans',beard:'mustache',phys:'muscle'}},
+  salvatore:{room:'barber', x:300, name:['Salvatore il Barbiere','Salvatore the Barber'], kind:'m', col:'#c7f9cc', look:{hair:'slick',hairColor:'#222222',skin:'#c98b5e',glasses:false,outfit:'#eceff2',pants:'#2b2d31',top:'shirt',bottom:'pants',beard:'mustache'}},
+  ercole:{room:'bisca', x:400, name:['Ercole il Buttafuori','Ercole the Bouncer'], kind:'m', col:'#ff6b6b', look:{hair:'buzz',hairColor:'#222222',skin:'#7a4a2c',glasses:true,outfit:'#2b2d31',pants:'#2b2d31',top:'tank',bottom:'pants',phys:'muscle'}},
+  tonino:{room:'bisca', x:290, name:['Tonino il Liscio','Slick Tonino'], kind:'m', col:'#e0aaff', look:{hair:'slick',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#8a5ac8',pants:'#eceff2',top:'shirt',bottom:'pants',beard:'stubble'}},
+  jacques:{room:'prive', x:420, name:['Jacques','Jacques'], kind:'m', col:'#ffd6a5', look:{hair:'quiff',hairColor:'#e8c36a',skin:'#f6cfa7',glasses:false,outfit:'#2b2d31',pants:'#2b2d31',top:'jacket',bottom:'pants'}},
+  contessa:{room:'prive', x:250, name:['La Contessa','The Countess'], kind:'f', col:'#ff8fab', look:{hair:'wavy',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:false,outfit:'#d64545',pants:'#d64545',top:'dress',bottom:'skirt',eyes:'#3f7a4a'}},
+  ciccio:{room:'porto', x:300, name:['Ciccio il Pescatore','Ciccio the Fisherman'], kind:'m', col:'#9be7ff', look:{hair:'curly',hairColor:'#eeeeee',skin:'#a46a43',glasses:false,outfit:'#e9c46a',pants:'#3f5f8a',top:'hoodie',bottom:'jeans',beard:'full'}},
+  marisa:{room:'faro', x:200, name:['Marisa la Guardiana','Marisa the Keeper'], kind:'f', col:'#b8f2e6', look:{hair:'braids',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#2b3a67',pants:'#2b2d31',top:'hoodie',bottom:'pants',freckles:true}},
+  gennaro:{room:'municipio', x:150, name:['Gennaro l\'Usciere','Gennaro the Porter'], kind:'m', col:'#ffd6a5', look:{hair:'receding',hairColor:'#6b3e26',skin:'#c98b5e',glasses:true,outfit:'#3f5f8a',pants:'#2b2d31',top:'jacket',bottom:'pants',phys:'belly'}},
+  gaspare:{room:'municipio', x:330, name:['Assessore Gaspare','Councillor Gaspare'], kind:'m', col:'#c77dff', look:{hair:'sidepart',hairColor:'#222222',skin:'#f6cfa7',glasses:true,outfit:'#2b2d31',pants:'#2b2d31',top:'shirt',bottom:'pants',beard:'goatee'}},
+  toto:{room:'pizzeria', x:300, name:['Totò il Pizzaiolo','Totò the Pizza Man'], kind:'m', col:'#ffe066', look:{hair:'curly',hairColor:'#222222',skin:'#c98b5e',glasses:false,outfit:'#eceff2',pants:'#eceff2',top:'tshirt',bottom:'pants',beard:'full',phys:'belly'}}
+};
+function avSave(){ try{ localStorage.setItem('vainAdv', JSON.stringify(AV.st)); }catch(e){} }
+function avLoad(){ try{ AV.st=JSON.parse(localStorage.getItem('vainAdv')||'null'); }catch(e){} if (!AV.st||!AV.st.v) AV.st={v:1, room:'living', inv:[], f:{}, open:['living','kitchen','garden','garage','attic','cellar']}; }
+const avHas=i=>AV.st.inv.includes(i);
+function avAdd(i){ if (!avHas(i)) AV.st.inv.push(i); avSave(); avRender(); }
+function avDel(i){ AV.st.inv=AV.st.inv.filter(x=>x!==i); if (AV.item===i) AV.item=null; avSave(); avRender(); }
+function avOpen(r){ if (!AV.st.open.includes(r)){ AV.st.open.push(r); avSave(); avToast('🗺️ '+AVT('Nuovo luogo: ','New place: ')+AV_PLACES[r][LANG==='it'?1:2]); } }
+function avToast(t){ const el=$('advToast'); el.textContent=t; el.classList.add('show'); clearTimeout(avToast.t); avToast.t=setTimeout(()=>el.classList.remove('show'),2600); }
+const avName=t=>{ if (!t) return ''; if (t.type==='item') return AV_ITEMS[t.id][LANG==='it'?1:2].toLowerCase(); if (t.type==='self') return AVT('te stesso','yourself'); if (t.type==='npc') return AV_CAST[t.id].name[LANG==='it'?0:1]; return t.n[LANG==='it'?0:1]; };
+function avSentence(extra){ const v=AV_VERBS.find(x=>x[0]===(AV.verb||'walk')); let s=v[LANG==='it'?1:2];
+  if (AV.item) s+=' '+avName({type:'item',id:AV.item})+' '+(AV.verb==='give'?AVT('a','to'):AVT('con','with'));
+  if (extra) s+=' '+extra; $('advLine').textContent=s; }
+function avRender(){
+  if (!$('advVerbs')) return;
+  if (AV.dlg){ $('advVerbs').style.display='none'; $('advInv').style.display='none'; $('advDlg').style.display=''; return; }
+  $('advVerbs').style.display=''; $('advInv').style.display=''; $('advDlg').style.display='none';
+  $('advVerbs').innerHTML=AV_VERBS.map(v=>`<button type="button" class="av${AV.verb===v[0]?' on':''}" data-v="${v[0]}">${v[LANG==='it'?1:2]}</button>`).join('');
+  $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${AV.item===i?' on':''}" data-i="${i}"><b>${AV_ITEMS[i][0]}</b><span>${AV_ITEMS[i][LANG==='it'?1:2]}</span></button>`).join('') : `<div class="aiempty">${AVT('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
+  avSentence();
+}
+/* text on screen, coloured per speaker, tap to skip */
+function avWait(ms){ return new Promise(res=>{ const t=setTimeout(done,ms); function done(){ clearTimeout(t); AV.skip=null; res(); } AV.skip=done; }); }
+async function avSay(who, text){
+  const el=$('advText'); const c=who==='me'?'#fff':(AV_CAST[who]||{}).col||'#fff';
+  const nm=who==='me'?H.name:(AV_CAST[who]?AV_CAST[who].name[LANG==='it'?0:1]:'');
+  el.innerHTML=`<b style="color:${c}">${esc(nm)}</b> <span style="color:${c}">${esc(text)}</span>`; el.classList.add('show');
+  const n=who==='me'?null:AV.npcs.find(x=>x.avId===who);
+  if (n){ n.dir=H.X>n.X?1:-1; npcPose(n, Math.random()<.5?'point':'present','happy'); } else if (who==='me'){ setPose(Math.random()<.5?'point':'present'); }
+  await avWait(Math.min(6500, 1400+text.length*48));
+  if (n) npcPose(n,'idle'); else if (who==='me') setPose('idle');
+  el.classList.remove('show');
+}
+async function avLines(arr){ for (const [w,it,en] of arr) await avSay(w, AVT(it,en)); }
+function avChoose(opts){ return new Promise(res=>{ AV.dlg=true; avRender();
+  $('advDlg').innerHTML=opts.map((o,i)=>`<button type="button" data-o="${i}">${esc(AVT(o[0],o[1]))}</button>`).join('');
+  $('advDlg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ AV.dlg=null; avRender(); res(+b.dataset.o); }); }); }
+function avSpawn(r){
+  AV.npcs.forEach(n=>removeNPC(n)); AV.npcs=[];
+  for (const [id,c] of Object.entries(AV_CAST)){ if (c.room!==r) continue; if (id==='tonino' && AV.st.f.toninoGone) continue; if (id==='gaspare' && AV.st.f.gaspareGone) continue;
+    const n=makeNPC({name:c.name[LANG==='it'?0:1], kind:c.kind, room:r, x:c.x}); n.avId=id; n.look={...c.look, kind:c.kind}; npcLook(n, n.look); n.dir=-1; npcPose(n,'idle'); AV.npcs.push(n); }
+  if (r==='bisca'){ const n=AV.npcs.find(x=>x.avId==='tonino'); if (n) npcPose(n,'sit'); }
+}
+function avApplyHair(){ if (AV.st.f.disguise){ try{ J.beard.innerHTML=beardSVG({...(H.look||{}), beard:'mustache', hairColor:'#2b2b2b'}); }catch(e){} } if (!AV.st.f.slick) return; try{ const L={...(H.look||{}), hair:'slick'}; J.hairBack.innerHTML=hairSVG(L,'back'); J.hairFront.innerHTML=hairSVG(L,'front'); }catch(e){} }
+async function avGo(r, first){
+  if (AV.busy && !first) return;
+  if (r==='cellar' && !avHas('torcia')){ await avSay('me', AVT('In cantina al buio? Ho visto troppi film horror. Serve una luce.','The cellar in the dark? I\'ve seen too many horror films. I need a light.')); return; }
+  setRoom(r); AV.st.room=r; avSave(); H.X = r==='bisca'?120:(r==='prive'?90:60); H.destX=null; camX=H.X; avSpawn(r); avApplyHair(); closeSheet(); avRender();
+  if (first) return;
+  AV.busy=true; try { await avEnter(r); } finally { AV.busy=false; }
+}
+async function avEnter(r){
+  const f=AV.st.f;
+  if (r==='cellar' && !f.cellarLit){ f.cellarLit=1; avSave(); await avSay('me', AVT('Accendo la torcia. Ragnatele, botti e l\'odore del nonno.','I switch on the torch. Cobwebs, barrels and the smell of grandpa.')); }
+  if (r==='bisca' && !f.inBisca){
+    await avSay('ercole', AVT('Alt. Parola d\'ordine, bello.','Hold it. Password, pal.'));
+    const ok=['Pippi mosce','Floppy Pippi'];
+    const o=await avChoose([['Pippi lisce','Smooth Pippi'],ok,['Apriti sesamo','Open sesame'],['Sono amico del sindaco','I\'m a friend of the mayor']]);
+    if (o!==1){ await avSay('ercole', AVT(['Sbagliato. Torna quando hai un cervello.','Ritenta. Anzi no, sparisci.','Il sindaco qui non lo può vedere nessuno.'][o%3],['Wrong. Come back with a brain.','Try again. Actually, don\'t.','Nobody here can stand the mayor.'][o%3])); await avGo2('piazza'); return; }
+    f.inBisca=1; avSave(); await avSay('ercole', AVT('Entra. E non toccare le fiches di Gina.','Get in. And don\'t touch Gina\'s chips.'));
+  }
+  if (r==='municipio' && !f.inMuni){
+    await avSay('gennaro', AVT('Chiuso! È notte! Qui entrano solo le autorità!','Closed! It\'s night! Authorities only!'));
+    if (!f.disguise){ await avSay('me', AVT('Mi serve un\'aria più... autorevole. Tipo dei baffi.','I need to look more... official. Like with a moustache.')); await avGo2('piazza'); return; }
+    await avSay('gennaro', AVT('...La FINANZA?! Prego, prego, Ispettore! Io timbro e basta, non so niente!','...The TAX POLICE?! Come in, Inspector! I just clock in, I know nothing!'));
+    f.inMuni=1; avSave();
+  }
+  if (r==='prive' && !f.inPrive){
+    if (!f.slick){ await avSay('jacques', AVT('Con quei capelli? Qui si entra solo impeccabili, monsieur. Fuori.','With that hair? Only the impeccable get in, monsieur. Out.')); await avGo2('piazza'); return; }
+    f.inPrive=1; avSave(); await avSay('jacques', AVT('Oh là là, che ciuffo. Prego, monsieur.','Oh là là, what a quiff. This way, monsieur.'));
+  }
+}
+async function avGo2(r){ setRoom(r); AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyHair(); avRender(); }
+function avMap(){
+  const it=LANG==='it';
+  sheet(`<h3 style="margin:0 0 10px">🗺️ ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div>`);
+  $('sheetBody').querySelectorAll('[data-avgo]').forEach(b=>b.onclick=()=>{ const r=b.dataset.avgo; closeSheet(); if (r!==H.room) avGo(r); });
+}
+function avMenu(){
+  const it=LANG==='it';
+  sheet(`<h3 style="margin:0 0 6px">🗺️ ${it?'Avventura':'Adventure'} — ${it?'Capitolo 1: La Notte del Mestolo d\'Oro':'Chapter 1: The Night of the Golden Ladle'}</h3>
+   <p style="opacity:.8;font-size:14px;margin:0 0 12px">${it?'Tocca un verbo, poi una cosa o una persona. Per "Usa" e "Dai" scegli prima un oggetto dell\'inventario. Tocca il testo per andare avanti più veloce.':'Tap a verb, then a thing or a person. For "Use" and "Give" pick an inventory item first. Tap the text to skip ahead.'}</p>
+   <button type="button" id="avHint" style="width:100%;margin-bottom:8px">💡 ${it?'Suggerimento':'Hint'}</button>
+   <button type="button" id="avRestart" class="ghost" style="width:100%;margin-bottom:8px;color:#ff8a80">${it?'Ricomincia l\'avventura':'Restart the adventure'}</button>
+   <button type="button" id="avExit" class="ghost" style="width:100%">🌐 ${it?'Torna al gioco online':'Back to the online game'}</button>`);
+  $('avHint').onclick=()=>{ closeSheet(); avSay('me', avHint()); };
+  $('avRestart').onclick=()=>{ try{ localStorage.removeItem('vainAdv'); }catch(e){} location.reload(); };
+  $('avExit').onclick=()=>{ location.hash=''; location.reload(); };
+}
+function avHint(){ const f=AV.st.f, h=avHas;
+  const L=[ [!f.radio, 'Quella radio in soggiorno ha l\'aria di voler dire qualcosa.','That radio in the living room looks like it has something to say.'],
+    [!f.peppe, 'In piazza i vecchietti sanno tutto di tutti. Parlaci.','Old folks in the piazza know everything. Talk to them.'],
+    [!f.baffoTalk, 'Il tizio che puzzava di pesce... in spiaggia, forse?','The guy who smelled of fish... the beach, maybe?'],
+    [!h('grappa')&&!f.gaveGrappa&&!h('torcia'), 'In garage c\'è sempre una torcia. Serve per la cantina.','There\'s always a torch in the garage. You need it for the cellar.'],
+    [!h('grappa')&&!f.gaveGrappa, 'Qualcosa di forte... la cantina del nonno!','Something strong... grandpa\'s cellar!'],
+    [!f.gaveGrappa, 'Dai la grappa a Baffo.','Give the grappa to Baffo.'],
+    [!f.salvaTalk, 'Salvatore il barbiere sa l\'altra metà della parola.','Salvatore the barber knows the other half of the password.'],
+    [!h('retino')&&!h('pettine')&&!f.gavePettine, 'Il pettine è nella fontana. Un retino? Nel baule in mansarda.','The comb is in the fountain. A net? In the attic trunk.'],
+    [!h('pettine')&&!f.gavePettine, 'Usa il retino con la fontana del parco.','Use the net on the park fountain.'],
+    [!f.gavePettine, 'Dai il pettine a Salvatore.','Give the comb to Salvatore.'],
+    [!f.inBisca, 'Vai alla bisca: la parola è "Pippi mosce".','Go to the gambling den: the password is "Floppy Pippi".'],
+    [!f.toninoTalk, 'Parla con Tonino il Liscio.','Talk to Slick Tonino.'],
+    [!f.slick, 'Usa la brillantina su te stesso: tocca "Usa", la brillantina, poi il tuo personaggio.','Use the gel on yourself: tap "Use", the gel, then your character.'],
+    [!f.contessaTalk, 'Al privé parla con la Contessa.','At the privé talk to the Countess.'],
+    [!h('basilico')&&!h('pizza')&&!f.gavePizza, 'Totò vuole basilico. Ce n\'è un vaso in giardino.','Totò wants basil. There\'s a pot in the garden.'],
+    [!h('pizza')&&!f.gavePizza, 'Dai il basilico a Totò.','Give the basil to Totò.'],
+    [!f.gavePizza, 'Dai la pizza alla Contessa.','Give the pizza to the Countess.'],
+    [!f.fake, 'Riporta il Mestolo al Sindaco in piazza.','Bring the Ladle back to the Mayor in the piazza.'],
+    [!f.ciccio, 'L\'etichetta dice Porto. Parla col pescatore.','The label says Harbour. Talk to the fisherman.'],
+    [!f.marisaTalk, 'Al faro, parla con Marisa.','At the lighthouse, talk to Marisa.'],
+    [!avHas('moka')&&!avHas('caffe')&&!f.gaveCoffee, 'La moka è in cucina. Prendila.','The coffee pot is in the kitchen. Take it.'],
+    [avHas('moka'), 'Usa la moka con i fornelli della cucina.','Use the coffee pot on the kitchen stove.'],
+    [!f.gaveCoffee, 'Dai il caffè bollente a Marisa.','Give the hot coffee to Marisa.'],
+    [!f.doorOpen, 'Usa la chiave con la porta del Magazzino 7.','Use the key on the Warehouse 7 door.'],
+    [!f.disguise, 'Al Municipio entrano solo le autorità. Usa i baffi finti su di te.','Only authorities enter the Town Hall. Use the fake moustache on yourself.'],
+    [!f.gaspareGone, 'Dai la ricevuta all\'Assessore Gaspare.','Give the receipt to Councillor Gaspare.'],
+    [!f.safeOpen, 'Leggi il post-it sulla scrivania. "Il taglio di Salvatore"... il poster dal barbiere!','Read the sticky note on the desk. "Salvatore\'s haircut"... the barber\'s poster!'],
+    [!f.end, 'Dai il Mestolo VERO al Sindaco.','Give the REAL Ladle to the Mayor.'],
+    [!f.readLetter, 'Leggi la lettera: usala su te stesso.','Read the letter: use it on yourself.'] ];
+  const x=L.find(l=>l[0]); return x? AVT(x[1],x[2]) : AVT('Hai già vinto. Vai a dormire.','You already won. Go to bed.'); }
+const AV_NOPE=[['Non credo funzioni.','I don\'t think that works.'],['Preferirei di no.','I\'d rather not.'],['Non ha senso nemmeno per me.','That makes no sense even to me.'],['Sì, e poi? No.','Sure, and then? No.'],['Mia madre non approverebbe.','My mother wouldn\'t approve.'],['Bella idea. Sbagliata, ma bella.','Nice idea. Wrong, but nice.']];
+function avNope(){ const x=AV_NOPE[Math.floor(Math.random()*AV_NOPE.length)]; return avSay('me', AVT(x[0],x[1])); }
+/* ===== the story ===== */
+async function avDo(verb, t, item){
+  const f=AV.st.f, id=t.id, me=(i,e)=>avSay('me',AVT(i,e)), np=(w,i,e)=>avSay(w,AVT(i,e));
+  const K=verb+':'+id+(item?':'+item:'');
+  switch(K){
+  /* living */
+  case 'look:radio': return me('Una radio a valvole. Trasmette solo liscio e annunci del sindaco.','A valve radio. Plays only ballroom music and the mayor\'s announcements.');
+  case 'use:radio': case 'open:radio': case 'take:radio':
+    if (verb==='take') return me('Pesa più di mia suocera. Resta lì.','It weighs more than my mother-in-law. It stays.');
+    setPose('play');
+    await np('sindaco','📻 Cittadini! Stanotte è la Sagra, ma il sacro Mestolo d\'Oro è stato RUBATO!','📻 Citizens! Tonight is the Festival, but the sacred Golden Ladle has been STOLEN!');
+    await np('sindaco','📻 Chi lo riporta vince mille Pippi e pizza gratis a vita! Ripeto: MILLE PIPPI!','📻 Whoever brings it back wins a thousand Pippi and free pizza for life! I repeat: A THOUSAND PIPPI!');
+    setPose('idle'); if (!f.radio){ f.radio=1; avSave(); avOpen('piazza'); }
+    return me('Mille Pippi... finalmente pago il bollo della macchina. In piazza qualcuno saprà qualcosa.','A thousand Pippi... I can finally pay my car tax. Someone in the piazza will know something.');
+  case 'look:sofa': return me('Il divano. Ha la forma del mio sedere, ci ho lavorato per anni.','The sofa. It has the shape of my bum, years of work went into it.');
+  case 'take:cushion': case 'open:cushion': case 'look:cushion':
+    if (!f.cushion){ f.cushion=1; avSave(); return me('Sotto il cuscino: tre briciole, un telecomando e la dignità che avevo perso nel 2009.','Under the cushion: three crumbs, a remote and the dignity I lost in 2009.'); }
+    return me('Basta frugare, c\'era già poco la prima volta.','Enough rummaging, there was little the first time.');
+  case 'look:books': return me('"Come diventare ricchi senza fare un cazzo", volume 2. Il volume 1 non l\'ha finito nessuno.','"How to get rich doing bugger all", volume 2. Nobody finished volume 1.');
+  case 'look:tv': case 'use:tv': return me('Danno una televendita di materassi da tre giorni. Non ho il coraggio di spegnerla.','A mattress infomercial has been on for three days. I can\'t bring myself to switch it off.');
+  case 'look:plant': return me('Una pianta finta. L\'unica che non sono riuscito a uccidere.','A fake plant. The only one I haven\'t managed to kill.');
+  /* kitchen */
+  case 'open:fridge': case 'look:fridge':
+    if (!f.acciuga){ f.acciuga=1; avAdd('acciuga'); return me('Dentro: un limone depresso e un\'acciuga. Prendo l\'acciuga, il limone ha già sofferto abbastanza.','Inside: a depressed lemon and an anchovy. I\'ll take the anchovy, the lemon has suffered enough.'); }
+    return me('Il limone mi guarda. Chiudo.','The lemon is staring at me. Closing.');
+  case 'take:coffee': if (avHas('moka')||avHas('caffe')||f.gaveCoffee) return me('Una moka basta. Due e mi viene la tachicardia.','One pot is enough. Two and my heart races.'); setPose('squat'); avAdd('moka'); return me('Prendo la moka. Il caffè dentro è freddo come il cuore della suocera.','I take the coffee pot. The coffee is as cold as my mother-in-law\'s heart.');
+  case 'use:stove:moka': setPose('cook'); await avWait(2200); setPose('idle'); avDel('moka'); avAdd('caffe'); return me('Caffè bollente! E stavolta niente pompieri.','Piping hot coffee! And no firemen this time.');
+  case 'use:coffee': setPose('drink'); await avWait(1500); setPose('idle'); return me('Caffè di ieri. Fa schifo ma sveglia anche i morti.','Yesterday\'s coffee. Tastes awful but would wake the dead.');
+  case 'look:coffee': return me('La moka della nonna. Mai lavata, per rispetto.','Grandma\'s coffee pot. Never washed, out of respect.');
+  case 'use:stove': case 'look:stove': return me('Ultima volta che l\'ho acceso sono venuti i pompieri. Due volte.','Last time I turned it on the firemen came. Twice.');
+  case 'look:sink': case 'use:sink': return me('Piatti dell\'anno scorso. Stanno sviluppando una civiltà.','Last year\'s dishes. They\'re developing a civilisation.');
+  /* garden */
+  case 'look:basil': return me('Basilico genovese. L\'unica cosa che coltivo, oltre ai rancori.','Genoese basil. The only thing I grow, apart from grudges.');
+  case 'take:basil': if (avHas('basilico')||f.gaveBasil) return me('Ne ho già preso. Lascia qualcosa ai pomodori.','I took some already. Leave some for the tomatoes.'); setPose('squat'); avAdd('basilico'); return me('Un bel mazzetto di basilico. Profuma di domenica.','A nice bunch of basil. Smells like Sunday.');
+  case 'look:grill': case 'use:grill': return me('Il barbecue. Le salsicce di Ferragosto sono ancora lì, carbonizzate.','The grill. The August sausages are still on it, carbonised.');
+  case 'use:hammock': setPose('lie'); await avWait(1800); setPose('idle'); return me('Due minuti di pace. Ora basta, ci sono mille Pippi in ballo.','Two minutes of peace. Enough, a thousand Pippi are at stake.');
+  case 'look:hammock': return me('L\'amaca. Il mio ufficio.','The hammock. My office.');
+  case 'look:tree': return me('Un albero. Fa ombra e ogni tanto mi tira le pigne.','A tree. Gives shade and now and then throws pine cones at me.');
+  /* garage */
+  case 'look:bench': return me('Il banco attrezzi. C\'è una torcia in mezzo alle viti.','The workbench. There\'s a torch among the screws.');
+  case 'take:bench': case 'open:bench': if (avHas('torcia')) return me('Ho già la torcia. Il resto sono viti spaiate.','I have the torch already. The rest are odd screws.'); setPose('squat'); avAdd('torcia'); return me('Presa la torcia. Funziona pure, miracolo.','Got the torch. It even works, a miracle.');
+  case 'look:tools': return me('Attrezzi appesi in ordine. Li ha appesi mia moglie, io non li ho mai toccati.','Tools hung in order. My wife hung them; I\'ve never touched them.');
+  case 'take:tools': return me('Se sposto qualcosa se ne accorge. Sempre.','If I move anything she notices. Always.');
+  case 'look:jerry': return me('Una tanica di benzina. Meglio non pensarci vicino al barbecue.','A jerry can of petrol. Better not think about it near the grill.');
+  /* attic */
+  case 'look:trunk': return me('Il baule del nonno. Chiuso da quando è partito per la Svizzera "per lavoro".','Grandpa\'s trunk. Shut since he went to Switzerland "for work".');
+  case 'open:trunk': case 'take:trunk':
+    if (!f.trunk){ f.trunk=1; avAdd('retino'); avAdd('baffi'); return me('Dentro: un retino da pesca e dei baffi finti. Il nonno aveva una vita segreta.','Inside: a fishing net and a fake moustache. Grandpa had a secret life.'); }
+    return me('Vuoto. A parte l\'odore di naftalina e misteri.','Empty. Apart from the smell of mothballs and mystery.');
+  case 'look:telescope': case 'use:telescope': setPose('look'); await avWait(1200); setPose('idle'); return me('Vedo la spiaggia: un tizio col ciuffo lucido che parla con un omone coi baffi. Sospetto.','I see the beach: a guy with a shiny quiff talking to a big moustached man. Suspicious.');
+  case 'look:boxes': case 'open:boxes': return me('Addobbi di Natale. Siamo a ottobre ma lui resta pronto.','Christmas decorations. It\'s October but they\'re always ready.');
+  case 'look:ghost': return me('Un lenzuolo su una sedia. Spero.','A sheet over a chair. I hope.');
+  case 'take:ghost': return me('No. Se c\'è un fantasma sotto, preferisco non saperlo.','No. If there\'s a ghost under it, I\'d rather not know.');
+  /* cellar */
+  case 'look:barrels': return me('Le botti del nonno. Una dice "GRAPPA - 70°. NON BERE. Nonno".','Grandpa\'s barrels. One says "GRAPPA - 70°. DON\'T DRINK. Grandpa".');
+  case 'take:barrels': case 'open:barrels': case 'use:barrels':
+    if (avHas('grappa')||f.gaveGrappa) return me('Una bottiglia basta. Due e finisco al pronto soccorso.','One bottle is enough. Two and I end up in A&E.');
+    setPose('squat'); avAdd('grappa'); return me('Riempio una bottiglia di grappa. I vapori da soli mi hanno sturato il naso.','I fill a bottle with grappa. The fumes alone unblocked my nose.');
+  case 'look:cheese': return me('Salami appesi. Il nonno li chiamava "il fondo pensione".','Hanging salami. Grandpa called them "the pension fund".');
+  case 'take:cheese': return me('Se ne manca uno, il nonno lo sa. Anche dalla Svizzera.','If one\'s missing, grandpa will know. Even from Switzerland.');
+  case 'look:wine': case 'take:wine': return me('Vino della casa. Annata "boh".','House wine. Vintage: "dunno".');
+  /* piazza */
+  case 'look:board': return me('"CERCASI MESTOLO D\'ORO. Ricompensa 1000 Pippi. Chi sa parli. Chi non sa stia zitto. — Il Sindaco".','"WANTED: GOLDEN LADLE. Reward 1000 Pippi. If you know, talk. If you don\'t, shut up. — The Mayor".');
+  case 'look:cafe': case 'use:cafe': return me('Il tavolino del bar. Prenotato dai vecchietti dal 1974.','The café table. Booked by the old boys since 1974.');
+  case 'look:gelato': case 'use:gelato': return me('Il gelataio è chiuso: c\'è scritto "torno subito" da martedì.','The ice-cream man is shut: "back soon" since Tuesday.');
+  case 'look:sindaco': return me('Il sindaco. Ha più medaglie che voti.','The mayor. He has more medals than votes.');
+  case 'talk:sindaco':
+    if (f.end) return np('sindaco','Eroe! Ti farei una statua, ma il bilancio è quello che è.','Hero! I\'d build you a statue, but the budget is what it is.');
+    await np('sindaco','Il Mestolo d\'Oro! Senza quello niente Sagra, niente risotto, niente rielezione!','The Golden Ladle! Without it no Festival, no risotto, no re-election!');
+    { const o=await avChoose([['Chi può averlo rubato?','Who could have stolen it?'],['Mille Pippi, davvero?','A thousand Pippi, really?'],['Arrivederci.','Goodbye.']]);
+      if (o===0) return np('sindaco','Chiunque! Questo paese è pieno di delinquenti. Chieda in giro, a Nonno Peppe magari.','Anyone! This town is full of crooks. Ask around, try Grandpa Peppe.');
+      if (o===1) return np('sindaco','Mille, sì. Lordi. Poi ci sono le tasse comunali... ma è un dettaglio.','A thousand, yes. Gross. Then there are council taxes... but that\'s a detail.'); return; }
+  case 'look:peppe': return me('Nonno Peppe. Ha visto tutto, dice. Anche lo sbarco sulla luna, dal vivo.','Grandpa Peppe. He\'s seen it all, he says. Even the moon landing, live.');
+  case 'talk:peppe':
+    await np('peppe','Ah, il Mestolo? Stanotte ho visto uno col ciuffo lucido come una padella che scappava.','Ah, the Ladle? Last night I saw a guy with a quiff shiny as a frying pan running off.');
+    { const o=await avChoose([['Dove è andato?','Where did he go?'],['Com\'era fatto?','What did he look like?'],['Cosa ci facevi sveglio di notte?','Why were you up at night?']]);
+      if (o===2){ await np('peppe','Alla mia età la prostata comanda, giovanotto.','At my age the prostate is in charge, young man.'); }
+      if (o===1){ await np('peppe','Puzzava di pesce e di brillantina. Un profumo che non scorderò mai, purtroppo.','He smelled of fish and hair gel. A smell I\'ll never forget, sadly.'); }
+      await np('peppe','È corso verso la spiaggia, dove sta quel contrabbandiere coi baffi.','He ran towards the beach, where that moustached smuggler hangs out.'); }
+    if (!f.peppe){ f.peppe=1; avSave(); avOpen('beach'); } return;
+  case 'give:peppe:acciuga': return np('peppe','Un\'acciuga? Per chi mi hai preso, per un gatto? ...Beh, grazie. La tengo.','An anchovy? What am I, a cat? ...Well, thanks. I\'ll keep it.').then(()=>avDel('acciuga'));
+  /* beach */
+  case 'look:sea': return me('Il mare. Qualcuno ci sta nuotando con le scarpe.','The sea. Someone is swimming in it with their shoes on.');
+  case 'look:castle': return me('Un castello di sabbia con una bandierina: "PROPRIETÀ PRIVATA".','A sandcastle with a little flag: "PRIVATE PROPERTY".');
+  case 'take:castle': return me('Distruggere il sogno di un bambino? Anche no. Probabilmente è di Baffo.','Destroy a child\'s dream? No. It\'s probably Baffo\'s anyway.');
+  case 'look:towel': case 'use:towel': return me('Un telo con scritto "Baffo". Anche il telo ha i baffi.','A towel saying "Baffo". Even the towel has a moustache.');
+  case 'look:baffo': return me('Baffo il contrabbandiere. Ha più tatuaggi che denti.','Baffo the smuggler. More tattoos than teeth.');
+  case 'talk:baffo':
+    if (f.gaveGrappa) return np('baffo','Ti ho già detto tutto. Vai dal barbiere e lasciami digerire.','I told you everything. Go to the barber and let me digest.');
+    await np('baffo','Che vuoi? Le informazioni costano.','What do you want? Information costs.');
+    { const o=await avChoose([['Hai visto uno col ciuffo lucido?','Seen a guy with a shiny quiff?'],['Quanto costano?','How much?'],['Bei baffi.','Nice moustache.']]);
+      if (o===2) await np('baffo','Lo so. Ci ho messo vent\'anni. Ora parla o sparisci.','I know. Took me twenty years. Now talk or get lost.');
+      await np('baffo','Portami qualcosa di FORTE. Ma forte davvero, non la birra analcolica.','Bring me something STRONG. Really strong, not alcohol-free beer.'); }
+    f.baffoTalk=1; avSave(); return;
+  case 'give:baffo:acciuga': return np('baffo','Un\'acciuga? A ME? Ne ho una barca piena. Letteralmente.','An anchovy? To ME? I\'ve got a boat full. Literally.');
+  case 'give:baffo:baffi': return np('baffo','Baffi finti? Mi stai prendendo per il culo?','Fake moustache? Are you taking the piss?');
+  case 'give:baffo:grappa':
+    avDel('grappa'); f.gaveGrappa=1; avSave();
+    { const n=AV.npcs.find(x=>x.avId==='baffo'); if (n){ npcPose(n,'drink'); await avWait(1600); npcPose(n,'idle'); } }
+    await np('baffo','UUUH! Questa sì che è grappa! Mi si sono drizzati i baffi.','WHOOO! Now THAT\'s grappa! My moustache stood on end.');
+    await np('baffo','Il ciuffo è Tonino il Liscio. Voleva vendermi il Mestolo, ma io roba che scotta non la tocco.','The quiff is Slick Tonino. He tried to sell me the Ladle, but I don\'t touch hot goods.');
+    await np('baffo','Se l\'è andato a giocare alla bisca. Metà parola d\'ordine è "Pippi"... l\'altra la sa Salvatore il barbiere.','He went to gamble it at the den. Half the password is "Pippi"... the barber Salvatore knows the rest.');
+    avAdd('biglietto'); avOpen('barber'); return;
+  /* park */
+  case 'look:fountain': return me(f.gotComb?'Acqua, monetine e un piccione che si fa il bidet.':'Sul fondo luccica un pettine d\'argento. E qualche monetina.', f.gotComb?'Water, coins and a pigeon having a bath.':'A silver comb glitters at the bottom. And some coins.');
+  case 'take:fountain': return me('Non ci metto le mani lì: ci fanno il bagno i piccioni. E non solo il bagno.','Not putting my hands in there: pigeons bathe in it. And not only bathe.');
+  case 'use:fountain:retino':
+    if (f.gotComb) return me('Ho già ripescato tutto quello che valeva.','I\'ve fished out everything worth having.');
+    setPose('sweep'); await avWait(1600); setPose('idle'); f.gotComb=1; avAdd('pettine');
+    return me('Preso! Un pettine d\'argento con inciso "Salvatore". E un preservativo, che lascio lì.','Got it! A silver comb engraved "Salvatore". And a condom, which I leave there.');
+  case 'look:pbench': return me('La panchina dove i vecchietti giudicano i passanti.','The bench where the old boys judge passers-by.');
+  case 'use:pbench': setPose('sit'); await avWait(1600); setPose('idle'); return me('Mi siedo e subito giudico un passante. Funziona.','I sit down and immediately judge a passer-by. It works.');
+  /* barber */
+  case 'look:salvatore': return me('Salvatore. Taglia capelli dal 1983, sempre lo stesso taglio.','Salvatore. Cutting hair since 1983, always the same cut.');
+  case 'talk:salvatore':
+    if (f.gavePettine) return np('salvatore','"Pippi mosce", ricorda. E salutami il Liscio... con un pugno.','"Floppy Pippi", remember. And say hi to Tonino... with a punch.');
+    await np('salvatore','Oggi non taglio. Ho perso il mio pettine portafortuna nella fontana del parco. Senza, sbaglio le basette.','No cuts today. I lost my lucky comb in the park fountain. Without it, I mess up sideburns.');
+    { const o=await avChoose([['Sai l\'altra metà della parola d\'ordine della bisca?','Do you know the other half of the den\'s password?'],['Fammi i capelli lo stesso.','Do my hair anyway.']]);
+      if (o===1) await np('salvatore','Senza pettine? Esci di qui come un porcospino. No.','Without my comb? You\'d leave looking like a hedgehog. No.');
+      await np('salvatore','La parola la so. Riportami il pettine e te la dico.','I know the word. Bring me the comb and I\'ll tell you.'); }
+    f.salvaTalk=1; avSave(); avOpen('park'); return;
+  case 'give:salvatore:pettine':
+    avDel('pettine'); f.gavePettine=1; avSave();
+    await np('salvatore','Il mio pettine! Ti bacerei, ma hai l\'alito da caffè di ieri.','My comb! I\'d kiss you, but you have yesterday\'s-coffee breath.');
+    await np('salvatore','La parola intera è "Pippi mosce". Tonino il Liscio lo trovi lì.','The full password is "Floppy Pippi". You\'ll find Slick Tonino there.');
+    await np('salvatore','E prendi questa brillantina: il Liscio me ne compra un litro a settimana, è avanzata.','And take this hair gel: Tonino buys a litre a week, this was left over.');
+    avDel('biglietto'); avAdd('brillantina'); avOpen('bisca'); return;
+  case 'give:salvatore:baffi': return np('salvatore','Baffi finti? Nel mio negozio? È un insulto alla categoria.','Fake moustache? In my shop? An insult to the trade.');
+  case 'look:chair': return me('La poltrona del barbiere. Gira, ma solo se insisti.','The barber chair. It spins, but only if you insist.');
+  case 'use:chair': setPose('sit'); await avWait(1500); setPose('idle'); return np('salvatore','Oggi non taglio, te l\'ho detto.','No cuts today, I told you.');
+  case 'look:mirror': return me(f.slick?'Che figo. Sembro un presentatore degli anni \'80.':'Mi guardo. Lo specchio si guarda altrove.', f.slick?'Looking good. Like an \'80s TV host.':'I look at myself. The mirror looks away.');
+  case 'look:poster': return me('"STILE \'83". Da allora nessuno ha chiesto altro.','"STYLE \'83". Nobody\'s asked for anything else since.');
+  /* self */
+  case 'look:me': return me('Sono io. Bello come sempre. Più o meno.','It\'s me. Handsome as ever. Roughly.');
+  case 'use:me:brillantina': case 'use:mirror:brillantina':
+    if (f.slick) return me('Ne ho già messa abbastanza da friggere una cotoletta.','I\'ve put on enough to fry a cutlet.');
+    setPose('brush'); await avWait(1600); setPose('idle'); f.slick=1; avSave(); avApplyHair();
+    return me('Capelli all\'indietro, lucidi come una Ferrari. Ora sì che posso entrare dappertutto.','Hair slicked back, shiny as a Ferrari. Now I can get in anywhere.');
+  case 'use:me:baffi':
+    if (!AV.st.open.includes('municipio')) return me('Mi metto i baffi finti. ...No, sembro un ispettore della Finanza. Li tolgo. Però... potrebbe servire.','I put on the fake moustache. ...No, I look like a tax inspector. Off they come. Still... might come in handy.');
+    if (f.disguise) return me('Ho già i baffi. Altri due e sembro un tricheco.','I already have a moustache. Two more and I\'m a walrus.');
+    setPose('brush'); await avWait(1200); setPose('idle'); f.disguise=1; avSave(); avApplyHair();
+    return me('Baffi finti, sguardo severo, voce da Finanza. Ora sembro un ispettore. Al Municipio non sapranno dire di no.','Fake moustache, stern look, tax-police voice. Now I look like an inspector. The Town Hall won\'t be able to say no.');
+  case 'look:lettera': case 'use:me:lettera': return avLetter();
+  case 'use:me:grappa': return me('Bere grappa a 70 gradi? Ci tengo al fegato. Più o meno.','Drink 70° grappa? I care about my liver. Sort of.');
+  case 'use:me:pizza': return me('Ho una fame... ma è la pizza della Contessa. Resisto. A fatica.','I\'m starving... but it\'s the Countess\'s pizza. I resist. Barely.');
+  case 'use:me:acciuga': return me('Un\'acciuga cruda a stomaco vuoto? Neanche sotto tortura.','A raw anchovy on an empty stomach? Not even under torture.');
+  /* bisca */
+  case 'look:table': return me('Il tavolo verde. Gina sta vincendo anche le camicie degli altri.','The green table. Gina is winning even the others\' shirts.');
+  case 'use:table': return me('Giocare? Ho solo un\'acciuga e la mia dignità. Già persa.','Play? I only have an anchovy and my dignity. Already lost.');
+  case 'look:slot': case 'use:slot': return me('La slot. Due ciliegie e una campana. Come al solito, niente.','The slot. Two cherries and a bell. As usual, nothing.');
+  case 'look:rules': return me('"1. Niente bari. 2. Si paga in Pippi. 3. Chi vomita pulisce."','"1. No cheats. 2. Pay in Pippi. 3. Whoever pukes, cleans."');
+  case 'look:ercole': return me('Ercole il buttafuori. Ha il collo più largo della testa.','Ercole the bouncer. His neck is wider than his head.');
+  case 'talk:ercole': return np('ercole','Sei dentro, no? Allora non rompere.','You\'re in, aren\'t you? So don\'t bug me.');
+  case 'look:tonino': return me('Tonino il Liscio. Ciuffo lucido, odore di pesce. È lui.','Slick Tonino. Shiny quiff, smells of fish. It\'s him.');
+  case 'talk:tonino':
+    await np('tonino','Ehi, bello. Ti serve un orologio? Un\'autoradio? Un rene?','Hey, handsome. Need a watch? A car radio? A kidney?');
+    { const o=await avChoose([['Dov\'è il Mestolo d\'Oro?','Where\'s the Golden Ladle?'],['Bei capelli. Brillantina?','Nice hair. Gel?'],['Puzzi di pesce.','You smell of fish.']]);
+      if (o===1) await np('tonino','Un litro a settimana. La bellezza ha un prezzo.','A litre a week. Beauty has a price.');
+      if (o===2) await np('tonino','È il profumo del lavoro onesto. Più o meno onesto.','It\'s the smell of honest work. More or less honest.');
+      await np('tonino','Il Mestolo? Ah... l\'ho perso a poker contro la Contessa. Aveva un poker d\'assi, la strega.','The Ladle? Ah... I lost it at poker to the Countess. She had four aces, the witch.');
+      await np('tonino','Ora sta al privé. Ma lì entri solo coi capelli impeccabili. Come i miei.','She\'s at the privé now. But you only get in with impeccable hair. Like mine.'); }
+    if (!f.toninoTalk){ f.toninoTalk=1; avSave(); avOpen('prive'); } return;
+  case 'give:tonino:acciuga': avDel('acciuga'); return np('tonino','Un\'acciuga! Grazie, mi ricorda casa. Il porto. Le latitanze.','An anchovy! Thanks, it reminds me of home. The harbour. Hiding out.');
+  /* privé */
+  case 'look:vsofa': return me('Divanetto di velluto. Probabilmente ha visto cose che non voglio sapere.','Velvet sofa. It has probably seen things I don\'t want to know.');
+  case 'look:champagne': case 'take:champagne': return me('Champagne a 400 Pippi la bottiglia. Bevo con gli occhi.','Champagne at 400 Pippi a bottle. I drink with my eyes.');
+  case 'look:chandelier': return me('Un lampadario di cristallo. Se cade, addio Contessa.','A crystal chandelier. If it falls, goodbye Countess.');
+  case 'look:jacques': return me('Jacques. Francese, dice. È di Frosinone.','Jacques. French, he says. He\'s from Frosinone.');
+  case 'talk:jacques': return np('jacques','Monsieur è già dentro. Monsieur si diverta. Con moderazione.','Monsieur is already in. Monsieur, enjoy yourself. In moderation.');
+  case 'look:contessa': return me('La Contessa. Ha un mestolo d\'oro nella borsetta e lo sguardo di chi ha vinto troppo.','The Countess. A golden ladle in her handbag and the look of someone who wins too much.');
+  case 'talk:contessa':
+    if (f.gavePizza) return np('contessa','La pizza era divina. Ora lasciami digerire con eleganza.','The pizza was divine. Now let me digest elegantly.');
+    await np('contessa','Mmm, un uomo col ciuffo. Che cosa vuoi, tesoro?','Mmm, a man with a quiff. What do you want, darling?');
+    { const o=await avChoose([['Il Mestolo d\'Oro, per favore.','The Golden Ladle, please.'],['Giochiamo a poker?','Fancy a game of poker?'],['Lei è bellissima.','You are gorgeous.']]);
+      if (o===1) await np('contessa','Con te? Ti spoglierei in tre mani. Non è un complimento.','With you? I\'d strip you in three hands. That\'s not a compliment.');
+      if (o===2) await np('contessa','Lo so. Ma i complimenti non si mangiano.','I know. But you can\'t eat compliments.');
+      await np('contessa','Il Mestolo te lo do... in cambio di una pizza. Ho una fame da lupa e qui servono solo tartine minuscole.','I\'ll give you the Ladle... for a pizza. I\'m starving and here they only serve tiny canapés.'); }
+    if (!f.contessaTalk){ f.contessaTalk=1; avSave(); avOpen('pizzeria'); } return;
+  case 'give:contessa:pizza':
+    avDel('pizza'); f.gavePizza=1; avSave();
+    { const n=AV.npcs.find(x=>x.avId==='contessa'); if (n){ npcPose(n,'eat','happy'); await avWait(1800); npcPose(n,'idle'); } }
+    await np('contessa','Mmmh... questa sì che è una pizza. Tieni il tuo mestolo, tesoro. E il mio numero.','Mmmh... now that is a pizza. Take your ladle, darling. And my number.');
+    avAdd('mestolo'); return me('Il Mestolo d\'Oro! Ora dritto dal sindaco in piazza.','The Golden Ladle! Straight to the mayor in the piazza.');
+  case 'give:contessa:acciuga': return np('contessa','Un\'acciuga? Ho detto pizza, non antipasto.','An anchovy? I said pizza, not starter.');
+  case 'give:contessa:baffi': return np('contessa','Baffi finti... hai dei gusti strani, tesoro. Mi piaci.','Fake moustache... you have strange tastes, darling. I like you.');
+  /* pizzeria */
+  case 'look:oven': return me('Il forno a legna. Fa 450 gradi, come la grappa del nonno.','The wood oven. 450 degrees, like grandpa\'s grappa.');
+  case 'look:ptable': return me('Un tavolo apparecchiato. C\'è una forchetta piegata: qualcuno ha protestato.','A laid table. There\'s a bent fork: someone complained.');
+  case 'look:toto': return me('Totò. Pizzaiolo da tre generazioni. La pancia da quattro.','Totò. Pizza maker for three generations. The belly for four.');
+  case 'talk:toto':
+    if (f.gaveBasil) return np('toto','Torna quando vuoi, e porta basilico!','Come back any time, and bring basil!');
+    await np('toto','Pizza alle tre di notte? Per la Contessa? Volentieri... ma sono senza basilico!','Pizza at 3 a.m.? For the Countess? Gladly... but I\'m out of basil!');
+    await np('toto','Senza basilico non sforno. È una questione d\'onore. Mio nonno si rivolterebbe nella tomba.','No basil, no pizza. A matter of honour. My grandpa would turn in his grave.');
+    f.totoTalk=1; avSave(); return;
+  case 'give:toto:basilico':
+    avDel('basilico'); f.gaveBasil=1; avSave();
+    { const n=AV.npcs.find(x=>x.avId==='toto'); if (n){ npcPose(n,'cook','happy'); await avWait(2200); npcPose(n,'idle'); } }
+    await np('toto','Ecco qua: margherita con basilico fresco. Dille che l\'ha fatta Totò, con amore e sudore.','There you go: margherita with fresh basil. Tell her Totò made it, with love and sweat.');
+    avAdd('pizza'); return;
+  case 'give:toto:acciuga': avDel('acciuga'); return np('toto','Un\'acciuga! La metto sulla pizza di Tonino, tanto lui puzza già di pesce.','An anchovy! I\'ll put it on Tonino\'s pizza, he smells of fish anyway.');
+  /* ending */
+  case 'give:sindaco:mestolo':
+    avDel('mestolo'); f.fake=1; avSave();
+    await np('sindaco','IL MESTOLO! Fammi vedere... mmm, pesa poco. Strano.','THE LADLE! Let me see... hmm, it\'s light. Strange.');
+    { const n=AV.npcs.find(x=>x.avId==='sindaco'); if (n){ npcPose(n,'eat'); await avWait(1500); npcPose(n,'angry','angry'); } }
+    await np('sindaco','È CIOCCOLATO! Cioccolato con la stagnola dorata! Mi prendi in giro?!','IT\'S CHOCOLATE! Chocolate in gold foil! Are you mocking me?!');
+    await np('peppe','Buono però. Ne avanza un pezzo?','Tasty though. Any left?');
+    avAdd('etichetta'); avOpen('porto');
+    return me('Sotto la stagnola c\'è un\'etichetta: "Magazzino 7 — Porto". Quindi anche la Contessa è stata fregata. Qualcuno ha fatto un mestolo falso... o cinquanta.','Under the foil there\'s a label: "Warehouse 7 — Harbour". So even the Countess got conned. Someone made a fake ladle... or fifty.');
+  case 'give:sindaco:vero': return avEnding();
+  case 'give:sindaco:etichetta': return np('sindaco','Non voglio vedere niente di cioccolato. Portami quello VERO.','I don\'t want to see anything chocolate. Bring me the REAL one.');
+  /* harbour */
+  case 'look:warehouse': return me(f.doorOpen?'Il magazzino è aperto. Dentro: casse e casse di mestoli di cioccolato.':'Il Magazzino 7. Un lucchetto grosso come la mia testa.', f.doorOpen?'The warehouse is open. Inside: crates and crates of chocolate ladles.':'Warehouse 7. A padlock as big as my head.');
+  case 'open:warehouse': case 'use:warehouse':
+    if (f.doorOpen) { if (!f.receipt){ f.receipt=1; avAdd('ricevuta'); avOpen('municipio'); return me('Frugo tra le casse... una ricevuta! "50 mestoli di cioccolato dorato. Il VERO resta nella cassaforte del Municipio. — G."','I rummage through the crates... a receipt! "50 gold-foil chocolate ladles. The REAL one stays in the Town Hall safe. — G."'); } return me('Solo cioccolato. Tanto. Troppo. Ok, ne mangio uno.','Just chocolate. Lots. Too much. Fine, I\'ll eat one.'); }
+    return me('Chiuso a chiave. Prenderlo a spallate? Ci ho provato una volta con una porta a vetri. Mai più.','Locked. Shoulder-barge it? I tried once with a glass door. Never again.');
+  case 'use:warehouse:chiave':
+    setPose('squat'); await avWait(1200); setPose('idle'); f.doorOpen=1; avDel('chiave'); avSave(); drawRoom('porto');
+    await me('Clac! Il lucchetto si apre. Che odore... cacao e pesce. Una combinazione che non auguro a nessuno.','Clack! The padlock opens. What a smell... cocoa and fish. A combo I wouldn\'t wish on anyone.');
+    f.receipt=1; avAdd('ricevuta'); avOpen('municipio');
+    return me('Tra le casse, una ricevuta: "50 mestoli di cioccolato dorato. Il VERO resta nella cassaforte del Municipio. — G."','Among the crates, a receipt: "50 gold-foil chocolate ladles. The REAL one stays in the Town Hall safe. — G."');
+  case 'look:crates': return me('Casse con scritto "PESCE". Dentro c\'è scritto "PESCE" anche sul pesce.','Crates marked "FISH". Even the fish inside is marked "FISH".');
+  case 'open:crates': return me('Sgombri. Mi fissano tutti. Richiudo.','Mackerel. They\'re all staring at me. Closing.');
+  case 'look:boat': return me('La barca di Baffo, "Baffo II". La "Baffo I" l\'ha affondata la Finanza.','Baffo\'s boat, "Baffo II". The "Baffo I" was sunk by the tax police.');
+  case 'look:lamp': return me('Un lampione. I gabbiani lo usano come bagno pubblico.','A lamp post. The seagulls use it as a public toilet.');
+  case 'look:ciccio': return me('Ciccio il pescatore. Ha la barba piena di sale e di segreti.','Ciccio the fisherman. His beard is full of salt and secrets.');
+  case 'talk:ciccio':
+    await np('ciccio','Uè. Di notte al porto vengono solo i pescatori, i contrabbandieri e i disperati. Tu cosa sei?','Hey. At night only fishermen, smugglers and losers come to the harbour. Which are you?');
+    { const o=await avChoose([['Di chi è il Magazzino 7?','Whose is Warehouse 7?'],['Un disperato, direi.','A loser, I\'d say.'],['Pescato qualcosa?','Caught anything?']]);
+      if (o===1) await np('ciccio','Bravo, l\'onestà mi piace. Siediti, ti racconto una cosa.','Good, I like honesty. Sit down, let me tell you something.');
+      if (o===2) await np('ciccio','Una scarpa, una ruota e la dentiera di mio cognato. Annata buona.','A shoe, a wheel and my brother-in-law\'s dentures. A good year.');
+      await np('ciccio','Il Magazzino 7 è dell\'Assessore Gaspare. Dice che ci tiene le reti. Ma da quando le reti puzzano di cioccolato?','Warehouse 7 belongs to Councillor Gaspare. He says he keeps nets in it. Since when do nets smell of chocolate?');
+      await np('ciccio','Le chiavi di tutto il porto le ha Marisa, la guardiana del faro. Ma non regala niente a nessuno.','Marisa, the lighthouse keeper, has the keys to the whole harbour. But she gives nothing away.'); }
+    if (!f.ciccio){ f.ciccio=1; avSave(); avOpen('faro'); } return;
+  case 'give:ciccio:acciuga': avDel('acciuga'); return np('ciccio','Un\'acciuga per un pescatore? È come regalare sabbia al deserto. Però la mangio.','An anchovy for a fisherman? Like gifting sand to the desert. I\'ll eat it though.');
+  /* lighthouse */
+  case 'look:lhdoor': return me('La porta del faro. C\'è scritto "NON DISTURBARE. MORDO."','The lighthouse door. It says "DO NOT DISTURB. I BITE."');
+  case 'open:lhdoor': return np('marisa','Lì dentro non entra nessuno. Nemmeno io, quando ho la luna storta.','Nobody goes in there. Not even me, when I\'m in a mood.');
+  case 'look:lantern': return me('La lanterna gira e illumina il mare. E ogni tanto la finestra del bagno dei vicini.','The lantern turns and lights the sea. And now and then the neighbours\' bathroom window.');
+  case 'look:hut': return me('La casetta della guardiana. Ci sono quattordici gatti alla finestra. Quindici.','The keeper\'s hut. Fourteen cats at the window. Fifteen.');
+  case 'look:buoy': case 'take:buoy': return me('Un salvagente. Lo lascio qui, magari serve a qualcuno più sfortunato di me. Difficile.','A life buoy. I\'ll leave it for someone unluckier than me. Unlikely.');
+  case 'look:rocks': return me('Scogli. Uno ha la forma della faccia del sindaco. Anche lui è duro come la pietra.','Rocks. One looks like the mayor\'s face. Equally thick.');
+  case 'look:marisa': return me('Marisa, la guardiana. Occhiaie fino alle ginocchia.','Marisa the keeper. Bags under her eyes down to her knees.');
+  case 'talk:marisa':
+    if (f.gaveCoffee) return np('marisa','Grazie ancora per il caffè. Ora vai a rompere le scatole all\'Assessore.','Thanks again for the coffee. Now go and bother the Councillor.');
+    await np('marisa','Sono sveglia da tre notti. Il faro non si spegne da solo, sai.','I\'ve been awake for three nights. The lighthouse doesn\'t switch itself off, you know.');
+    { const o=await avChoose([['Mi servono le chiavi del Magazzino 7.','I need the Warehouse 7 keys.'],['Cosa vedi da lassù di notte?','What do you see up there at night?'],['Perché non dormi?','Why don\'t you sleep?']]);
+      if (o===1) await np('marisa','Vedo tutto. Ma la memoria mi torna solo con la caffeina.','I see everything. But my memory only comes back with caffeine.');
+      if (o===2) await np('marisa','Perché il comune non mi manda il cambio da otto anni. Grazie, Assessore Gaspare.','Because the council hasn\'t sent a replacement in eight years. Thanks, Councillor Gaspare.');
+      await np('marisa','Portami un caffè. CALDO. E ti do quello che vuoi. Tranne i gatti.','Bring me a coffee. HOT. And I\'ll give you what you want. Except the cats.'); }
+    f.marisaTalk=1; avSave(); return;
+  case 'give:marisa:moka': return np('marisa','Freddo?! Mi vuoi morta? CALDO, ho detto. Scaldalo, genio.','Cold?! Do you want me dead? HOT, I said. Heat it up, genius.');
+  case 'give:marisa:caffe':
+    avDel('caffe'); f.gaveCoffee=1; avSave();
+    { const n=AV.npcs.find(x=>x.avId==='marisa'); if (n){ npcPose(n,'drink','happy'); await avWait(1800); npcPose(n,'idle'); } }
+    await np('marisa','Ahhh. Sono di nuovo una persona. Più o meno.','Ahhh. I\'m a person again. Roughly.');
+    await np('marisa','Ecco la chiave del Magazzino 7. E ti dico una cosa: stanotte alle due ho visto l\'Assessore uscire dal magazzino con qualcosa che brillava.','Here\'s the Warehouse 7 key. And here\'s something: at two tonight I saw the Councillor leave the warehouse with something shiny.');
+    await np('marisa','È andato dritto in Municipio. Un assessore in ufficio alle due di notte. Mai visto uno lavorare a quell\'ora.','He went straight to the Town Hall. A councillor at his desk at 2 a.m. Never seen one work at that hour.');
+    avAdd('chiave'); return;
+  case 'give:marisa:acciuga': avDel('acciuga'); return np('marisa','Per i gatti? Grazie. Ora ti ameranno per sempre. È una minaccia.','For the cats? Thanks. Now they\'ll love you forever. That\'s a threat.');
+  /* town hall */
+  case 'look:safe': return me(f.safeOpen?'La cassaforte è aperta e vuota. Come le casse del comune.':'Una cassaforte a combinazione. Quattro cifre.', f.safeOpen?'The safe is open and empty. Like the council\'s coffers.':'A combination safe. Four digits.');
+  case 'open:safe': case 'use:safe':
+    if (f.safeOpen) return me('Già aperta. Non c\'è altro, giuro.','Already open. Nothing else, I swear.');
+    if (!f.gaspareGone) return np('gaspare','Giù le mani dalla mia cassaforte!','Hands off my safe!');
+    { setPose('squat'); const o=await avChoose([['1974','1974'],['1983','1983'],['2009','2009'],['1492','1492']]);
+      if (o!==1){ setPose('idle'); return me(['Clic. Niente. Come al bar dal 1974.','Clic. Niente. Neanche il mio crollo del 2009 la apre.','Clic. Niente. Colombo non c\'entra.'][o===0?0:o===2?1:2], ['Click. Nothing. Like the café since 1974.','Click. Nothing. Not even my 2009 breakdown opens it.','Click. Nothing. Columbus isn\'t involved.'][o===0?0:o===2?1:2]); }
+      await avWait(900); setPose('idle'); f.safeOpen=1; avSave(); drawRoom('municipio');
+      avAdd('vero'); avAdd('lettera');
+      return me('CLAC! Dentro: il VERO Mestolo d\'Oro, pesante come un mattone. E una lettera sigillata con un corvo nero.','CLACK! Inside: the REAL Golden Ladle, heavy as a brick. And a letter sealed with a black crow.'); }
+  case 'look:desk': return me(f.gaspareGone?'Sulla scrivania un post-it: "Combinazione = l\'anno del taglio di Salvatore. NON DIRLO A NESSUNO."':'La scrivania dell\'Assessore. C\'è un post-it, ma lui ci tiene il gomito sopra.', f.gaspareGone?'A sticky note on the desk: "Combination = the year of Salvatore\'s haircut. TELL NO ONE."':'The Councillor\'s desk. There\'s a sticky note, but his elbow is on it.');
+  case 'look:portrait': return me('Il ritratto del sindaco. Il pittore è stato generoso coi capelli.','The mayor\'s portrait. The painter was generous with the hair.');
+  case 'look:window': return me(f.gaspareGone?'La finestra da cui è saltato Gaspare. Primo piano. Ha atterrato sui cassonetti.':'Una finestra aperta. Al primo piano. Utile per le fughe.', f.gaspareGone?'The window Gaspare jumped from. First floor. He landed in the bins.':'An open window. First floor. Handy for escapes.');
+  case 'look:flag': return me('Una bandiera. Sventola anche senza vento, grazie al ventilatore dell\'assessore.','A flag. It flutters without wind, thanks to the councillor\'s fan.');
+  case 'look:gennaro': return me('Gennaro l\'usciere. Dorme in piedi da vent\'anni.','Gennaro the porter. He\'s slept standing up for twenty years.');
+  case 'talk:gennaro': return np('gennaro','Signor Ispettore, io non c\'entro niente! Io timbro e basta!','Inspector, sir, I have nothing to do with it! I just clock in!');
+  case 'look:gaspare': return me('L\'Assessore Gaspare. Sorriso da dentifricio, occhi da gatto che ha mangiato il canarino.','Councillor Gaspare. Toothpaste smile, eyes of a cat that ate the canary.');
+  case 'talk:gaspare':
+    await np('gaspare','Ispettore! Che piacere. I miei conti sono in ordine, glielo giuro sulla testa di mia madre.','Inspector! What a pleasure. My accounts are in order, I swear on my mother\'s head.');
+    { const o=await avChoose([['Dov\'è il Mestolo d\'Oro?','Where is the Golden Ladle?'],['Bei mestoli di cioccolato al porto.','Nice chocolate ladles at the harbour.'],['Sua madre è d\'accordo?','Does your mother agree?']]);
+      if (o===2) await np('gaspare','Mia madre è in Svizzera. Con un certo nonno, tra l\'altro.','My mother is in Switzerland. With a certain grandpa, by the way.');
+      await np('gaspare','Mestolo? Cioccolato? Non so di cosa parla. Senza prove, Ispettore, sono un santo.','Ladle? Chocolate? I don\'t know what you mean. Without proof, Inspector, I\'m a saint.'); }
+    f.gaspareTalk=1; avSave(); return;
+  case 'give:gaspare:ricevuta':
+    avDel('ricevuta'); f.gaspareGone=1; avSave();
+    await np('gaspare','La... la mia ricevuta! Non è come sembra! ...Ok, è esattamente come sembra.','My... my receipt! It\'s not what it looks like! ...OK, it\'s exactly what it looks like.');
+    await np('gaspare','Non mi prenderete mai! Il Corvo mi proteggerà!','You\'ll never catch me! The Crow will protect me!');
+    { const n=AV.npcs.find(x=>x.avId==='gaspare'); if (n){ npcPose(n,'run','scared'); await npcWalk(n, 520); removeNPC(n); AV.npcs=AV.npcs.filter(x=>x!==n); } }
+    await np('gennaro','È saltato dalla finestra! Sui cassonetti! Ispettore, io non ho visto niente!','He jumped out the window! Into the bins! Inspector, I saw nothing!');
+    return me('Il Corvo? Chi diavolo è il Corvo? Intanto la scrivania è libera.','The Crow? Who the hell is the Crow? Anyway, the desk is free.');
+  case 'give:gaspare:etichetta': return np('gaspare','Un\'etichetta? Ne stampano a milioni. Non prova niente, Ispettore.','A label? They print millions. Proves nothing, Inspector.');
+  }
+  /* generic answers */
+  if (verb==='look') return me('Niente di speciale. Come la mia vita sentimentale.','Nothing special. Like my love life.');
+  if (verb==='talk' && t.type!=='npc') return me('Parlare con gli oggetti... non sono ancora a quel punto.','Talking to objects... I\'m not there yet.');
+  if (verb==='talk') return np(t.id,'Non ho tempo, devo trovare il Mestolo... o almeno fingere.','No time, I have to find the Ladle... or at least pretend.');
+  if (verb==='take' && t.type==='npc') return me('Prendere una persona? Ci vuole almeno una cena prima.','Pick up a person? Dinner first, at least.');
+  if (verb==='give' && t.type==='npc') return np(t.id,'Grazie, ma no. Tienitelo.','Thanks, but no. Keep it.');
+  return avNope();
+}
+async function avEnding(){
+  const f=AV.st.f; avDel('vero'); f.end=1; avSave();
+  await avSay('sindaco', AVT('Questo pesa! È VERO! IL MESTOLO D\'ORO! Cittadini, la Sagra è salva!','This is heavy! It\'s REAL! THE GOLDEN LADLE! Citizens, the Festival is saved!'));
+  AV.npcs.forEach(n=>npcPose(n,'cheer','happy')); setPose('cheer');
+  await avSay('sindaco', AVT('E Gaspare, il mio assessore! Voleva rifilarci quello di cioccolato e vendersi il vero! Lo farò arrestare... appena esce dai cassonetti.','And Gaspare, my own councillor! Planned to fob us off with chocolate and sell the real one! I\'ll have him arrested... once he\'s out of the bins.'));
+  await avSay('sindaco', AVT('Ecco i tuoi mille Pippi! ...Meno le tasse comunali, il bollo, i diritti di segreteria e il caffè: 200 Pippi.','Here are your thousand Pippi! ...Minus council tax, stamp duty, admin fees and coffee: 200 Pippi.'));
+  try { if (typeof LIFE!=='undefined' && typeof LIFE.pippi==='number' && !f.paid){ f.paid=1; avSave(); LIFE.pippi+=200; if (typeof saveLife==='function') saveLife(); } } catch(e){}
+  try { const u=unlockedPlaces(); ['porto','faro','municipio'].forEach(x=>{ if (!u.includes(x)) u.push(x); }); localStorage.setItem('vainUnlock', JSON.stringify(u)); } catch(e){}
+  setPose('dance'); AV.npcs.forEach(n=>npcPose(n,'dance','happy'));
+  await avSay('me', AVT('Duecento... beh, meglio di niente. Però quella lettera col corvo mi brucia in tasca.','Two hundred... well, better than nothing. But that crow letter is burning a hole in my pocket.'));
+  setPose('idle'); AV.npcs.forEach(n=>npcPose(n,'idle'));
+  if (f.readLetter) avFinale(); else await avSay('me', AVT('Prima di festeggiare, leggo quella lettera. Tocca la lettera nell\'inventario.','Before celebrating, let me read that letter. Tap the letter in the inventory.'));
+}
+async function avLetter(){
+  const f=AV.st.f;
+  await avSay('me', AVT('Apro la lettera. C\'è scritto, con una calligrafia inquietante:','I open the letter. It says, in creepy handwriting:'));
+  await avSay('me', AVT('"Gaspare, idiota. Il Mestolo è solo la chiave: sotto il manico c\'è inciso il primo pezzo della Mappa dell\'Isola dei Pippi."','"Gaspare, you idiot. The Ladle is just the key: under the handle is engraved the first piece of the Map of Pippi Island."'));
+  await avSay('me', AVT('"Gli altri pezzi sono nascosti in paese. Alla prossima luna nuova ci vediamo al faro. — Il Corvo"','"The other pieces are hidden in town. Next new moon, meet me at the lighthouse. — The Crow"'));
+  f.readLetter=1; avSave();
+  await avSay('me', AVT('L\'Isola dei Pippi... un tesoro intero di Pippi. E un corvo che mi ruba le battute. Questa storia non è finita.','Pippi Island... a whole treasure of Pippi. And a crow stealing my lines. This story isn\'t over.'));
+  if (f.end) avFinale();
+}
+function avFinale(){
+  sheet(`<div style="text-align:center"><div style="font-size:54px">🥄🗺️🐦‍⬛</div><h3>${AVT('Fine del Capitolo 1: La Notte del Mestolo d\'Oro','End of Chapter 1: The Night of the Golden Ladle')}</h3><p>${AVT('La Sagra è salva, Gaspare è nei cassonetti e il Corvo ti osserva. Hai guadagnato 200 Pippi anche nel gioco online.','The Festival is saved, Gaspare is in the bins and the Crow is watching you. You earned 200 Pippi in the online game too.')}</p><p><b>${AVT('Sbloccati nel gioco online: ⚓ Porto, 🗼 Faro, 🏛️ Municipio','Unlocked in the online game: ⚓ Harbour, 🗼 Lighthouse, 🏛️ Town Hall')}</b></p><p style="font-size:20px;letter-spacing:2px;color:#ffd166;margin:16px 0 4px">${AVT('CONTINUA…','TO BE CONTINUED…')}</p><p style="opacity:.75;margin-top:0">${AVT('Capitolo 2: L\'Isola dei Pippi','Chapter 2: Pippi Island')}</p><button type="button" id="avEndOk" style="width:100%">OK</button></div>`);
+  $('avEndOk').onclick=()=>closeSheet();
+}
+/* tap on the scene */
+function avHsAt(x,y){ return (AV_HS[H.room]||[]).find(h=>Math.abs(x-h.x)<=h.w/2+6 && Math.abs(y-h.y)<=h.h/2+6); }
+async function avTap(e){
+  if (AV.dlg) return;
+  if (AV.busy){ if (AV.skip) AV.skip(); return; }
+  if (e.target.closest('.mini')){ avMap(); return; }
+  if (!e.target.closest('#cam')) return;
+  const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
+  const n=AV.npcs.find(x=>x.room===H.room && x.g.contains(e.target));
+  let t=null;
+  if (n) t={type:'npc', id:n.avId, x:n.X};
+  else if (holG.contains(e.target)) t={type:'self', id:'me', x:H.X};
+  else { const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
+  const verb=AV.verb||'walk';
+  if (!t){ AV.item=null; avRender(); const id=++runId; walkTo(clamp(sp.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
+  let v=verb; if (v==='walk') v='look';
+  if ((v==='use'||v==='give') && !AV.item && t.type!=='self' && v==='give'){ avSentence(avName(t)); return avSay('me', AVT('Dare cosa? Scegli prima un oggetto.','Give what? Pick an item first.')); }
+  avSentence(avName(t));
+  AV.busy=true;
+  try {
+    if (t.type!=='self'){ const tx=clamp(t.x+(H.X<t.x?-48:48),30,450); const id=++runId; if (Math.abs(H.X-tx)>8) await walkTo(tx, id); setPose('idle'); H.dir=t.x>=H.X?1:-1; }
+    await avDo(v, t, AV.item);
+  } catch(err){ console.log(err); }
+  finally { AV.busy=false; AV.item=null; AV.verb=null; avRender(); }
+}
+function avBar(){
+  $('advVerbs').addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b||AV.busy) return; const v=b.dataset.v;
+    if (v==='map') return avMap(); if (v==='menu') return avMenu();
+    AV.verb = AV.verb===v ? null : v; if (v!=='use' && v!=='give') AV.item=null; avRender(); });
+  $('advInv').addEventListener('click', async e=>{ const b=e.target.closest('[data-i]'); if(!b||AV.busy) return; const i=b.dataset.i;
+    if (AV.verb==='use'||AV.verb==='give'){ AV.item = AV.item===i ? null : i; avRender(); return; }
+    AV.busy=true; try{ const nm=AV_ITEMS[i][LANG==='it'?1:2];
+      const looks={ acciuga:['Un\'acciuga sotto sale. Mi fissa.','A salted anchovy. It\'s staring at me.'], torcia:['Una torcia. Fa luce, come me nei giorni buoni.','A torch. It shines, like me on good days.'], retino:['Un retino da pesca del nonno. Ha catturato più scarpe che pesci.','Grandpa\'s fishing net. Caught more shoes than fish.'], grappa:['Grappa a 70 gradi. Si potrebbe usare come carburante.','70° grappa. Could be used as fuel.'], biglietto:['Un biglietto unto: "PIPPI ..." Il resto è una macchia di sugo.','A greasy note: "PIPPI ..." The rest is a sauce stain.'], pettine:['Un pettine d\'argento: "Salvatore".','A silver comb: "Salvatore".'], brillantina:['Brillantina extra forte. Tiene anche in caso di uragano.','Extra-strong gel. Holds even in a hurricane.'], basilico:['Basilico fresco. Profuma di nonna.','Fresh basil. Smells of grandma.'], pizza:['Margherita bollente. Resisti.','A piping hot margherita. Resist.'], mestolo:['Il Mestolo d\'Oro. Pesante, lucido e inutile. Come un trofeo.','The Golden Ladle. Heavy, shiny and useless. Like a trophy.'], baffi:['Baffi finti. Il nonno, chissà perché, li teneva.','A fake moustache. Grandpa kept them, who knows why.'], radiomsg:['',''], moka:['Moka di caffè freddo. Va scaldata.','A pot of cold coffee. Needs heating.'], caffe:['Caffè bollente. Profuma di rinascita.','Piping hot coffee. Smells like rebirth.'], chiave:['Chiave del Magazzino 7. Ha un portachiavi a forma di gatto.','Warehouse 7 key. Cat-shaped keyring.'], etichetta:['"Magazzino 7 — Porto". Sa ancora di cioccolato.','"Warehouse 7 — Harbour". Still smells of chocolate.'], ricevuta:['"50 mestoli di cioccolato. Il VERO nella cassaforte del Municipio. — G."','"50 chocolate ladles. The REAL one in the Town Hall safe. — G."'], lettera:['Una lettera sigillata con un corvo nero. La apro? Usala su di te.','A letter sealed with a black crow. Open it? Use it on yourself.'], vero:['Il VERO Mestolo d\'Oro. Pesa come un rimorso.','The REAL Golden Ladle. Heavy as remorse.'] }[i];
+      AV.verb='look'; avSentence(nm.toLowerCase()); if (i==='lettera') await avLetter(); else await avSay('me', AVT(looks[0],looks[1])); } finally { AV.busy=false; AV.verb=null; avRender(); } });
+  $('advText').addEventListener('pointerdown', ()=>{ if (AV.skip) AV.skip(); });
+}
+async function avStart(){
+  document.body.classList.add('adv'); avLoad(); avBar();
+  $('title').innerHTML=`vAIn <span>${AVT('Avventura','Adventure')}</span>`;
+  try { applyCostume('pajamas'); setProp(null); } catch(e){}
+  await avGo(AV.st.room||'living', true); avRender(); setTimeout(()=>window.fitCam&&fitCam(),50);
+  if (!AV.st.f.intro){ AV.st.f.intro=1; avSave(); AV.busy=true;
+    try { await avLines([['me','Che dormita. Sono le tre di notte e ho fame.','What a nap. It\'s 3 a.m. and I\'m starving.'],['me','Quella radio gracchia da un\'ora. Forse dice qualcosa di utile, per una volta.','That radio\'s been crackling for an hour. Maybe it\'s saying something useful, for once.']]); } finally { AV.busy=false; } }
+}
+
 /* ================= ONBOARDING ================= */
 let pick='m';
 function preview(kind){
@@ -3253,12 +3862,16 @@ function moveIn(kind, name, code){
   if (!H.look || H.look.kind!==kind){ H.look={...defaultLook(kind), kind}; saveLook(); }
   applyKind(); applyCostume('pajamas'); setProp('mug');
   $('setup').classList.add('hide');
+  if (window.ADV){ try{ applyExtras(); }catch(e){} avStart(); return; }
   showNumber(); initPeer(); try{ startGossip(); startBoard(); applyExtras(); }catch(e){}
   if (C.ready) updateIdentity(); else if (window.FB) communityStart(); else { renderSocial(); window.addEventListener('fb-ready', communityStart, {once:true}); }
   say(tr('hello'), 2500);
 }
 function needName(){ const n=$('nameIn'); if (n.value.trim()) return false; n.style.borderColor='#ff453a'; n.placeholder=LANG==='it'?'Scrivi il tuo nome':'Type your name'; n.focus(); return true; }
 $('btnStart').onclick=()=>{ if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
+setTimeout(()=>{ $('btnStartAdv').textContent=LANG==='it'?'🗺️ Avventura offline':'🗺️ Offline adventure'; },0);
+$('btnStartAdv').onclick=()=>{ if (needName()) return; if (!window.ADV){ try{ localStorage.setItem('subservient', JSON.stringify({kind:pick, name:$('nameIn').value.trim().slice(0,18), code:$('codeIn').value})); }catch(e){} location.hash='avventura'; location.reload(); return; } moveIn(pick, $('nameIn').value, $('codeIn').value); };
+$('btnAdv').onclick=()=>{ if (window.ADV) return avMenu(); location.hash='avventura'; location.reload(); };
 $('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); } });
 $('codeIn').value=String(Math.floor(100+Math.random()*900));
 $('mynum').onclick=()=>{ $('nameIn').value=H.name; $('codeIn').value=H.code; $('setup').classList.remove('hide'); };
@@ -3710,7 +4323,8 @@ applyLang();
     b.addEventListener('mousedown', e=>e.preventDefault());
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
-  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar,.objmenu')) return; e.preventDefault();
+  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (window.ADV && e.target.closest('#advText')) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar,.objmenu,.advbar,.sheet')) return; e.preventDefault();
+    if (window.ADV){ avTap(e); return; }
     if (document.body.classList.contains('land') && e.target.closest('#cam')){ document.body.classList.add('kbhide'); setTimeout(()=>window.fitCam&&fitCam(),0); }
     if (e.target.closest('.mini')){ openMap(); return; }
     if (H.room==='piazza' || H.room==='barber'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
@@ -3759,9 +4373,10 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
     document.body.classList.toggle('chat', $('callbox').classList.contains('show'));
     wrap.style.height=(vh-pad)+'px';
     const hgt=el=>{ if (!el) return 0; const st=getComputedStyle(el); if (st.display==='none') return 0; return el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); };
-    const others = hgt(document.querySelector('header.top')) + hgt($('callbox')) + hgt($('f')) + hgt($('kbd')) + hgt(document.querySelector('.kbbar')) + (land?4:10);
+    const others = hgt(document.querySelector('header.top')) + hgt($('callbox')) + hgt($('f')) + (document.body.classList.contains('adv')?(land?Math.max(120, vh*0.3):Math.min(300, Math.max(210, vh*0.36))):0) + hgt($('kbd')) + hgt(document.querySelector('.kbbar')) + (land?4:10);
     const fullW=wrap.clientWidth; let h=Math.max(100, Math.min(fullW/1.6, vh-pad-others)); let w=Math.min(fullW, h*1.6); h=w/1.6;
     const W=w.toFixed(1)+'px', Hh=h.toFixed(1)+'px'; if (camEl.style.width!==W) camEl.style.width=W; if (camEl.style.height!==Hh) camEl.style.height=Hh;
+    if (document.body.classList.contains('adv')){ const ab=$('advbar'); const free=vh-pad-hgt(document.querySelector('header.top'))-h-(land?16:44); const v=Math.max(land?120:190, free)+'px'; if (ab.style.height!==v) ab.style.height=v; }
   }
   window.fitCam=fit;
   if (window.visualViewport){ visualViewport.addEventListener('resize',fit); }
@@ -3839,7 +4454,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='39';
+const BUILD='41';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
