@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, interactive-widget=resizes-content">
-<title>Subservient Holgen</title>
-<meta name="description" content="Holgen and Holga will do anything you type. Almost. A silly web toy: free, no sign-up.">
+<title>vAIn</title>
+<meta name="apple-mobile-web-app-title" content="vAIn"><meta name="application-name" content="vAIn">
+<meta name="description" content="vAIn: your character does anything you type. Almost. Free, no sign-up.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Subservient Holgen">
-<meta property="og:title" content="Subservient Holgen &amp; Holga">
+<meta property="og:site_name" content="vAIn">
+<meta property="og:title" content="vAIn">
 <meta property="og:description" content="They'll do anything you type. Almost. Play free, no sign-up.">
 <meta property="og:url" content="https://subservient-game.github.io/">
-<meta property="og:image" content="https://subservient-game.github.io/og.png">
+<meta property="og:image" content="https://subservient-game.github.io/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Holgen and Holga toasting in the garden">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://subservient-game.github.io/og.png">
+<meta name="twitter:image" content="https://subservient-game.github.io/og.png?v=2">
 <meta name="theme-color" content="#131519">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -178,14 +179,14 @@
         <button type="button" data-k="m" class="on"><svg viewBox="-28 -104 56 108" id="pvM"></svg>Holgen</button>
         <button type="button" data-k="f"><svg viewBox="-28 -104 56 108" id="pvF"></svg>Holga</button>
       </div>
-      <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="Holgen" aria-label="Name">
+      <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="" aria-label="Name">
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
       <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
     </div>
   </div>
 
-  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><h1 id="title">Subservient <span>Holgen</span></h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
+  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><h1 id="title">vAIn</h1><div class="lang"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
   <div class="cam" id="cam">
     <svg class="scene" id="scene" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -1121,7 +1122,7 @@ function tween(props, ms, id){
 /* characters never stop on top of each other (unless asked explicitly) */
 const GAP=62;
 function freeSpot(x, self){
-  if (x<10 || x>470 || window.__closeOK) return x;
+  if (x<10 || x>470 || window.__closeOK || (self && self.player)) return x;
   const occ=[]; if (self!=='me') occ.push(H.destX??H.X);
   for (const n of NPCS) if (n!==self && n.room===H.room && n.alpha>0.2 && n.g.style.display!=='none') occ.push(n.destX??n.X);
   const ok=v=>occ.every(o=>Math.abs(o-v)>=GAP);
@@ -1327,7 +1328,7 @@ function buildPrompt(cmd){
   const states = Object.entries(ST.o).map(([k,v])=>{ const a=[]; if('on' in v) a.push(v.on?'on':'off'); if('open' in v) a.push(v.open?'open':'closed'); if(v.grow&&v.grow!==1) a.push('grown x'+v.grow.toFixed(2)); return a.length?`${k}:${a.join(',')}`:null; }).filter(Boolean).join('; ');
   const dark = Object.keys(ST.dark).filter(k=>ST.dark[k]).join(', ')||'none';
   const who = (H.kind==='f' ? `a woman (she/her)` : `a man (he/him)`)+`: ${(H.look&&H.look.hair)||'messy'} hair${H.look&&H.look.glasses===false?'':', round glasses'}`;
-  return `You direct "Subservient ${H.name}", a comedy web toy in the spirit of the old obedient-webcam sites. ${H.name} is ${who}, cardigan, pyjama trousers, slippers, usually holding a coffee mug. Lazy, deadpan, but obeys EVERYTHING, filmed by security cameras in a small house. Turn the viewer's command into an animation script. Be inventive, funny and generous: the viewer should feel ${H.name} can do anything. The players are adults (40+): crude, cheeky, sarcastic humour, insults and swearing (Italian or English) are welcome, in the lines and in the actions — just no explicit sexual content.
+  return `You direct ${H.name} in "vAIn", a comedy web toy in the spirit of the old obedient-webcam sites. ${H.name} is ${who}, cardigan, pyjama trousers, slippers, usually holding a coffee mug. Lazy, deadpan, but obeys EVERYTHING, filmed by security cameras in a small house. Turn the viewer's command into an animation script. Be inventive, funny and generous: the viewer should feel ${H.name} can do anything. The players are adults (40+): crude, cheeky, sarcastic humour, insults and swearing (Italian or English) are welcome, in the lines and in the actions — just no explicit sexual content.
 
 HOUSE (scene is 480 x 300, floor y≈258, x 0-480 left→right)
 Rooms: living, kitchen, bathroom, bedroom, garden. "goto" an object in another room walks there automatically.
@@ -1834,18 +1835,19 @@ const PASSERS = {
         {p:'sneeze',s:'ACHOO! Relax, not contagious. I think.'},{p:'look',s:'Where\'s the loo? No? I\'ll go here then.'},{p:'stomp',s:'Move it, loser!'},{p:'think',s:'Just picking my nose. Don\'t mind me.'}]
   }
 };
-function randomLook(kind){ const pick=a=>a[Math.floor(Math.random()*a.length)]; return {hair:pick(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly']), hairColor:pick(LOOKS.hairColor), skin:pick(LOOKS.skin), glasses:Math.random()<.4, outfit:pick(LOOKS.outfit), pants:pick(LOOKS.pants)}; }
-async function passerBy(r){
-  if (H.room!==r || !PL.topic || PL.passer) return;
-  const kind=Math.random()<.5?'f':'m', fromLeft=Math.random()<.5;
-  const name=PASSERS.names[Math.floor(Math.random()*PASSERS.names.length)];
-  const n=makeNPC({name, kind, room:r, x:fromLeft?-50:530}); npcLook(n, randomLook(kind)); n.bot=true; n.passer=true; n.role=L2('passante','passer-by'); PL.passer=n;
-  const gags=PASSERS.gags[LANG==='it'?'it':'en']; const g=gags[Math.floor(Math.random()*gags.length)];
+function srand(...k){ let h=7; for (const v of k){ const n=typeof v==='string'?[...v].reduce((a,c)=>a*31+c.charCodeAt(0),0):v; h=(h*31+n)%2147483647; } let x=Math.sin(h*12.9898+78.233)*43758.5453; return x-Math.floor(x); }
+function randomLook(kind, seed){ if (seed!=null){ const pk=(a,i)=>a[Math.floor(srand(seed,i)*a.length)]; return {hair:pk(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly'],1), hairColor:pk(LOOKS.hairColor,2), skin:pk(LOOKS.skin,3), glasses:srand(seed,4)<.4, outfit:pk(LOOKS.outfit,5), pants:pk(LOOKS.pants,6)}; } const pick=a=>a[Math.floor(Math.random()*a.length)]; return {hair:pick(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly']), hairColor:pick(LOOKS.hairColor), skin:pick(LOOKS.skin), glasses:Math.random()<.4, outfit:pick(LOOKS.outfit), pants:pick(LOOKS.pants)}; }
+async function passerBy(r, sl){
+  if (H.room!==r || !PL.topic || PL.passer) return; if (sl==null) sl=Math.floor(Date.now()/1000);
+  const kind=srand(sl,r,3)<.5?'f':'m', fromLeft=srand(sl,r,4)<.5;
+  const name=PASSERS.names[Math.floor(srand(sl,r,5)*PASSERS.names.length)];
+  const n=makeNPC({name, kind, room:r, x:fromLeft?-50:530}); npcLook(n, randomLook(kind, sl)); n.bot=true; n.passer=true; n.role=L2('passante','passer-by'); PL.passer=n;
+  const gags=PASSERS.gags[LANG==='it'?'it':'en']; const g=gags[Math.floor(srand(sl,r,6)*gags.length)];
   try {
-    await npcWalk(n, clamp(H.X+(fromLeft?-60:60),40,440)); if (H.room!==r) return;
-    n.dir=H.X>n.X?1:-1; npcPose(n, POSES[g.p]?g.p:'idle'); npcSay(n, g.s, 3200);
+    await npcWalk(n, [110,190,280,360][Math.floor(srand(sl,r,7)*4)]); if (H.room!==r) return;
+    n.dir=fromLeft?1:-1; npcPose(n, POSES[g.p]?g.p:'idle'); npcSay(n, g.s, 3200);
     await sleep(3400); if (H.room!==r) return; npcPose(n,'idle');
-    if (Math.random()<.4){ npcSay(n, LANG==='it'?'Ciao bello/a!':'Bye, gorgeous!'); }
+    if (srand(sl,r,8)<.4){ npcSay(n, LANG==='it'?'Ciao bello/a!':'Bye, gorgeous!'); }
     await npcWalk(n, fromLeft?540:-60);
   } finally { removeNPC(n); if (PL.passer===n) PL.passer=null; }
 }
@@ -1890,15 +1892,22 @@ function enterPlace(r){
   try { PL.es=new EventSource(`${NTFY}/${PL.topic}/sse`); PL.es.onmessage=ev=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } if (m.event!=='message') return; let d; try{ d=JSON.parse(m.message); }catch(e){ return; } onPlaceMsg(d, r); }; } catch(e){}
   postPlace({t:'here', ...myPublic()});
   setTimeout(()=>postPlace({t:'here', ...myPublic()}), 1500);
-  PL.hb=setInterval(()=>postPlace({t:'here', ...myPublic()}), 9000);
+  PL.lastSent=Date.now(); PL.lastX=H.X;
+  PL.unstack=setInterval(()=>{ if (H.room!==r || H.seat || H.lying || !['idle','drink'].includes(H.pose)) return; const me=topicOf(H.name,H.code);
+      const clash=Object.values(PL.peers).find(p=>p.arrived && Math.abs(p.n.X-H.X)<GAP-12 && (p.n.topic||'')<me);
+      if (clash){ const id=++runId; walkTo(freeSpot(H.X+(H.X<240?GAP:-GAP),'me'), id); } }, 2500);
+  PL.hb=setInterval(()=>{ const now=Date.now(), moved=Math.abs(H.X-PL.lastX)>5; if ((moved && now-PL.lastSent>3000) || now-PL.lastSent>12000){ PL.lastSent=now; PL.lastX=H.X; postPlace({t:'here', ...myPublic()}); } }, 1000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.post}); npcLook(n,b.look); n.bot=true; n.post=b.post; n.roam=b.roam||25; n.work=b.work; n.sells=b.sells; n.role=b.role; n.lines=b.lines; return n; });
-  clearTimeout(PL.passT); const nextPasser=()=>{ PL.passT=setTimeout(()=>{ if (H.room===r && Math.random()<.75) passerBy(r); if (PL.topic) nextPasser(); }, rnd(35000,75000)); }; PL.passT=setTimeout(()=>{ if (H.room===r) passerBy(r); nextPasser(); }, rnd(9000,18000));
-  PL.wander=setInterval(()=>{ for (const n of PL.bots){ if (n.busy||n.room!==H.room) continue; const p=Math.random();
-      if (p<.45){ npcPose(n, n.work[Math.floor(Math.random()*n.work.length)]); }
-      else if (p<.65){ npcWalk(n, clamp(n.post+rnd(-n.roam,n.roam),30,450)); }
-      else if (p<.78){ npcSay(n, n.lines[LANG==='it'?'it':'en'][Math.floor(Math.random()*n.lines[LANG==='it'?'it':'en'].length)]); }
-      else npcPose(n,'idle'); } }, 4500);
+  clearInterval(PL.passT); PL.passSlot=Math.floor(Date.now()/60000);
+  PL.passT=setInterval(()=>{ const sl=Math.floor(Date.now()/60000); if (sl===PL.passSlot) return; const off=Math.floor(srand(sl,r,1)*25000); if (srand(sl,r,2)<.7){ PL.passSlot=sl; setTimeout(()=>{ if (H.room===r) passerBy(r, sl); }, off); } else PL.passSlot=sl; }, 1000);
+  PL.wander=setInterval(()=>{ const slot=Math.floor(Date.now()/4500); if (slot===PL.lastSlot) return; PL.lastSlot=slot; PL.bots.forEach((n,bi)=>{ if (n.busy||n.room!==H.room||n.smuggler) return; const p=srand(slot,bi,r), q=srand(slot,bi,r,9);
+      if (H.room==='disco' && p<.6){ npcPose(n, ['dance','disco','twist','robot'][Math.floor(q*4)]); return; }
+      if (p<.45){ npcPose(n, n.work[Math.floor(q*n.work.length)]); }
+      else if (p<.65){ npcWalk(n, clamp(Math.round(n.post+(q*2-1)*n.roam),30,450)); }
+      else if (p<.78){ const L=n.lines[LANG==='it'?'it':'en']; npcSay(n, L[Math.floor(q*L.length)]); }
+      else npcPose(n,'idle'); }); }, 500);
+  PL.lastSlot=0;
   const it=LANG==='it'; const n=Object.keys(PL.peers).length;
   setTimeout(()=>{ const ppl=Object.keys(PL.peers).length; if (ppl) say(it?`C'è gente! (${ppl})`:`People here! (${ppl})`,2500); }, 2500);
 }
@@ -1908,6 +1917,7 @@ function leavePlace(silent){
   postPlace({t:'bye'});
   try{ PL.es&&PL.es.close(); }catch(e){} clearInterval(PL.hb); clearInterval(PL.sweep); clearInterval(PL.wander);
   clearTimeout(PL.passT); if (PL.passer){ removeNPC(PL.passer); PL.passer=null; }
+  clearInterval(PL.passT); clearInterval(PL.unstack);
   for (const id in PL.peers) removeNPC(PL.peers[id].n); PL.peers={};
   PL.bots.forEach(removeNPC); PL.bots=[]; PL.topic=null; PL.es=null;
 }
@@ -1919,8 +1929,11 @@ function onPlaceMsg(d, r){
   if (d.t==='here'){
     if (!p) postPlace({t:'here', ...myPublic()});
     if (!p){ const n=makeNPC({name:cleanTxt(d.name).slice(0,18)||'?', kind:d.kind==='f'?'f':'m', room:r, x:Math.random()<.5?-50:530}); n.player=true; p=PL.peers[id]={n, last:Date.now()};
-      npcWalk(n, clamp(+d.x||240,30,450)).then(()=>{ npcPose(n,'wave'); npcSay(n, LANG==='it'?'Ciao!':'Hi!'); setTimeout(()=>npcPose(n,'idle'),1800); }); }
-    p.last=Date.now(); if (typeof d.topic==='string' && /^subservient-game-v2-[a-z0-9-]+$/.test(d.topic)){ p.n.topic=d.topic; p.n.code=String(d.code||'').slice(0,3); } if (d.look) npcLook(p.n, d.look); if (d.costume && COST[d.costume]) npcCostume(p.n, d.costume);
+      npcWalk(n, clamp(+d.x||240,30,450)).then(()=>{ p.arrived=true; npcPose(n,'wave'); npcSay(n, LANG==='it'?'Ciao!':'Hi!'); setTimeout(()=>npcPose(n,'idle'),1800); }); }
+    p.last=Date.now(); if (typeof d.topic==='string' && /^subservient-game-v2-[a-z0-9-]+$/.test(d.topic)){ p.n.topic=d.topic; p.n.code=String(d.code||'').slice(0,3); }
+    if (d.look && JSON.stringify(d.look)!==JSON.stringify(p.n.look)){ p.n.look=d.look; npcLook(p.n, d.look); }
+    const ck=d.costume||'pajamas'; if (ck!==p.n.costumeKey){ p.n.costumeKey=ck; if (COST[ck]) npcCostume(p.n, ck); }
+    if (p.arrived && !p.n.running && typeof d.x==='number' && Math.abs(d.x-p.n.X)>6){ npcWalk(p.n, clamp(d.x,-60,540)); }
     return;
   }
   if (!p) return; p.last=Date.now();
@@ -2000,11 +2013,15 @@ function npcCostume(n, c){
   dressNPC(n, outfit, pants); n.g.style.setProperty('--skin',skin); n.g.style.setProperty('--skinD',shade(skin,.93));
   n.P.cHat.innerHTML=sanitizeSVG(m.hat||''); n.P.cFace.innerHTML=sanitizeSVG(m.face||'');
   n.P.cTorso.innerHTML=sanitizeSVG((n.kind==='f'?(m.torsoF||m.torso):(m.torsoM||m.torso))||''); n.P.cBack.innerHTML=sanitizeSVG(m.back||'');
+  if (n.look){ const L=n.look, base=!c.preset||c.preset==='pajamas';
+    n.P.hairBack.innerHTML=hairSVG(L,'back'); n.P.hairFront.innerHTML=hairSVG(L,'front'); if (n.P.glasses) n.P.glasses.style.display=L.glasses===false?'none':'';
+    if (!m.skin && L.skin){ const sk=normColor(L.skin)||SKIN; n.g.style.setProperty('--skin',sk); n.g.style.setProperty('--skinD',shade(sk,.93)); }
+    if (base){ const o=normColor(L.outfit)||outfit, pt=normColor(L.pants)||pants; dressNPC(n,o,pt); n.P.hairBack.innerHTML=hairSVG(L,'back'); n.P.hairFront.innerHTML=hairSVG(L,'front'); [n.P.thL2,n.P.thR2].forEach(e=>e.style.display=pt!=='#8fa9c9'?'none':''); } }
   n.P.hairBack.style.display=n.P.hairFront.style.display=m.hideHair?'none':'';
 }
 /* replay the other player's script on their character (simplified but faithful) */
 async function npcRun(n, steps){
-  if (!n) return; const my=++n.runId||(n.runId=1); n.runId=my;
+  if (!n) return; n.running=true; setTimeout(()=>{ n.running=false; }, 15000); const my=++n.runId||(n.runId=1); n.runId=my;
   for (const s of (steps||[]).slice(0,26)){
     if (n.runId!==my || !n.g.isConnected) return;
     const d=String(s.do||'');
@@ -2157,14 +2174,13 @@ function preview(kind){
 $('pvM').innerHTML=preview('m'); $('pvF').innerHTML=preview('f');
 document.querySelectorAll('.pick button').forEach(b=>b.onclick=()=>{
   pick=b.dataset.k; document.querySelectorAll('.pick button').forEach(x=>x.classList.toggle('on',x===b));
-  const n=$('nameIn'); if (!n.value || n.value==='Holgen' || n.value==='Holga') n.value = pick==='f'?'Holga':'Holgen';
 });
 function moveIn(kind, name, code){
   aiOK=(CONFIG.GEMINI_KEY||CONFIG.POLLINATIONS_KEY)?true:false;
   H.kind=kind; H.name=(name||'').trim().slice(0,18) || (kind==='f'?'Holga':'Holgen');
   code=String(code||'').replace(/\D/g,''); H.code = code.length===3 ? code : String(Math.floor(100+Math.random()*900));
   try { localStorage.setItem('subservient', JSON.stringify({kind:H.kind, name:H.name, code:H.code})); } catch(e){}
-  $('title').innerHTML=`Subservient <span>${esc(H.name)}</span>`; document.title=`Subservient ${H.name}`;
+  $('title').innerHTML=`vAIn <span>${esc(H.name)}</span>`; document.title=`vAIn · ${H.name}`;
   $('cmd').placeholder=tr('ph',H.name);
   if (!H.look || H.look.kind!==kind){ H.look={...defaultLook(kind), kind}; saveLook(); }
   applyKind(); applyCostume('pajamas'); setProp('mug');
@@ -2173,8 +2189,9 @@ function moveIn(kind, name, code){
   if (C.ready) updateIdentity(); else if (window.FB) communityStart(); else { renderSocial(); window.addEventListener('fb-ready', communityStart, {once:true}); }
   say(tr('hello'), 2500);
 }
-$('btnStart').onclick=()=>{ moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
-$('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); moveIn(pick, $('nameIn').value, $('codeIn').value); } });
+function needName(){ const n=$('nameIn'); if (n.value.trim()) return false; n.style.borderColor='#ff453a'; n.placeholder=LANG==='it'?'Scrivi il tuo nome':'Type your name'; n.focus(); return true; }
+$('btnStart').onclick=()=>{ if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
+$('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); } });
 $('codeIn').value=String(Math.floor(100+Math.random()*900));
 $('mynum').onclick=()=>{ $('nameIn').value=H.name; $('codeIn').value=H.code; $('setup').classList.remove('hide'); };
 
@@ -2194,7 +2211,7 @@ function dressNPC(n, outfit, pants){
   const sk=SKIN; n.outfit=outfit||n.outfit;
   n.g.style.setProperty('--outfit',n.outfit); n.g.style.setProperty('--outfitD',shade(n.outfit,.78));
   n.g.style.setProperty('--pants',pants||'#8fa9c9'); n.g.style.setProperty('--skin',sk); n.g.style.setProperty('--skinD',shade(sk,.93));
-  n.P.hairBack.innerHTML=HAIR[n.kind].back; n.P.hairFront.innerHTML=HAIR[n.kind].front;
+  if (n.look && typeof hairSVG==='function'){ n.P.hairBack.innerHTML=hairSVG(n.look,'back'); n.P.hairFront.innerHTML=hairSVG(n.look,'front'); } else { n.P.hairBack.innerHTML=HAIR[n.kind].back; n.P.hairFront.innerHTML=HAIR[n.kind].front; }
   n.P.lashes.innerHTML = n.kind==='f' ? `<path d="M-12.4 -19.6 l-2 -1.4 M-11.8 -21.6 l-1.6 -1.8 M12.4 -19.6 l2 -1.4 M11.8 -21.6 l1.6 -1.8" stroke="#2b2b2b" stroke-width="1" stroke-linecap="round"/>` : '';
   if (pants && pants!=='#8fa9c9') [n.P.thL2,n.P.thR2].forEach(e=>e.style.display='none');
 }
@@ -2550,7 +2567,7 @@ async function partnerStep(s, id){
 function openSetup(){
   pick = H.kind || 'm';
   document.querySelectorAll('.pick button').forEach(x=>x.classList.toggle('on', x.dataset.k===pick));
-  $('nameIn').value = H.name || (pick==='f'?'Holga':'Holgen');
+  $('nameIn').value = H.name || '';
   if ($('codeIn') && H.code) $('codeIn').value = H.code;
   $('setupMore').style.display = $('setup').classList.contains('hide') ? 'block' : 'none';
   const r=$('btnReset'); r.dataset.sure=''; r.textContent=tr('restartAll');
@@ -2674,7 +2691,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='22';
+const BUILD='23';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
