@@ -81,7 +81,7 @@ async function meAct(pose, ms){ setPose(pose); await avWait(ms||1500); setPose('
 function avSpawn(r){
   AV.npcs.forEach(n=>removeNPC(n)); AV.npcs=[];
   for (const [id,c] of Object.entries(CHT()?CHT().CAST:(CH2()?AV_CAST2:AV_CAST))){ if (c.room!==r) continue; if (c.gone && c.gone()) continue;
-    const n=makeNPC({name:c.name[LANG==='it'?0:1], kind:c.kind, room:r, x:c.x}); n.avId=id; n.look={...c.look, kind:c.kind}; npcLook(n, n.look); n.dir=c.dir||-1; npcPose(n,c.pose||'idle'); if (c.pose) n.keep=1; AV.npcs.push(n); }
+    const n=makeNPC({name:c.name[LANG==='it'?0:1], kind:c.kind, room:r, x:c.x}); n.avId=id; n.look={...c.look, kind:c.kind}; npcLook(n, n.look); n.dir=c.dir||-1; if (c.costume) try{ costumeNPC(n, c.costume.hat||'', c.costume.torso||''); }catch(e){} npcPose(n,c.pose||'idle'); if (c.pose) n.keep=1; AV.npcs.push(n); }
 }
 function avApplyLook(){ const f=F();
   try { if (f.trench){ holG.style.setProperty('--outfit','#b08a5a'); holG.style.setProperty('--outfitD','#8a6a40'); applyStyle(holG, J, {...(H.look||{}), top:'jacket', bottom:(H.look||{}).bottom||'pants'}, H.kind); } } catch(e){}

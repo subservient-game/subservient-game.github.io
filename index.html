@@ -395,19 +395,20 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=53"></script>
-<script src="adv/icons.js?v=53"></script>
-<script src="adv/engine.js?v=53"></script>
-<script src="adv/minigames.js?v=53"></script>
-<script src="adv/c1-data.js?v=53"></script>
-<script src="adv/c1-story-a.js?v=53"></script>
-<script src="adv/c1-story-b.js?v=53"></script>
-<script src="adv/c1-story-c.js?v=53"></script>
-<script src="adv/c1-story-d.js?v=53"></script>
-<script src="adv/c1-story-e.js?v=53"></script>
-<script src="adv/c1-story-f.js?v=53"></script>
-<script src="adv/c2.js?v=53"></script>
-<script src="adv/c3.js?v=53"></script>
+<script src="adv/music.js?v=54"></script>
+<script src="adv/icons.js?v=54"></script>
+<script src="adv/engine.js?v=54"></script>
+<script src="adv/minigames.js?v=54"></script>
+<script src="adv/c1-data.js?v=54"></script>
+<script src="adv/c1-story-a.js?v=54"></script>
+<script src="adv/c1-story-b.js?v=54"></script>
+<script src="adv/c1-story-c.js?v=54"></script>
+<script src="adv/c1-story-d.js?v=54"></script>
+<script src="adv/c1-story-e.js?v=54"></script>
+<script src="adv/c1-story-f.js?v=54"></script>
+<script src="adv/c2.js?v=54"></script>
+<script src="adv/c3.js?v=54"></script>
+<script src="adv/c4.js?v=54"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -452,6 +453,8 @@ const ROOMS = {
   giungla:{ name:'GIUNGLA', cam:31, mx:28, my:2, mw:24, mh:21, out:1, locked:1, secret:1 },
   laguna:{ name:'LAGUNA', cam:32, mx:54, my:2, mw:24, mh:21, out:1, locked:1, secret:1 },
   villaggio:{ name:'VILLAGGIO', cam:33, mx:80, my:2, mw:22, mh:21, out:1, locked:1, secret:1 },
+  vulcano:{ name:'VULCANO', cam:34, mx:2, my:25, mw:24, mh:21, out:1, locked:1, secret:1 },
+  grotta:{ name:'GROTTA', cam:35, mx:28, my:25, mw:24, mh:21, locked:1, secret:1 },
   archivio:{ name:'ARCHIVIO',   cam:28, mx:54, my:2, mw:24, mh:21, locked:1, secret:1 },
   hospital:{ name:'HOSPITAL',    cam:18, mx:42, my:25, mw:19, mh:21, out:1 },
   gym:     { name:'GYM',         cam:19, mx:62, my:25, mw:19, mh:21, out:1 },
@@ -903,6 +906,22 @@ function drawRoom(r){
     <g transform="translate(240 262)"><ellipse rx="26" ry="8" fill="#5a5e62"/><path d="M-14 -2 L14 -2" stroke="#5a3a22" stroke-width="5"/><path class="flick" d="M-8 -4 Q-8 -22 0 -32 Q8 -22 8 -4Z" fill="#ff9f1c"/></g>
     <g transform="translate(140 120)"><path d="M0 0 V40" stroke="#5a3a22" stroke-width="3"/><path d="M-14 0 H14" stroke="#5a3a22" stroke-width="3"/><path d="M0 -24 Q14 -26 12 -10 Q10 0 0 0 Q-6 -8 0 -24Z" fill="#2a9d8f" stroke="#2b2b2b" stroke-width="2"/><path d="M8 -20 L16 -16 L8 -14Z" fill="#f4d03f" stroke="#2b2b2b" stroke-width="1.5"/><circle cx="4" cy="-18" r="1.8" fill="#2b2b2b"/><path d="M-2 -2 L-6 14 L2 2Z" fill="#d64545" stroke="#2b2b2b" stroke-width="1.5"/></g>
     <g transform="translate(450 200)"><path d="M-20 0 L-20 -60 M20 0 L20 -60" stroke="#5a3a22" stroke-width="5"/><path d="M-20 -50 Q0 -40 20 -50 M-20 -30 Q0 -20 20 -30" stroke="#c9a77a" stroke-width="3" fill="none"/>${(typeof AV!=='undefined'&&AV.st&&AV.st.f&&AV.st.f.bridgeFixed)?`<path d="M20 -40 L60 -40" stroke="#c9a77a" stroke-width="4"/>`:`<path d="M20 -40 L30 -20 M24 -50 L34 -30" stroke="#c9a77a" stroke-width="3"/>`}<text x="0" y="-66" text-anchor="middle" font-size="7" fill="#2b2b2b" font-family="Fredoka, sans-serif">PONTE</text></g>`;
+  }
+  if (r==='vulcano'){
+    b+=`<rect width="480" height="300" fill="#3a1f1a"/><rect width="480" height="120" fill="#7a3a2a" opacity=".5"/><path d="M80 120 L200 10 L280 10 L400 120Z" fill="#4a2a22" stroke="#2b2b2b" stroke-width="3"/><path d="M200 10 Q240 -10 280 10" fill="#ff6b1c"/><g class="smoke"><circle cx="230" cy="0" r="24" fill="#888" opacity=".35"/><circle cx="260" cy="-10" r="18" fill="#888" opacity=".3"/></g>
+    <path d="M0 140 L480 130 L480 300 L0 300Z" fill="#2b1a16"/>${Array.from({length:18},(_,i)=>`<ellipse cx="${(i*61)%480}" cy="${160+(i*37)%120}" rx="${14+(i%3)*6}" ry="5" fill="#3e2620"/>`).join('')}
+    <path d="M220 130 Q200 190 260 230 Q300 260 250 300" stroke="#ff6b1c" stroke-width="22" fill="none" class="flick"/><path d="M220 130 Q200 190 260 230 Q300 260 250 300" stroke="#ffd166" stroke-width="8" fill="none"/>
+    ${(typeof AV!=='undefined'&&AV.st&&AV.st.f&&AV.st.f.lavaCrossed)?'':`${[[214,180],[250,222],[264,262]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="14" ry="6" fill="#555" stroke="#2b2b2b" stroke-width="2"/>`).join('')}`}
+    <g transform="translate(70 230)"><rect x="-44" y="-60" width="88" height="60" fill="#6b4a2b" stroke="#2b2b2b" stroke-width="2.5"/><path d="M-54 -58 L0 -96 L54 -58Z" fill="#5a3a22" stroke="#2b2b2b" stroke-width="2.5"/><rect x="-12" y="-36" width="24" height="36" fill="#2b1a10"/><rect x="18" y="-48" width="16" height="12" fill="#ffd166" opacity=".8"/><text y="-66" text-anchor="middle" font-size="7" fill="#e9dcc0" font-family="Fredoka, sans-serif">ERNESTO</text></g>
+    ${[[360,170,'GIOCO'],[410,150,'MEMORIA'],[455,130,'RINUNCIA']].map(([x,y,t],i)=>`<g transform="translate(${x} ${y})"><path d="M-18 40 L-18 -10 Q0 -30 18 -10 L18 40Z" fill="${(typeof AV!=='undefined'&&AV.st&&AV.st.f&&AV.st.f['gate'+(i+1)])?'#2b1a10':'#7a6a52'}" stroke="#2b2b2b" stroke-width="2.5"/><text y="-14" text-anchor="middle" font-size="5.5" fill="#ffd166" font-family="Fredoka, sans-serif">${t}</text></g>`).join('')}`;
+  }
+  if (r==='grotta'){
+    b+=`<rect width="480" height="300" fill="#141018"/><path d="M0 0 H480 V40 Q400 60 360 30 Q300 70 240 40 Q180 70 120 34 Q60 60 0 30Z" fill="#241c2a"/>${Array.from({length:10},(_,i)=>`<path d="M${20+i*48} 30 l6 ${20+(i%3)*14} l6 ${-(20+(i%3)*14)}Z" fill="#2e2436"/>`).join('')}
+    <rect y="232" width="480" height="68" fill="#211a26"/><ellipse cx="240" cy="200" rx="230" ry="110" fill="#ffd166" opacity=".06"/>
+    <g transform="translate(240 210)"><path d="M-110 30 Q-80 -20 -40 -10 Q0 -40 40 -10 Q80 -20 110 30Z" fill="#c9a227" stroke="#2b2b2b" stroke-width="2.5"/>${Array.from({length:22},(_,i)=>`<circle cx="${-90+(i*37)%180}" cy="${10-(i*13)%30}" r="7" fill="#f4d03f" stroke="#9a7a10" stroke-width="1.5"/>`).join('')}<rect x="-30" y="-50" width="60" height="40" rx="4" fill="#6b4a2b" stroke="#2b2b2b" stroke-width="2.5"/><path d="M-30 -36 H30" stroke="#c9a227" stroke-width="3"/><circle cy="-30" r="4" fill="#c9a227"/></g>
+    <g class="sparkle">${Array.from({length:18},(_,i)=>`<circle cx="${120+(i*29)%240}" cy="${150+(i*17)%70}" r="1.4" fill="#fff6c9"/>`).join('')}</g>
+    ${[[60,180],[420,180]].map(([x,y])=>`<g transform="translate(${x} ${y})"><rect x="-16" y="-80" width="32" height="130" fill="#6c737b" stroke="#2b2b2b" stroke-width="2"/><circle cy="-92" r="16" fill="#6c737b" stroke="#2b2b2b" stroke-width="2"/><path d="M-6 -96 h4 M2 -96 h4 M-6 -86 Q0 -82 6 -86" stroke="#2b2b2b" stroke-width="2"/><path d="M14 -60 L34 -96" stroke="#2b2b2b" stroke-width="5"/><ellipse cx="36" cy="-100" rx="7" ry="5" fill="#6c737b" stroke="#2b2b2b" stroke-width="2"/></g>`).join('')}
+    <path d="M440 232 Q470 200 480 230 L480 300 L430 300Z" fill="#1d4a6a"/><g class="ripple"><path d="M434 270 Q456 262 478 270" stroke="#9fd3e0" stroke-opacity=".5" fill="none"/></g>`;
   }
   if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
   b+=roomDetails(r);
@@ -2756,7 +2775,7 @@ const isNight=()=>{ const h=new Date().getHours(); return h>=22 || h<6; };
 const WX_ICON={sun:'☀️', cloud:'⛅', rain:'🌧️', snow:'❄️', storm:'⛈️'};
 function weatherNow(){ const slot=Math.floor(Date.now()/(20*60000)); let x=Math.sin(slot*12.9898)*43758.5453; x=x-Math.floor(x);
   return x<.5?'sun':x<.7?'cloud':x<.87?'rain':x<.93?'snow':'storm'; }
-const OUTDOOR=r=>['garden','park','beach','piazza','woods','porto','faro','cimitero','isola','giungla','laguna','villaggio'].includes(r);
+const OUTDOOR=r=>['garden','park','beach','piazza','woods','porto','faro','cimitero','isola','giungla','laguna','villaggio','vulcano'].includes(r);
 function unlockedPlaces(){ try{ return JSON.parse(localStorage.getItem('vainUnlock')||'[]'); }catch(e){ return []; } }
 let wxKey='', stormT=null;
 function drawWeather(){
@@ -4032,7 +4051,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='53';
+const BUILD='54';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
