@@ -2145,11 +2145,12 @@ function enterPlace(r){
   PL.lastSent=Date.now(); PL.lastX=H.X;
   PL.unstack=setInterval(()=>{ if (H.room!==r || H.seat || H.lying || !['idle','drink'].includes(H.pose)) return; const me=topicOf(H.name,H.code);
       const clash=Object.values(PL.peers).find(p=>p.arrived && Math.abs(p.n.X-H.X)<GAP-12 && (p.n.topic||'')<me) || NPCS.find(n=>n.bot && n.room===H.room && Math.abs(((n.destX??n.X))-H.X)<GAP-12);
-      if (clash){ const id=++runId; walkTo(freeSpot(H.X+(H.X<240?GAP:-GAP),'me'), id); } }, 2500);
+      if (clash){ const id=++runId; walkTo(freeSpot(H.X+(H.X<240?GAP:-GAP),'me'), id); } }, 1200);
   PL.hb=setInterval(()=>{ const now=Date.now(), moved=Math.abs(H.X-PL.lastX)>5; if ((moved && now-PL.lastSent>3000) || now-PL.lastSent>12000){ PL.lastSent=now; PL.lastX=H.X; postPlace({t:'here', ...myPublic()}); } }, 1000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
   setTimeout(()=>nightExtras(r), 800);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.post}); npcLook(n,b.look); n.bot=true; n.post=b.post; n.roam=b.roam||25; n.work=b.work; n.sells=b.sells; n.role=b.role; n.lines=b.lines; return n; });
+  { const fx=freeSpot(H.X,'me'); if (fx!==H.X && !H.seat && !H.lying){ H.X=fx; H.destX=null; camX=fx; } }
   clearInterval(PL.passT); PL.passSlot=null;
   PL.passT=setInterval(()=>{ const sl=Math.floor(Date.now()/60000); if (sl===PL.passSlot) return; PL.passSlot=sl; if (srand(sl,r,2)>=.7) return; const off=Math.floor(srand(sl,r,1)*25000), late=(Date.now()%60000)-off; if (late>4000) return; setTimeout(()=>{ if (H.room===r) passerBy(r, sl); }, Math.max(0,-late)); }, 1000);
   PL.wander=setInterval(()=>{ const slot=Math.floor(Date.now()/4500); if (slot===PL.lastSlot) return; PL.lastSlot=slot; PL.bots.forEach((n,bi)=>{ if (n.busy||n.room!==H.room||n.smuggler) return; const p=srand(slot,bi,r), q=srand(slot,bi,r,9);
@@ -3838,7 +3839,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='38';
+const BUILD='39';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
