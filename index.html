@@ -187,6 +187,8 @@
   .brc b { font-size:20px; line-height:1; } .brc i { font-style:normal; font-size:24px; } .brc small { font-size:10px; color:#666; min-height:12px; }
   .brhand { display:flex; gap:10px; justify-content:center; margin:8px 0; } .brhand .brc { width:72px; height:104px; } .brmsg { text-align:center; min-height:20px; margin:4px 0; color:#ffd166; }
   .advbar { display:none; }
+  .advgo { width:100%; margin:8px 0 4px; padding:12px; background:#2a2240; color:#ffd166; border:1px solid #4b3d78; border-radius:10px; font-weight:700; font-size:15px; }
+  #btnAdv { display:none; } body.adv #btnAdv { display:inline-flex; }
   body.adv .advbar { display:flex; flex-direction:column; margin-top:6px; flex:none; min-height:0; }
   body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs button { font-size:16px; padding:12px 2px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
   body.adv form#f, body.adv #kbd, body.adv .kbbar, body.adv #callbox, body.adv .social, body.adv .mynum, body.adv #btnLook, body.adv #btnNew, body.adv .jobbar { display:none !important; }
@@ -261,7 +263,7 @@
       <input id="nameIn" maxlength="18" data-ip="name" placeholder="Name" value="" aria-label="Name">
       <label class="codel"><span data-i="yourcode">Your 3-digit code</span><input id="codeIn" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="Code"></label>
       <button id="btnStart" style="width:100%" data-i="movein">Move in</button>
-      <button type="button" id="btnStartAdv" class="ghost" style="width:100%;margin-top:8px">🗺️ Avventura offline</button>
+      <button type="button" id="btnStartAdv" class="ghost" style="display:none">🗺️</button>
       <div id="setupMore" style="display:none;margin-top:10px"><button type="button" class="ghost" id="btnCancelSetup" style="width:100%;margin-bottom:8px" data-i="cancel">Cancel</button><button type="button" class="ghost" id="btnReset" style="width:100%;color:#ff8a80" data-i="restartAll">Start over from scratch</button></div>
     </div>
   </div>
@@ -393,17 +395,17 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=49"></script>
-<script src="adv/icons.js?v=49"></script>
-<script src="adv/engine.js?v=49"></script>
-<script src="adv/minigames.js?v=49"></script>
-<script src="adv/c1-data.js?v=49"></script>
-<script src="adv/c1-story-a.js?v=49"></script>
-<script src="adv/c1-story-b.js?v=49"></script>
-<script src="adv/c1-story-c.js?v=49"></script>
-<script src="adv/c1-story-d.js?v=49"></script>
-<script src="adv/c1-story-e.js?v=49"></script>
-<script src="adv/c1-story-f.js?v=49"></script>
+<script src="adv/music.js?v=50"></script>
+<script src="adv/icons.js?v=50"></script>
+<script src="adv/engine.js?v=50"></script>
+<script src="adv/minigames.js?v=50"></script>
+<script src="adv/c1-data.js?v=50"></script>
+<script src="adv/c1-story-a.js?v=50"></script>
+<script src="adv/c1-story-b.js?v=50"></script>
+<script src="adv/c1-story-c.js?v=50"></script>
+<script src="adv/c1-story-d.js?v=50"></script>
+<script src="adv/c1-story-e.js?v=50"></script>
+<script src="adv/c1-story-f.js?v=50"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -2063,7 +2065,7 @@ function hairChips(cur, act){ const it=LANG==='it'; const mine=Object.entries(LO
 function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
 function openCustom(tab){
   tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
-  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div>`;
+  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div><button type="button" id="goAdv" class="advgo">🗺️ ${it?'Avventura offline — gioca la storia':'Offline adventure — play the story'}</button>`;
   if (tab==='shop'){ h+=shopHTML(); }
   else if (tab==='look'){
     h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${hairChips(L.hair, 'hair')}</div>`;
@@ -3365,7 +3367,7 @@ function moveIn(kind, name, code){
 }
 function needName(){ const n=$('nameIn'); if (n.value.trim()) return false; n.style.borderColor='#ff453a'; n.placeholder=LANG==='it'?'Scrivi il tuo nome':'Type your name'; n.focus(); return true; }
 $('btnStart').onclick=()=>{ if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); focusCmd(); };
-setTimeout(()=>{ $('btnStartAdv').textContent=LANG==='it'?'🗺️ Avventura offline':'🗺️ Offline adventure'; },0);
+
 $('btnStartAdv').onclick=()=>{ if (needName()) return; if (!window.ADV){ try{ localStorage.setItem('subservient', JSON.stringify({kind:pick, name:$('nameIn').value.trim().slice(0,18), code:$('codeIn').value})); }catch(e){} location.hash='avventura'; location.reload(); return; } moveIn(pick, $('nameIn').value, $('codeIn').value); };
 $('btnAdv').onclick=()=>{ if (window.ADV) return avMenu(); location.hash='avventura'; location.reload(); };
 $('nameIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if (needName()) return; moveIn(pick, $('nameIn').value, $('codeIn').value); } });
@@ -3750,8 +3752,13 @@ function openSetup(){
   if ($('codeIn') && H.code) $('codeIn').value = H.code;
   $('setupMore').style.display = $('setup').classList.contains('hide') ? 'block' : 'none';
   const r=$('btnReset'); r.dataset.sure=''; r.textContent=tr('restartAll');
-  $('setup').classList.remove('hide');
+  $('setup').classList.remove('hide'); setupTexts();
 }
+function setupTexts(){ const it=LANG==='it', edit=!!H.name && !$('setup').classList.contains('hide') && $('setupMore').style.display==='block';
+  const w=$('setup').querySelector('[data-i="who"]'), t=$('setup').querySelector('[data-i="pickTxt"]');
+  if (edit){ if (w) w.textContent=it?'Il tuo profilo':'Your profile'; if (t) t.textContent=it?'Cambia personaggio, nome o codice e premi Aggiorna. Annulla per tornare al gioco.':'Change character, name or code and tap Update. Cancel to go back to the game.'; $('btnStart').textContent=it?'Aggiorna':'Update'; }
+  else { if (w) w.textContent=tr('who'); if (t) t.textContent=tr('pickTxt'); $('btnStart').textContent=window.ADV?(it?'Inizia l\'avventura':'Start the adventure'):tr('movein'); } }
+document.addEventListener('click',e=>{ if (e.target.closest('#goAdv')){ location.hash='avventura'; location.reload(); } });
 $('btnNew').onclick=openSetup; $('btnLook').onclick=()=>openCustom('look');
 $('btnCancelSetup').onclick=()=>{ $('setup').classList.add('hide'); if (window.focusCmd) focusCmd(); };
 $('btnReset').onclick=async()=>{
@@ -3797,8 +3804,8 @@ function applyLang(){ try{ if (typeof kbRender==='function' && KB.on) kbRender()
   if (typeof renderSocial==='function') renderSocial();
   const c=caption.textContent; if (!c || c===I18N.en.start||c===I18N.it.start) caption.textContent=tr('start'); else if (c===I18N.en.waiting||c===I18N.it.waiting) caption.textContent=tr('waiting');
 }
-document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{ LANG=b.dataset.l; try{ localStorage.setItem('subservientLang',LANG); }catch(e){} applyLang(); if (window.focusCmd) focusCmd(); }));
-applyLang();
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{ LANG=b.dataset.l; try{ localStorage.setItem('subservientLang',LANG); }catch(e){} applyLang(); try{ setupTexts(); }catch(e){} if (window.focusCmd) focusCmd(); }));
+applyLang(); try{ setupTexts(); }catch(e){}
 
 /* ================= KEYBOARD-FRIENDLY LAYOUT =================
    The page always fits the visible area (above the on-screen keyboard), and the command box keeps focus so the keyboard stays open. */
@@ -3951,7 +3958,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='49';
+const BUILD='50';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);

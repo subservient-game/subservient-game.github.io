@@ -25,3 +25,20 @@ AV_TROPHIES.push(['bollo','Burocrazia sconfitta: marca da bollo ottenuta senza p
     [()=>F().needBollo && !avHas('marca') && !F().distintivo && !avHas('tazzina'),'Chiedi a Rocky la tazzina di Nico.','Ask Rocky for Nico\'s cup.'],
     [()=>F().needBollo && !avHas('marca') && !F().distintivo,'Dai la tazzina a Nico.','Give the cup to Nico.']]);
   ins('Dai il Mestolo vero al sindaco.',[[()=>F().nestDone && !F().ladleClean,'Il mestolo è sporco: lavalo nella fontana del parco o in un lavandino.','The ladle is dirty: wash it in the park fountain or a sink.']]); })();
+/* la Contessa vuole anche una partita a briscola, dopo la pizza */
+avOn('give:contessa:pizza',async()=>{ const f=F(); avDel('pizza'); f.gavePizza=1; avSave(); await npcAct('contessa','eat',2000);
+  await np('contessa','Mmmh... il basilico, la legna, il lievito... Totò è un artista. Un artista sudato, ma un artista.','Mmmh... the basil, the wood fire, the sourdough... Totò is an artist. A sweaty artist, but an artist.');
+  await np('contessa','Però, tesoro, una pizza è una pizza e un mestolo d\'oro è un mestolo d\'oro. Facciamo così: se mi batti a briscola, è tuo. Se perdi, mi porti un\'altra pizza. E un marito.','But darling, a pizza is a pizza and a golden ladle is a golden ladle. Let\'s do this: beat me at briscola and it\'s yours. Lose and you bring me another pizza. And a husband.');
+  f.contessaDuel=1; avSave(); });
+const contessaTalkOld=AV_S['talk:contessa'];
+avOn('talk:contessa',async()=>{ const f=F();
+  if (f.contessaDuel && !f.contessaBeat){ if (!await needBadge('contessa')) return;
+    const o=await avChoose([['Giochiamo a briscola, Contessa.','Let\'s play briscola, Countess.'],['Altro...','Something else...']]);
+    if (o===0){ const r=await avBriscola(T('la Contessa','the Countess'),2);
+      if (r!==true) return np('contessa',['Peccato, tesoro. Riprova. Io ho tempo: i miei mariti no.','Ancora? Va bene. Ma ogni volta che perdi mi diverto di più.'][Math.random()<.5?0:1],['Pity, darling. Try again. I have time: my husbands didn\'t.','Again? Fine. Every time you lose I enjoy it more.'][0]);
+      f.contessaBeat=1; avSave(); avTrophy('contessa','Hai battuto la Contessa a briscola. Il suo quarto marito potresti essere tu.','Beat the Countess at briscola. You could be her fourth husband.');
+      await np('contessa','...Hai vinto. Senza barare. Che uomo noioso. Ecco il tuo mestolo. Stranamente leggero per essere oro, ma io l\'oro lo riconosco solo sui mariti morti.','...You won. Without cheating. How boring. Here\'s your ladle. Strangely light for gold, but I only recognise gold on dead husbands.');
+      avAdd('mestolo'); return me('Il Mestolo d\'Oro! ...Leggero davvero. Mi conviene guardarlo bene prima di portarlo al sindaco.','The Golden Ladle! ...Really light. I\'d better take a good look before bringing it to the mayor.'); } }
+  return contessaTalkOld(); });
+AV_TROPHIES.push(['contessa','Hai battuto la Contessa a briscola. Il suo quarto marito potresti essere tu.','Beat the Countess at briscola. You could be her fourth husband.']);
+(()=>{ const i=AV_HINTS.findIndex(h=>h[1].startsWith('Quel mestolo è troppo leggero')); AV_HINTS.splice(i<0?AV_HINTS.length:i,0,[()=>F().contessaDuel && !F().contessaBeat,'La Contessa vuole una partita a briscola. Gioca forte: è più brava di Tonino.','The Countess wants a game of briscola. Play hard: she\'s better than Tonino.']); })();
