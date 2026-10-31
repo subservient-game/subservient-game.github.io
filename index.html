@@ -395,20 +395,21 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=54"></script>
-<script src="adv/icons.js?v=54"></script>
-<script src="adv/engine.js?v=54"></script>
-<script src="adv/minigames.js?v=54"></script>
-<script src="adv/c1-data.js?v=54"></script>
-<script src="adv/c1-story-a.js?v=54"></script>
-<script src="adv/c1-story-b.js?v=54"></script>
-<script src="adv/c1-story-c.js?v=54"></script>
-<script src="adv/c1-story-d.js?v=54"></script>
-<script src="adv/c1-story-e.js?v=54"></script>
-<script src="adv/c1-story-f.js?v=54"></script>
-<script src="adv/c2.js?v=54"></script>
-<script src="adv/c3.js?v=54"></script>
-<script src="adv/c4.js?v=54"></script>
+<script src="adv/music.js?v=55"></script>
+<script src="adv/icons.js?v=55"></script>
+<script src="adv/engine.js?v=55"></script>
+<script src="adv/minigames.js?v=55"></script>
+<script src="adv/c1-data.js?v=55"></script>
+<script src="adv/c1-story-a.js?v=55"></script>
+<script src="adv/c1-story-b.js?v=55"></script>
+<script src="adv/c1-story-c.js?v=55"></script>
+<script src="adv/c1-story-d.js?v=55"></script>
+<script src="adv/c1-story-e.js?v=55"></script>
+<script src="adv/c1-story-f.js?v=55"></script>
+<script src="adv/c2.js?v=55"></script>
+<script src="adv/c3.js?v=55"></script>
+<script src="adv/c4.js?v=55"></script>
+<script src="adv/c5.js?v=55"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4051,7 +4052,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='54';
+const BUILD='55';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);

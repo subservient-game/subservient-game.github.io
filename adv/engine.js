@@ -90,7 +90,7 @@ function avApplyLook(){ const f=F();
 async function avGo(r, first){
   if (AV.busy && !first) return;
   const EN=CHT()?CHT().ENTER:(CH2()?AV_ENTER2:AV_ENTER); const gate=EN[r] && EN[r].before; if (!first && gate){ AV.busy=true; let ok; try{ ok=await gate(); } finally{ AV.busy=false; } if (ok===false) return; }
-  setRoom(r); try{ musRoom(r); document.body.classList.toggle('island',['isola','giungla','laguna','villaggio','vulcano','grotta'].includes(r)); }catch(x){} AV.st.room=r; avSave(); H.X=(EN[r]&&EN[r].x)||60; H.destX=null; camX=H.X; avSpawn(r); avApplyLook(); closeSheet(); avRender();
+  setRoom(r); try{ musRoom(r); document.body.classList.toggle('island',['isola','giungla','laguna','villaggio','vulcano','grotta'].includes(r)); }catch(x){} AV.st.room=r; avSave(); H.X=(EN[r]&&EN[r].x)||60; H.destX=null; avSpawn(r); try{ H.X=freeSpot(H.X,'me'); }catch(x){} camX=H.X; avApplyLook(); closeSheet(); avRender();
   if (first) return;
   const after=EN[r] && EN[r].after; if (after){ AV.busy=true; try{ await after(); } catch(e){ console.log(e); } finally{ AV.busy=false; avRender(); } }
 }
