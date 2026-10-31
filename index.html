@@ -118,15 +118,16 @@
   .flutter { animation:flutter 6s ease-in-out infinite; } @keyframes flutter { 0%,100% { transform:translate(205px,225px) scale(1,1); } 25% { transform:translate(225px,212px) scale(.4,1); } 50% { transform:translate(240px,220px) scale(1,1); } 75% { transform:translate(220px,230px) scale(.4,1); } }
   .sway { animation:sway 5s ease-in-out infinite; transform-origin:185px 39px; } @keyframes sway { 50% { transform:skewX(1.5deg); } }
   .side { display:contents; }
-  body.land .wrap { max-width:none; display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:12px; align-items:start; }
-  body.land header.top { grid-column:1 / -1; margin-bottom:6px; }
-  body.land .cam { grid-column:1; align-self:start; }
-  body.land .side { grid-column:2; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
-  body.land form.cmd { margin-top:0; } body.land form.cmd input { padding:10px 12px; } body.land #go { padding:10px 16px; }
-  body.land .callbox.show { margin-top:0; margin-bottom:6px; }
-  body.land .kbd { margin-top:6px; padding:5px 3px 3px; } body.land .kr { gap:4px; margin-bottom:4px; }
-  body.land .kk { height:34px; font-size:16px; max-width:none; } body.land .kk.fn { font-size:13px; max-width:none; } body.land .kk.go { max-width:none; }
-  body.land .mynum, body.land .social, body.land #ver { display:none; }
+  .wrap { overflow:hidden; }
+  .info { flex:1 1 auto; min-height:0; overflow:auto; display:flex; flex-direction:column; justify-content:flex-start; }
+  form.cmd { margin-top:6px; } .kbd { margin-top:6px; }
+  body.land .wrap { max-width:none; } body.land header.top { margin-bottom:4px; } body.land header.top h1 { font-size:15px; }
+  body.land .newbtn, body.land .lang button { padding:2px 9px; font-size:13px; }
+  body.land .info, body.land .kbbar { display:none; } body.land .side { display:contents; }
+  body.land form.cmd input { padding:8px 12px; } body.land #go { padding:8px 16px; }
+  body.land .kbd { padding:4px 3px 3px; margin-top:4px; } body.land .kr { gap:4px; margin-bottom:3px; }
+  body.land .kk { height:31px; font-size:16px; max-width:none; } body.land .kk.fn, body.land .kk.go { max-width:none; }
+  body.land.kbhide .kbd { display:none !important; }
   body.land.chat .callbox.show .log { max-height:1.7em; } body.land.chat .callbox.show .callhead { margin-bottom:2px; } body.land.chat .callbox.show { padding:4px 6px; }
   body.land.chat .kk { height:27px; font-size:14px; } body.land.chat .kr { margin-bottom:3px; } body.land.chat form.cmd input { padding:7px 10px; } body.land.chat #go { padding:7px 14px; } body.land .kbbar { display:none; }
   .kbd { flex:0 0 auto; margin-top:8px; padding:6px 3px 4px; background:#1a1d23; border-radius:14px; user-select:none; -webkit-user-select:none; touch-action:none; }
@@ -168,7 +169,9 @@
 
   .ln { fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .outfit { fill:var(--outfit); }
-  #hol .outfit, #hol .pants, #hol .skin, #npcs .outfit, #npcs .pants, #npcs .skin { stroke:rgba(40,22,10,.32); stroke-width:.7; paint-order:stroke; }
+  #hol :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]), #npcs :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]) { stroke:rgba(35,20,10,.62); stroke-width:1.15; paint-order:stroke; stroke-linejoin:round; }
+  #hol #eyes *, #npcs [data-j="eyes"] *, #hol #propR *, #npcs [data-j="propR"] * { stroke:none; }
+  #back :is(path,rect,circle,ellipse,polygon):not([stroke]):not([opacity]):not([fill^="url"]):not([width="480"]) { stroke:rgba(35,20,10,.42); stroke-width:1; paint-order:stroke; stroke-linejoin:round; }
   .outfitD { fill:var(--outfitD); }
   .pants { fill:var(--pants); }
   .skin { fill:var(--skin); }
@@ -253,14 +256,14 @@
       <g id="back"></g>
       <g id="spawnB"></g>
       <rect id="darkOv" width="480" height="300" fill="#070b18" opacity="0" pointer-events="none"/>
-      <ellipse id="shadow" cx="240" cy="258" rx="26" ry="5" fill="#000" opacity=".28" filter="url(#soft)"/>
+      <ellipse id="shadow" cx="240" cy="258" rx="30" ry="6" fill="url(#ctShadow)"/>
       <g id="npcs"></g>
       <g id="vehB"></g>
       <g id="hol"></g>
       <g id="vehF"></g>
       <g id="front"></g>
       <g id="spawnF"></g>
-      <rect id="tint" width="480" height="300" opacity="0" pointer-events="none" style="mix-blend-mode:soft-light"/>
+      <rect id="tint" width="480" height="300" opacity="0" pointer-events="none"/>
       <g id="wx" pointer-events="none"></g>
       <g id="fx"></g>
     </svg>
@@ -341,7 +344,7 @@ if (cfg && cfg.apiKey){
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
 const scene=$('scene'), holG=$('hol'), backL=$('back'), frontL=$('front'), fxL=$('fx'), darkOv=$('darkOv'), shadowEl=$('shadow'), bubble=$('bubble'), caption=$('caption'), cam=$('cam'), spawnB=$('spawnB'), spawnF=$('spawnF');
-const STAND=258, LANE=276, HIP=52, BASE=1.3;
+const STAND=258, LANE=276, HIP=52, BASE=1.45;
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -1012,7 +1015,7 @@ const SIT = { lL:13, kL:-12, lR:-13, kR:12, sL:.22, sR:.22 };
 const P = (frames, dur=600, opt={}) => ({ frames:frames.map(f=>({...N,...f})), dur, ...opt });
 const POSES = {
   idle: P([{}, {y:.7, head:1.6, tor:.5, aL:11.5, aR:-11.5}, {y:.2, head:-.6, tor:-.3}], 1500),
-  walk: P([{y:0,lL:16,kL:-12,lR:-6,kR:3,aL:-10,eL:-14,aR:16,eR:12,head:-1.5,rot:-1.2,tor:-1},{y:-2.4,lL:5,kL:-6,lR:-4,kR:5,aL:4,eL:-8,aR:-2,eR:8,rot:0,tor:0},{y:0,lL:6,kL:-3,lR:-16,kR:12,aL:16,eL:-12,aR:-10,eR:14,head:1.5,rot:1.2,tor:1},{y:-2.4,lL:4,kL:-5,lR:-5,kR:6,aL:-2,eL:-8,aR:4,eR:8,rot:0,tor:0}], 140),
+  walk: P([{y:.6,lL:22,kL:-16,lR:-10,kR:4,aL:-20,eL:-22,aR:22,eR:18,head:-2.5,rot:-2.2,tor:-2,sx:1.02},{y:-4.2,lL:6,kL:-8,lR:-4,kR:8,aL:2,eL:-10,aR:-2,eR:10,rot:0,tor:0,sx:.98},{y:.6,lL:10,kL:-4,lR:-22,kR:16,aL:22,eL:-18,aR:-20,eR:22,head:2.5,rot:2.2,tor:2,sx:1.02},{y:-4.2,lL:4,kL:-8,lR:-6,kR:8,aL:-2,eL:-10,aR:2,eR:10,rot:0,tor:0,sx:.98}], 135),
   run: P([{y:0,lL:26,kL:-20,lR:-4,aL:-30,eL:-60,aR:-40,eR:60,head:-3},{y:-5,lL:3,lR:-3},{y:0,lL:4,lR:-26,kR:20,aL:40,eL:-60,aR:30,eR:60,head:3},{y:-5}], 90),
   sneak: P([{y:4,lL:14,kL:-14,lR:-4,aL:-40,eL:-100,aR:40,eR:100,head:6},{y:5,lL:4,lR:-14,kR:14,aL:-40,eL:-100,aR:40,eR:100,head:4}], 330, {usesR:1}),
   sit: P([{aL:14,eL:-24,aR:-14,eR:24},{aL:14,eL:-24,aR:-14,eR:24,head:2,y:.5}], 1600),
@@ -1155,7 +1158,7 @@ function apply(){
   const lift = Math.max(0,-cur.y);
   shadowEl.setAttribute('cx',H.X); shadowEl.setAttribute('rx', Math.max(8,26*s/BASE - lift*.25));
   shadowEl.setAttribute('cy', H.Y+2);
-  shadowEl.setAttribute('opacity', H.alpha<.5 ? 0 : onFloor ? Math.max(.08,.28 - lift*.003) : (Math.abs(cur.rot)>60 && !H.lying? .2 : 0));
+  shadowEl.setAttribute('opacity', H.alpha<.5 ? 0 : onFloor ? Math.min(1,3*Math.max(.08,.28 - lift*.003)) : (Math.abs(cur.rot)>60 && !H.lying? .6 : 0));
 }
 
 /* ================= BUBBLE / FX ================= */
@@ -2232,7 +2235,7 @@ function roomDetails(r){
 function tintNow(){ const h=new Date().getHours()+new Date().getMinutes()/60;
   if (h>=6 && h<10) return ['#9cc4ff',.18]; if (h>=10 && h<15) return [null,0]; if (h>=15 && h<18) return ['#ffcc66',.22]; if (h>=18 && h<22) return ['#ff8a5c',.26]; return ['#7b86e0',.22]; }
 function applyTint(){ const el=$('tint'); if (!el) return; const [c,o]=tintNow(); if (!c){ el.setAttribute('opacity',0); return; } const out=['garden','park','beach','woods','piazza'].includes(H.room);
-  el.setAttribute('fill',c); el.setAttribute('opacity', (out?o:o*.6).toFixed(2)); }
+  el.setAttribute('fill',c); el.setAttribute('opacity', ((out?o:o*.6)*.45).toFixed(3)); }
 setInterval(applyTint, 60000);
 /* ================= LIFE: Pippi, hunger, hygiene ================= */
 const LIFE = (()=>{ let d=null; try { d=JSON.parse(localStorage.getItem('subservientLife')||'null'); } catch(e){} return Object.assign({pippi:50, food:80, clean:80, t:Date.now(), owned:[], bisca:false, prive:false}, d||{}); })();
@@ -3407,6 +3410,7 @@ applyLang();
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar')) return; e.preventDefault();
+    if (document.body.classList.contains('land') && e.target.closest('#cam')){ document.body.classList.add('kbhide'); setTimeout(()=>window.fitCam&&fitCam(),0); }
     if (e.target.closest('.mini')){ openMap(); return; }
     if (H.room==='piazza' || H.room==='barber'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
       if (H.room==='piazza' && sp.x>290 && sp.x<348 && sp.y>145 && sp.y<200){ openBoard(); return; }
@@ -3437,7 +3441,9 @@ applyLang();
 $('f').parentNode.insertBefore($('callbox'), $('f'));
 /* everything except header + camera lives in a side column: in portrait it behaves as before, in landscape it sits to the right of the camera */
 (function(){ const wrap=document.querySelector('.wrap'); const side=document.createElement('div'); side.className='side'; side.id='side';
-  wrap.insertBefore(side, $('callbox')); ['callbox','f','kbd','kbbar','mynum','social','ver'].forEach(id=>{ const el=id==='kbbar'?document.querySelector('.kbbar'):$(id); if (el) side.appendChild(el); }); })();
+  wrap.insertBefore(side, $('callbox')); const info=document.createElement('div'); info.className='info'; info.id='info';
+  side.appendChild($('callbox')); side.appendChild(info); ['mynum','social','ver'].forEach(id=>{ if ($(id)) info.appendChild($(id)); });
+  ['f','kbd'].forEach(id=>side.appendChild($(id))); side.appendChild(document.querySelector('.kbbar')); })();
 
 /* the camera always shows the WHOLE room: it gets smaller (same shape) when the keyboard or the chat need space */
 (function(){
@@ -3447,14 +3453,11 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
     const cs=getComputedStyle(document.body); const pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
     const land = innerWidth>innerHeight && vh<600; document.body.classList.toggle('land', land);
     document.body.classList.toggle('chat', $('callbox').classList.contains('show'));
-    if (land){ const head=document.querySelector('header.top'); const headH=head.offsetHeight+parseFloat(getComputedStyle(head).marginBottom||0);
-      const h=Math.max(120, vh-pad-headH-4); const maxW=wrap.clientWidth*0.6; const w=Math.min(h*1.6, maxW);
-      camEl.style.width=w+'px'; camEl.style.height=(w/1.6)+'px'; const sd=$('side'); if (sd) sd.style.maxHeight=(vh-pad-headH-4)+'px'; return; }
-    if ($('side')) $('side').style.maxHeight='';
-    const kids=[...wrap.children].flatMap(el=>el.id==='side'?[...el.children]:[el]);
-    let others=0; for (const el of kids){ if (el===camEl) continue; const lastEl=($('kbd')&&$('kbd').style.display!=='none')?($('kbd').nextElementSibling||$('kbd')):$('f'); if (el!==lastEl && (el.compareDocumentPosition(lastEl) & Node.DOCUMENT_POSITION_PRECEDING)) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
-    const fullW=wrap.clientWidth; const h=Math.max(110, Math.min(fullW/1.6, vh-pad-others-6));
-    camEl.style.height=h+'px'; camEl.style.width=Math.min(fullW, h*1.6)+'px';
+    wrap.style.height=(vh-pad)+'px';
+    const hgt=el=>{ if (!el) return 0; const st=getComputedStyle(el); if (st.display==='none') return 0; return el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); };
+    const others = hgt(document.querySelector('header.top')) + hgt($('callbox')) + hgt($('f')) + hgt($('kbd')) + hgt(document.querySelector('.kbbar')) + (land?4:10);
+    const fullW=wrap.clientWidth; let h=Math.max(100, Math.min(fullW/1.6, vh-pad-others)); let w=Math.min(fullW, h*1.6); h=w/1.6;
+    const W=w.toFixed(1)+'px', Hh=h.toFixed(1)+'px'; if (camEl.style.width!==W) camEl.style.width=W; if (camEl.style.height!==Hh) camEl.style.height=Hh;
   }
   window.fitCam=fit;
   if (window.visualViewport){ visualViewport.addEventListener('resize',fit); }
@@ -3503,6 +3506,9 @@ function kbSetup(){
   try{ window.fitCam && fitCam(); }catch(e){}
 }
 ['cmd','chatIn'].forEach(id=>$(id).addEventListener('focus',()=>{ KB.target=$(id); }));
+['cmd','chatIn'].forEach(id=>$(id).addEventListener('pointerdown',()=>{ if (document.body.classList.contains('kbhide')){ document.body.classList.remove('kbhide'); setTimeout(()=>window.fitCam&&fitCam(),0); } }));
+setTimeout(()=>{ if (innerWidth>innerHeight && innerHeight<600) document.body.classList.add('kbhide'); }, 50);
+addEventListener('orientationchange',()=>setTimeout(()=>{ if (innerWidth>innerHeight) document.body.classList.add('kbhide'); else document.body.classList.remove('kbhide'); window.fitCam&&fitCam(); },300));
 $('chatIn').addEventListener('pointerdown',()=>{ KB.target=$('chatIn'); });
 $('cmd').addEventListener('pointerdown',()=>{ KB.target=$('cmd'); });
 (function(){ const kb=$('kbd'); let rep=null, repT=null;
@@ -3529,7 +3535,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='30';
+const BUILD='31';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
