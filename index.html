@@ -3420,7 +3420,8 @@ async function avEnter(r){
 async function avGo2(r){ setRoom(r); AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyHair(); avRender(); }
 function avMap(){
   const it=LANG==='it';
-  sheet(`<h3 style="margin:0 0 10px">🗺️ ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div>`);
+  sheet(`<h3 style="margin:0 0 10px">🗺️ ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div><button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:8px">${LANG==='it'?'✕ Chiudi':'✕ Close'}</button>`);
+  $('avClose').onclick=()=>closeSheet();
   $('sheetBody').querySelectorAll('[data-avgo]').forEach(b=>b.onclick=()=>{ const r=b.dataset.avgo; closeSheet(); if (r!==H.room) avGo(r); });
 }
 function avMenu(){
@@ -3429,7 +3430,8 @@ function avMenu(){
    <p style="opacity:.8;font-size:14px;margin:0 0 12px">${it?'Tocca un verbo, poi una cosa o una persona. Per "Usa" e "Dai" scegli prima un oggetto dell\'inventario. Tocca il testo per andare avanti più veloce.':'Tap a verb, then a thing or a person. For "Use" and "Give" pick an inventory item first. Tap the text to skip ahead.'}</p>
    <button type="button" id="avHint" style="width:100%;margin-bottom:8px">💡 ${it?'Suggerimento':'Hint'}</button>
    <button type="button" id="avRestart" class="ghost" style="width:100%;margin-bottom:8px;color:#ff8a80">${it?'Ricomincia l\'avventura':'Restart the adventure'}</button>
-   <button type="button" id="avExit" class="ghost" style="width:100%">🌐 ${it?'Torna al gioco online':'Back to the online game'}</button>`);
+   <button type="button" id="avExit" class="ghost" style="width:100%">🌐 ${it?'Torna al gioco online':'Back to the online game'}</button><button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:8px">${LANG==='it'?'✕ Chiudi':'✕ Close'}</button>`);
+  $('avClose').onclick=()=>closeSheet();
   $('avHint').onclick=()=>{ closeSheet(); avSay('me', avHint()); };
   $('avRestart').onclick=()=>{ try{ localStorage.removeItem('vainAdv'); }catch(e){} location.reload(); };
   $('avExit').onclick=()=>{ location.hash=''; location.reload(); };
@@ -3820,7 +3822,7 @@ async function avTap(e){
   finally { AV.busy=false; AV.item=null; AV.verb=null; avRender(); }
 }
 function avBar(){
-  $('advVerbs').addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b||AV.busy) return; const v=b.dataset.v;
+  $('advVerbs').addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b) return; const v=b.dataset.v; if (v==='menu') return avMenu(); if (AV.busy) return;
     if (v==='map') return avMap(); if (v==='menu') return avMenu();
     AV.verb = AV.verb===v ? null : v; if (v!=='use' && v!=='give') AV.item=null; avRender(); });
   $('advInv').addEventListener('click', async e=>{ const b=e.target.closest('[data-i]'); if(!b||AV.busy) return; const i=b.dataset.i;
@@ -4112,6 +4114,7 @@ function renderSocial(msg){
 }
 function fmtWhen(t){ try { return new Date(t).toLocaleString(LANG==='it'?'it-IT':'en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } }
 function sheet(html){ $('sheetBody').innerHTML=html; $('sheet').classList.add('show'); }
+document.addEventListener('DOMContentLoaded',()=>{}); setTimeout(()=>{ const sh=$('sheet'); if (sh) sh.addEventListener('click', e=>{ if (e.target===sh) closeSheet(); }); },0);
 function closeSheet(){ $('sheet').classList.remove('show'); if (window.focusCmd) focusCmd(); }
 function openRel(){
   const {st, partner} = deriveStatus();
@@ -4454,7 +4457,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='41';
+const BUILD='42';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
