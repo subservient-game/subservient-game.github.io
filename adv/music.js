@@ -10,7 +10,7 @@ const MUS_TRACKS={
   sea:{ bpm:70, chords:[[62,'m'],[60,'M'],[58,'M'],[60,'M']], scale:[62,64,65,67,69,72,74,77],
     mel:[0,null,2,null, 4,null,3,2, 1,null,null,null, 2,3,4,null, 5,null,4,null, 3,null,1,null, 2,null,null,null, null,null,null,null] }
 };
-const MUS_ROOM=r=>['bisca','prive','cimitero','bunker','cellar','municipio','disco','karaoke'].includes(r)?'night':(['beach','porto','faro'].includes(r)?'sea':'day');
+const MUS_ROOM=r=>['bisca','prive','cimitero','bunker','cellar','municipio','disco','karaoke'].includes(r)?'night':(['beach','porto','faro','isola','laguna'].includes(r)?'sea':'day');
 const mfreq=m=>440*Math.pow(2,(m-69)/12);
 function musNote(t, midi, dur, type, vol, attack){ const c=MUS.ctx; const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.value=mfreq(midi);
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+(attack||.02)); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(MUS.master); o.start(t); o.stop(t+dur+.05); }
