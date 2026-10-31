@@ -113,6 +113,14 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  .kbd { flex:0 0 auto; margin-top:8px; padding:6px 3px 4px; background:#1a1d23; border-radius:14px; user-select:none; -webkit-user-select:none; touch-action:none; }
+  .kr { display:flex; gap:5px; justify-content:center; margin-bottom:6px; } .kr:last-child { margin-bottom:0; }
+  .kk { flex:1 1 0; max-width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:#3a3f48; color:#eef0f3; border-radius:8px; font-size:19px; font-family:system-ui,sans-serif; box-shadow:0 2px 0 #121418; }
+  .kk.fn { background:#2a2e35; font-size:15px; max-width:56px; flex:1.4 1 0; } .kk.sp { flex:4 1 0; max-width:none; font-size:14px; color:#aab2bd; } .kk.go { background:var(--accent); color:#1a1a1a; font-weight:700; max-width:76px; flex:2 1 0; }
+  .kk.on { background:#eef0f3; color:#1a1a1a; } .kk.dn { transform:translateY(2px); box-shadow:none; filter:brightness(1.35); }
+  .kbbar { flex:0 0 auto; text-align:right; } .kbtog { background:none; border:0; color:#6b7380; font-size:12px; padding:4px 6px; font-weight:500; }
+  .kbback { padding:8px 10px; background:var(--panel); border:1px solid var(--line); font-size:18px; }
+  @media (pointer:fine){ .kbbar { display:none; } }
   #stats { font-size:.95em; opacity:.95; }
   #camName, #clock { display:none !important; }
   .rain line { stroke:#cfe6ff; stroke-width:1.2; opacity:.55; animation:rain .5s linear infinite; } @keyframes rain { to { transform:translate(-8px,26px); } }
@@ -144,6 +152,7 @@
 
   .ln { fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .outfit { fill:var(--outfit); }
+  #hol .outfit, #hol .pants, #hol .skin, #npcs .outfit, #npcs .pants, #npcs .skin { stroke:rgba(40,22,10,.32); stroke-width:.7; paint-order:stroke; }
   .outfitD { fill:var(--outfitD); }
   .pants { fill:var(--pants); }
   .skin { fill:var(--skin); }
@@ -201,6 +210,11 @@
         <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fbbe6"/><stop offset="1" stop-color="#d8eef8"/></linearGradient>
         <linearGradient id="gWood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a5434"/><stop offset="1" stop-color="#4c321e"/></linearGradient>
         <linearGradient id="gFloorWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6644"/><stop offset="1" stop-color="#5b3f27"/></linearGradient>
+        <radialGradient id="roomShade" cx=".5" cy=".38" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a0f05" stop-opacity=".32"/></radialGradient>
+        <linearGradient id="floorShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".45" stop-color="#000" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".06"/></linearGradient>
+        <linearGradient id="wallLight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".10"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".10"/></linearGradient>
+        <radialGradient id="sunWarm" cx=".85" cy=".1" r=".9"><stop offset="0" stop-color="#fff2c4" stop-opacity=".35"/><stop offset=".6" stop-color="#fff2c4" stop-opacity="0"/></radialGradient>
+        <radialGradient id="ctShadow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".38"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
         <linearGradient id="gSofa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f7a8c"/><stop offset="1" stop-color="#355766"/></linearGradient>
         <linearGradient id="gCurtain" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b0573f"/><stop offset=".5" stop-color="#cf7357"/><stop offset="1" stop-color="#b0573f"/></linearGradient>
         <linearGradient id="gLeaf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa84f"/><stop offset="1" stop-color="#3f7a33"/></linearGradient>
@@ -244,8 +258,11 @@
   </div>
   <form class="cmd" id="f" autocomplete="off">
     <input id="cmd" maxlength="200" placeholder="Tell Holgen what to do…" aria-label="Command">
+    <button type="button" id="kbBack" class="kbback" aria-label="Keyboard" style="display:none">🎹</button>
     <button type="submit" id="go">Go</button>
   </form>
+  <div class="kbd" id="kbd"></div>
+  <div class="kbbar"><button type="button" id="kbToggle" class="kbtog">⌨️ tastiera del telefono</button></div>
   <button type="button" class="mynum" id="mynum"></button>
   <div class="social" id="social"></div>
   <div id="ver" style="font-size:12px;opacity:.45;padding:2px 4px">versione</div>
@@ -666,6 +683,10 @@ function drawRoom(r){
   }
   if (r==='piazza') b+=sagraDecor()+`<g><rect x="296" y="150" width="46" height="34" fill="#b5835a" stroke="#6b4a2b" stroke-width="3"/><rect x="302" y="156" width="14" height="10" fill="#fff"/><rect x="320" y="158" width="16" height="12" fill="#ffd166"/><rect x="306" y="170" width="12" height="9" fill="#9fd3e0"/><text x="319" y="196" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="Fredoka, sans-serif">📌 ${LANG==='it'?'BACHECA':'BOARD'}</text></g>`;
   b=decorate(r,b);
+  { const outdoor=['garden','park','beach','woods','piazza'].includes(r);
+    if (outdoor) b+=`<rect width="480" height="300" fill="url(#sunWarm)"/><rect y="236" width="480" height="64" fill="url(#floorShade)" opacity=".6"/>`;
+    else b+=`<rect width="480" height="232" fill="url(#wallLight)"/><rect y="232" width="480" height="68" fill="url(#floorShade)"/><rect width="480" height="300" fill="url(#roomShade)"/>`;
+    for (const o of Object.values(OBJ)) if (o.room===r && (o.seat||o.lie)){ const x=(o.seat||o.lie).x; b+=`<ellipse cx="${x}" cy="249" rx="54" ry="5" fill="url(#ctShadow)"/>`; } }
   backL.innerHTML=b; frontL.innerHTML=frontFor(r);
   darkOv.setAttribute('opacity', dark ? (r==='garden'?.55:.66) : 0);
   holG.style.filter = dark ? 'brightness(.7)' : '';
@@ -720,6 +741,7 @@ const bodyMarkup = () => `
     <g id="cBack"></g>
     <path d="M-15 3 L15 3 L14 -4 L-14 -4 Z" class="pants"/>
     <path class="outfit" d="M-16 2 Q-19 -20 -15 -36 Q-13 -42 -6 -42 L6 -42 Q13 -42 15 -36 Q19 -20 16 2 Q0 6 -16 2 Z"/>
+    <path d="M6 -42 Q13 -42 15 -36 Q19 -20 16 2 Q11 4 7 3.6 Q10 -18 6 -42Z" fill="#000" opacity=".09"/><path d="M-14 -33 Q-16.5 -18 -14.5 -3" stroke="#fff" stroke-opacity=".2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
     <g id="cardi"><path d="M-7 -41.5 L0 -22 L7 -41.5 Z" fill="#3d4a5c"/>
     <path class="outfitD" d="M-7 -41.5 L-1.2 3 L-3.4 3 L-9 -40 Z"/><path class="outfitD" d="M7 -41.5 L1.2 3 L3.4 3 L9 -40 Z"/>
     <g fill="#6b4a2a"><circle cx="-3.6" cy="-16" r="1.2"/><circle cx="-2.6" cy="-8" r="1.2"/><circle cx="-1.8" cy="-1" r="1.2"/></g>
@@ -730,7 +752,7 @@ const bodyMarkup = () => `
     <g id="head">
       <g id="hairBack"></g>
       <circle cx="-15.5" cy="-16" r="3.6" class="skinD"/><circle cx="15.5" cy="-16" r="3.6" class="skinD"/>
-      <circle cx="0" cy="-17" r="16" class="skin"/>
+      <circle cx="0" cy="-17" r="16" class="skin"/><path d="M6 -31.5 A16 16 0 0 1 6 -2.5 A19 19 0 0 0 6 -31.5Z" fill="#7a3b1a" opacity=".07"/><ellipse cx="-7" cy="-27" rx="5" ry="2.6" fill="#fff" opacity=".18"/>
       <g fill="#e88b6c" opacity=".6"><circle cx="-10" cy="-9.5" r="1"/><circle cx="-12" cy="-11" r=".8"/><circle cx="-8.3" cy="-11.4" r=".8"/><circle cx="10" cy="-9.5" r="1"/><circle cx="12" cy="-11" r=".8"/><circle cx="8.3" cy="-11.4" r=".8"/></g>
       <path d="M0 -15 q2 2.6 -.2 3.8" stroke="#d9a07a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
       <g id="eyes"></g>
@@ -1732,7 +1754,7 @@ function lookOut(){ return {...(H.look||{}), phys: (typeof physOf==='function'?p
 function defaultLook(kind){ return {hair: kind==='f'?'bun':'short', hairColor:'#c8642a', skin:'#f6cfa7', glasses:true, outfit:null, pants:null}; }
 H.look = (()=>{ try { return JSON.parse(localStorage.getItem('subservientLook')||'null'); } catch(e){ return null; } })();
 function saveLook(){ try{ localStorage.setItem('subservientLook', JSON.stringify(H.look)); }catch(e){} }
-function hairSVG(look, part){ const st=HAIRSTYLES[look.hair]||HAIRSTYLES.short; return (st[part]||'').replace(/#c8642a/g, look.hairColor||'#c8642a'); }
+function hairSVG(look, part){ const st=HAIRSTYLES[look.hair]||HAIRSTYLES.short; let h=(st[part]||'').replace(/#c8642a/g, look.hairColor||'#c8642a'); if (part==='front' && !['bald','mohawk'].includes(look.hair||'short')) h+=`<path d="M-9 -31 Q-2 -35.5 6 -33" stroke="#fff" stroke-opacity=".32" stroke-width="1.8" fill="none" stroke-linecap="round"/>`; return h; }
 function applyLook(){
   if (!H.look) H.look=defaultLook(H.kind);
   J.hairBack.innerHTML=hairSVG(H.look,'back'); J.hairFront.innerHTML=hairSVG(H.look,'front');
@@ -2889,6 +2911,7 @@ function makeNPC(o){
   const P={}; g.querySelectorAll('[data-j]').forEach(e=>P[e.getAttribute('data-j')]=e);
   const n={ g, P, cur:{...N}, pose:POSES.idle, poseStart:performance.now(), X:o.x??300, Y:o.y??STAND, dir:o.dir??-1, room:o.room||H.room, name:o.name||'', kind:o.kind||'m', outfit:o.outfit||'#d9a93b', alpha:1, role:o.role||'' };
   dressNPC(n, o.outfit, o.pants); npcFace(n,'normal');
+  n.sh=document.createElementNS(NS,'ellipse'); n.sh.setAttribute('rx','24'); n.sh.setAttribute('ry','4.5'); n.sh.setAttribute('fill','url(#ctShadow)'); npcLayer.insertBefore(n.sh, npcLayer.firstChild);
   NPCS.push(n); return n;
 }
 function dressNPC(n, outfit, pants){
@@ -2902,11 +2925,11 @@ function dressNPC(n, outfit, pants){
 function costumeNPC(n, hat, torso){ n.P.cHat.innerHTML=sanitizeSVG(hat||''); n.P.cTorso.innerHTML=sanitizeSVG(torso||''); }
 function npcFace(n, name){ const f=FACES[name]||FACES.normal; n.P.eyes.innerHTML=EYES[f[0]]; n.P.eyes.setAttribute('fill','#222'); n.P.mouth.innerHTML=MOUTHS[f[1]]; n.P.brows.innerHTML=BROWS[f[2]]; }
 function npcPose(n, name, face){ const p=POSES[name]||POSES.idle; n.pose=p; n.poseStart=performance.now(); npcFace(n, face||p.face||'normal'); }
-function removeNPC(n){ const i=NPCS.indexOf(n); if(i>=0) NPCS.splice(i,1); n.g.remove(); }
+function removeNPC(n){ const i=NPCS.indexOf(n); if(i>=0) NPCS.splice(i,1); n.g.remove(); if (n.sh) n.sh.remove(); }
 function updateNPCs(dt, now){
   const k=1-Math.exp(-dt*16);
   for (const n of NPCS){
-    const vis = n.room===H.room; n.g.style.display = vis?'':'none'; if(!vis) continue;
+    const vis = n.room===H.room; n.g.style.display = vis?'':'none'; if (n.sh){ n.sh.style.display=vis?'':'none'; n.sh.setAttribute('cx',n.X.toFixed(1)); n.sh.setAttribute('cy',(n.Y+1).toFixed(1)); n.sh.setAttribute('opacity', n.alpha); } if(!vis) continue;
     const t={...samplePose(n.pose, now-n.poseStart)};
     for (const key in t) n.cur[key]+=(t[key]-n.cur[key])*k;
     const c=n.cur, P=n.P, s=BASE*(1+(n.Y-STAND)*0.006);
@@ -3292,7 +3315,7 @@ const I18N = {
 let LANG='en';
 try { const l=localStorage.getItem('subservientLang'); if (l==='it'||l==='en') LANG=l; } catch(e){}
 function tr(k, a){ const v=(I18N[LANG]||I18N.en)[k] ?? I18N.en[k]; return typeof v==='function' ? v(a) : v; }
-function applyLang(){
+function applyLang(){ try{ if (typeof kbRender==='function' && KB.on) kbRender(); }catch(e){}
   document.documentElement.lang=LANG;
   document.querySelectorAll('[data-i]').forEach(e=>e.textContent=tr(e.dataset.i));
   document.querySelectorAll('[data-ip]').forEach(e=>e.placeholder=tr(e.dataset.ip));
@@ -3325,7 +3348,7 @@ applyLang();
     b.addEventListener('mousedown', e=>e.preventDefault());
     b.addEventListener('touchstart', e=>{ e.preventDefault(); const f=b.closest('form'); if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } }, {passive:false});
   });
-  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
+  document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum,.kbd,.kbbar')) return; e.preventDefault();
     if (e.target.closest('.mini')){ openMap(); return; }
     if (H.room==='piazza' || H.room==='barber'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
       if (H.room==='piazza' && sp.x>290 && sp.x<348 && sp.y>145 && sp.y<200){ openBoard(); return; }
@@ -3361,7 +3384,7 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
   function fit(){
     const vv=window.visualViewport; const vh=vv?vv.height:innerHeight;
     const cs=getComputedStyle(document.body); const pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
-    let others=0; for (const el of wrap.children){ if (el===camEl) continue; if (el.compareDocumentPosition($('f')) & Node.DOCUMENT_POSITION_PRECEDING) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
+    let others=0; for (const el of wrap.children){ if (el===camEl) continue; const lastEl=($('kbd')&&$('kbd').style.display!=='none')?($('kbd').nextElementSibling||$('kbd')):$('f'); if (el!==lastEl && (el.compareDocumentPosition(lastEl) & Node.DOCUMENT_POSITION_PRECEDING)) continue; const st=getComputedStyle(el); if (st.display==='none'||st.position==='absolute'||st.position==='fixed') continue; others+=el.offsetHeight+parseFloat(st.marginTop)+parseFloat(st.marginBottom); }
     const fullW=wrap.clientWidth; const h=Math.max(110, Math.min(fullW/1.6, vh-pad-others-6));
     camEl.style.height=h+'px'; camEl.style.width=Math.min(fullW, h*1.6)+'px';
   }
@@ -3371,6 +3394,60 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
   new MutationObserver(()=>requestAnimationFrame(fit)).observe($('callbox'),{attributes:true,attributeFilter:['class']});
   setInterval(fit,700); fit();
 })();
+/* ================= BUILT-IN KEYBOARD (no phone keyboard, no suggestion bar) ================= */
+const KB={ on:false, shift:false, caps:false, layer:'abc', target:null };
+const KB_LAYERS={
+  abc:[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['⇧','z','x','c','v','b','n','m','⌫'],['123','àè','😀',' ','\'','⏎']],
+  num:[['1','2','3','4','5','6','7','8','9','0'],['-','/',':',';','(',')','€','&','@','"'],['#+=','.',',','?','!','%','+','*','⌫'],['abc','àè','😀',' ','.','⏎']],
+  sym:[['[',']','{','}','#','^','=','_','\\','|'],['~','<','>','$','£','¥','•','°','§','¿'],['123','.',',','?','!','\'','¡','€','⌫'],['abc','àè','😀',' ','.','⏎']],
+  acc:[['à','è','é','ì','ò','ù','á','í','ó','ú'],['À','È','É','Ì','Ò','Ù','ç','ñ','ü','ö'],['⇧','\'','"','-','?','!',',','.','⌫'],['abc','123','😀',' ','.','⏎']],
+  emo:[['😂','🤣','😍','😎','🙄','😡','😱','🤢','😴','🤡'],['👍','👎','👏','🙏','💪','🎉','❤️','🔥','💩','🍕'],['🍺','🍷','⚽','🎤','🎲','💰','🚗','🌧️','⌫'],['abc','123','àè',' ','.','⏎']]
+};
+function kbRender(){ const el=$('kbd'); if (!el) return; const L=KB_LAYERS[KB.layer]; try{ $('kbToggle').textContent = LANG==='it' ? '⌨️ usa la tastiera del telefono' : '⌨️ use the phone keyboard'; }catch(e){}
+  el.innerHTML=L.map(row=>`<div class="kr">${row.map(k=>{ const cls=k===' '?'sp':(['⇧','⌫','123','abc','#+=','àè','😀','⏎'].includes(k)?'fn':''); const lab=k===' '?(LANG==='it'?'spazio':'space'):k==='⏎'?(LANG==='it'?'Invio':'Go'):(KB.layer==='abc'&&k.length===1&&(KB.shift||KB.caps)?k.toUpperCase():k);
+    return `<div class="kk ${cls}${k==='⇧'&&(KB.shift||KB.caps)?' on':''}${k==='⏎'?' go':''}" data-k="${k.replace(/"/g,'&quot;')}">${lab==='⇧'&&KB.caps?'⇪':lab}</div>`; }).join('')}</div>`).join(''); }
+function kbTarget(){ const t=KB.target; return (t && document.body.contains(t) && t.offsetParent!==null) ? t : $('cmd'); }
+function kbInsert(ch){ const el=kbTarget(); const ml=+el.getAttribute('maxlength')||500; let s=el.selectionStart??el.value.length, e=el.selectionEnd??s;
+  if (el.value.length-(e-s)+ch.length>ml) return; el.value=el.value.slice(0,s)+ch+el.value.slice(e); try{ el.setSelectionRange(s+ch.length,s+ch.length); }catch(x){} el.dispatchEvent(new Event('input',{bubbles:true})); }
+function kbBack(){ const el=kbTarget(); let s=el.selectionStart??el.value.length, e=el.selectionEnd??s; if (s===e){ if (!s) return; const prev=[...el.value.slice(0,s)]; const cut=prev[prev.length-1].length; s-=cut; }
+  el.value=el.value.slice(0,s)+el.value.slice(e); try{ el.setSelectionRange(s,s); }catch(x){} el.dispatchEvent(new Event('input',{bubbles:true})); }
+function kbKey(k){
+  if (navigator.vibrate) try{ navigator.vibrate(6); }catch(e){}
+  const el=kbTarget(); if (document.activeElement!==el) try{ el.focus({preventScroll:true}); }catch(e){}
+  if (k==='⌫'){ kbBack(); return; }
+  if (k==='⏎'){ const f=el.form; if (f){ if (f.requestSubmit) f.requestSubmit(); else f.dispatchEvent(new Event('submit',{cancelable:true})); } return; }
+  if (k==='⇧'){ const now=Date.now(); if (KB.shift && now-(KB.lastShift||0)<350){ KB.caps=true; KB.shift=false; } else if (KB.caps){ KB.caps=false; } else KB.shift=!KB.shift; KB.lastShift=now; kbRender(); return; }
+  if (k==='123'){ KB.layer='num'; kbRender(); return; } if (k==='abc'){ KB.layer='abc'; kbRender(); return; } if (k==='#+='){ KB.layer='sym'; kbRender(); return; }
+  if (k==='àè'){ KB.layer='acc'; kbRender(); return; } if (k==='😀'){ KB.layer='emo'; kbRender(); return; }
+  let ch=k; if (KB.layer==='abc' && (KB.shift||KB.caps)) ch=k.toUpperCase();
+  kbInsert(ch);
+  if (KB.shift){ KB.shift=false; kbRender(); }
+  if (KB.layer==='acc' || KB.layer==='emo'){ /* stay */ } else if (KB.layer!=='abc' && (k===' '||k==='.')) { KB.layer='abc'; kbRender(); }
+}
+function kbSetup(){
+  const touch = window.matchMedia && matchMedia('(pointer:coarse)').matches;
+  let pref='mine'; try{ pref=localStorage.getItem('subservientKb')||'mine'; }catch(e){}
+  KB.on = touch && pref!=='native';
+  const kb=$('kbd'); kb.style.display=KB.on?'':'none'; $('kbBack').style.display=(touch && !KB.on)?'':'none';
+  ['cmd','chatIn'].forEach(id=>{ const el=$(id); if (KB.on) el.setAttribute('inputmode','none'); else el.removeAttribute('inputmode'); });
+  $('kbToggle').textContent = LANG==='it' ? '⌨️ usa la tastiera del telefono' : '⌨️ use the phone keyboard';
+  if (KB.on) kbRender();
+  try{ window.fitCam && fitCam(); }catch(e){}
+}
+['cmd','chatIn'].forEach(id=>$(id).addEventListener('focus',()=>{ KB.target=$(id); }));
+$('chatIn').addEventListener('pointerdown',()=>{ KB.target=$('chatIn'); });
+$('cmd').addEventListener('pointerdown',()=>{ KB.target=$('cmd'); });
+(function(){ const kb=$('kbd'); let rep=null, repT=null;
+  const stop=()=>{ clearTimeout(repT); clearInterval(rep); repT=rep=null; };
+  kb.addEventListener('pointerdown',e=>{ const t=e.target.closest('.kk'); e.preventDefault(); if(!t) return; t.classList.add('dn'); setTimeout(()=>t.classList.remove('dn'),110); const k=t.dataset.k; kbKey(k);
+    if (k==='⌫'){ repT=setTimeout(()=>{ rep=setInterval(()=>kbKey('⌫'),60); },420); } });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>kb.addEventListener(ev,stop));
+  kb.addEventListener('contextmenu',e=>e.preventDefault());
+  $('kbToggle').addEventListener('pointerdown',e=>{ e.preventDefault(); try{ localStorage.setItem('subservientKb','native'); }catch(x){} kbSetup(); const el=kbTarget(); el.blur(); setTimeout(()=>el.focus(),60); });
+  $('kbBack').addEventListener('pointerdown',e=>{ e.preventDefault(); try{ localStorage.setItem('subservientKb','mine'); }catch(x){} kbSetup(); const el=kbTarget(); el.blur(); setTimeout(()=>el.focus({preventScroll:true}),60); });
+})();
+kbSetup();
+
 /* ================= BOOT ================= */
 function tick(){ const d=new Date(); $('clock').textContent=d.toLocaleDateString('en-GB')+' '+d.toLocaleTimeString('en-GB'); }
 tick(); setInterval(tick,1000);
@@ -3381,7 +3458,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='27';
+const BUILD='28';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
