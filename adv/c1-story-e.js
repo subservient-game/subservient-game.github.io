@@ -6,7 +6,7 @@ function avCrows(goal, secs){ return new Promise(res=>{ let n=0, left=secs, done
    <div id="crG" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">${Array.from({length:12},(_,i)=>`<button type="button" data-k="${i}" style="height:58px;font-size:28px;background:#1b2433">&nbsp;</button>`).join('')}</div>
    <div style="display:flex;justify-content:space-between;font-weight:700"><span id="crN">🐦‍⬛ 0/${goal}</span><span id="crT">${secs}s</span></div></div>`);
   const cells=[...$('crG').querySelectorAll('button')];
-  const pop=()=>{ if (done) return; const free=cells.filter(c=>!c.dataset.on); if (!free.length) return; const c=free[Math.floor(Math.random()*free.length)]; c.dataset.on=1; c.textContent='🐦‍⬛'; setTimeout(()=>{ if (c.dataset.on){ delete c.dataset.on; c.innerHTML='&nbsp;'; } }, 900+Math.random()*500); };
+  const pop=()=>{ if (done) return; const free=cells.filter(c=>!c.dataset.on); if (!free.length) return; const c=free[Math.floor(Math.random()*free.length)]; c.dataset.on=1; c.innerHTML=AV_ICON_CROW; setTimeout(()=>{ if (c.dataset.on){ delete c.dataset.on; c.innerHTML='&nbsp;'; } }, 900+Math.random()*500); };
   cells.forEach(c=>c.onpointerdown=e=>{ e.preventDefault(); if (done||!c.dataset.on) return; delete c.dataset.on; c.textContent='💥'; setTimeout(()=>{ if(!c.dataset.on) c.innerHTML='&nbsp;'; },200); n++; $('crN').textContent=`🐦‍⬛ ${n}/${goal}`; if (n>=goal) end(true); });
   const sp=setInterval(pop, 420), tm=setInterval(()=>{ left--; if ($('crT')) $('crT').textContent=left+'s'; if (left<=0) end(false); },1000);
   function end(ok){ if (done) return; done=true; clearInterval(sp); clearInterval(tm); closeSheet(); res(ok); } }); }

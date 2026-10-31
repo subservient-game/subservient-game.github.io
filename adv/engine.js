@@ -32,7 +32,7 @@ function avRender(){
   if (AV.dlg){ $('advVerbs').style.display='none'; $('advInv').style.display='none'; $('advDlg').style.display=''; return; }
   $('advVerbs').style.display=''; $('advInv').style.display=''; $('advDlg').style.display='none';
   $('advVerbs').innerHTML=AV_VERBS.map(v=>`<button type="button" class="av${AV.verb===v[0]?' on':''}" data-v="${v[0]}">${v[LANG==='it'?1:2]}</button>`).join('');
-  $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${AV.item===i?' on':''}" data-i="${i}"><b>${AV_ITEMS[i]?AV_ITEMS[i][0]:'❔'}</b><span>${avItemName(i)}</span></button>`).join('') : `<div class="aiempty">${T('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
+  $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${AV.item===i?' on':''}" data-i="${i}"><b>${avIcon(i)}</b><span>${avItemName(i)}</span></button>`).join('') : `<div class="aiempty">${T('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
   avSentence();
 }
 /* ---------- speech ---------- */

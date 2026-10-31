@@ -5,7 +5,7 @@ const BR_PTS={1:11,3:10,10:4,9:3,8:2}; const BR_STR=[1,3,10,9,8,7,6,5,4,2];
 const brName=r=>({1:'A',8:T('Fante','J'),9:T('Cav.','Kn'),10:T('Re','K')}[r]||String(r));
 const brPts=c=>BR_PTS[c.r]||0, brStr=c=>10-BR_STR.indexOf(c.r);
 function brBeats(a,b,tr){ /* does b (second) beat a (first)? */ if (b.s===a.s) return brStr(b)>brStr(a); return b.s===tr; }
-function brCard(c,btn,i){ const S=BR_SUITS[c.s]; return `<${btn?'button type="button" data-c="'+i+'"':'div'} class="brc" style="--sc:${S[3]}"><b>${brName(c.r)}</b><i>${S[0]}</i><small>${brPts(c)||''}</small></${btn?'button':'div'}>`; }
+function brCard(c,btn,i){ const S=BR_SUITS[c.s]; return `<${btn?'button type="button" data-c="'+i+'"':'div'} class="brc" style="--sc:${S[3]}"><b>${brName(c.r)}</b><i>${AV_SUITS[c.s]}</i><small>${brPts(c)||''}</small></${btn?'button':'div'}>`; }
 function avBriscola(opp, level){ return new Promise(res=>{
   const deck=[]; for (let s=0;s<4;s++) for (let r=1;r<=10;r++) deck.push({s,r});
   for (let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
@@ -21,7 +21,7 @@ function avBriscola(opp, level){ return new Promise(res=>{
     return lowest(ai); };
   const draw=()=>{
     sheet(`<div class="brw"><div class="brtop"><span>${esc(opp)}: ${'🂠'.repeat(ai.length)}</span><span>${it?'Mazzo':'Deck'}: ${deck.length}</span></div>
-      <div class="brmid"><div class="brbr">${it?'Briscola':'Trump'}<br>${deck.length?brCard(brisc):`<div class="brc" style="--sc:${BR_SUITS[tr][3]}"><i>${BR_SUITS[tr][0]}</i></div>`}</div><div class="brtab">${table.map(c=>brCard(c)).join('')}</div></div>
+      <div class="brmid"><div class="brbr">${it?'Briscola':'Trump'}<br>${deck.length?brCard(brisc):`<div class="brc" style="--sc:${BR_SUITS[tr][3]}"><i>${AV_SUITS[tr]}</i></div>`}</div><div class="brtab">${table.map(c=>brCard(c)).join('')}</div></div>
       <p class="brmsg">${msg||'&nbsp;'}</p><div class="brhand">${me.map((c,i)=>brCard(c,true,i)).join('')}</div>
       <div class="brtop"><span>${it?'Tu':'You'}: ${myP}</span><span>${esc(opp)}: ${aiP}</span></div><button type="button" class="ghost" id="brQuit" style="width:100%;margin-top:8px">${it?'Abbandona':'Quit'}</button></div>`);
     $('brQuit').onclick=()=>{ closeSheet(); res(false); };
