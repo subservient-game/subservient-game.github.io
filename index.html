@@ -1777,14 +1777,31 @@ $('chatF').addEventListener('submit',e=>{ e.preventDefault(); const i=$('chatIn'
 /* ================= LOOK (character customisation) ================= */
 const HAIRSTYLES = {
   short: HAIR.m, bun: HAIR.f,
-  long:{ back:`<path d="M-19 -22 C-23 -44 23 -44 19 -22 L21 12 Q0 18 -21 12 Z" fill="#c8642a"/>`, front:`<path d="M-17 -15 C-19 -35 19 -35 17 -15 C12 -26 -6 -28 -17 -15 Z" fill="#c8642a"/>` },
+  long:{ back:`<path d="M-19 -22 C-23 -44 23 -44 19 -22 L21 12 Q0 18 -21 12 Z" fill="#c8642a"/>`, front:`<path d="M-17.4 -13 C-18.6 -43 18.6 -43 17.4 -14 C14.4 -25 2 -30 -8 -23 C-11 -21 -14.4 -17.6 -17.4 -13Z" fill="#c8642a"/>` },
   curly:{ back:'', front:`<g fill="#c8642a"><circle cx="-14" cy="-26" r="6"/><circle cx="-7" cy="-32" r="6.5"/><circle cx="1" cy="-34" r="6.5"/><circle cx="9" cy="-32" r="6.5"/><circle cx="15" cy="-26" r="6"/><circle cx="-17" cy="-19" r="4.5"/><circle cx="17" cy="-19" r="4.5"/></g>` },
   mohawk:{ back:'', front:`<path d="M-4 -31 L-6 -46 L-1 -40 L1 -51 L4 -40 L8 -45 L4 -31 Z" fill="#c8642a"/>` },
-  pony:{ back:`<path d="M12 -30 Q32 -28 27 -2 Q23 10 18 2 Q23 -14 10 -24 Z" fill="#c8642a"/>`, front:`<path d="M-17 -15 C-19 -35 19 -35 17 -15 C12 -26 -6 -28 -17 -15 Z" fill="#c8642a"/><circle cx="13" cy="-28" r="3" fill="#ff5c86"/>` },
-  bald:{ back:'', front:`<path d="M-17 -16 Q-17 -24 -13 -27 L-13 -16 Z M17 -16 Q17 -24 13 -27 L13 -16 Z" fill="#c8642a"/>` }
+  pony:{ back:`<path d="M12 -30 Q32 -28 27 -2 Q23 10 18 2 Q23 -14 10 -24 Z" fill="#c8642a"/>`, front:`<path d="M-17.4 -13 C-18.6 -43 18.6 -43 17.4 -14 C14.4 -25 2 -30 -8 -23 C-11 -21 -14.4 -17.6 -17.4 -13Z" fill="#c8642a"/><circle cx="13" cy="-28" r="3" fill="#ff5c86"/>` },
+  bald:{ back:'', front:`<path d="M-17 -16 Q-17 -24 -13 -27 L-13 -16 Z M17 -16 Q17 -24 13 -27 L13 -16 Z" fill="#c8642a"/>` },
+  /* --- men --- */
+  buzz:{ back:'', front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -29.6 0 -29.6 C-8 -29.6 -14.4 -24 -16.8 -16Z" fill="#c8642a" opacity=".78"/>` },
+  sidepart:{ back:'', front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C15 -23 10 -26.6 4 -26.6 L-2.6 -30 C-7.6 -28.4 -13.6 -24.6 -16.8 -16Z" fill="#c8642a"/><path d="M-4.6 -36.4 L-2.6 -30" stroke="#000" stroke-opacity=".3" stroke-width="1"/>` },
+  quiff:{ back:'', front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -28.6 0 -28.6 C-8 -28.6 -14.4 -24 -16.8 -16Z" fill="#c8642a"/><path d="M-7 -32 C-8 -45 10 -48 15 -38.6 C11 -40.6 4 -40.6 -1 -31.6Z" fill="#c8642a"/>` },
+  afro:{ back:`<circle cx="0" cy="-27" r="22.5" fill="#c8642a"/>`, front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -27.6 0 -27.6 C-8 -27.6 -14.4 -24 -16.8 -16Z" fill="#c8642a"/>` },
+  slick:{ back:'', front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -30.6 0 -30.6 C-8 -30.6 -14.4 -24 -16.8 -16Z" fill="#c8642a"/><path d="M-10 -32 Q0 -36 10 -32 M-12.4 -27.6 Q0 -34 12.4 -27.6" stroke="#fff" stroke-opacity=".3" fill="none"/>` },
+  mullet:{ back:`<path d="M-15.4 -22 L-16.6 5 Q-10.4 9 -6 2.6 L6 2.6 Q10.4 9 16.6 5 L15.4 -22Z" fill="#c8642a"/>`, front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C12.4 -25 4 -28 -2 -26.6 C-8 -26.6 -13 -23 -16.8 -16Z" fill="#c8642a"/>` },
+  receding:{ back:'', front:`<path d="M-16.6 -13 Q-17.4 -24 -12.4 -27.4 L-11.2 -16.4Z M16.6 -13 Q17.4 -24 12.4 -27.4 L11.2 -16.4Z" fill="#c8642a"/><path d="M-6 -32.8 Q0 -35 6 -32.8 Q0 -31 -6 -32.8Z" fill="#c8642a"/>` },
+  /* --- women --- */
+  bob:{ back:`<path d="M-19.4 -22 C-22.4 -42.4 22.4 -42.4 19.4 -22 L19.4 -3 Q12.4 1 10 -5.4 L-10 -5.4 Q-12.4 1 -19.4 -3Z" fill="#c8642a"/>`, front:`<path d="M-17.4 -14 C-18.6 -43 18.6 -43 17.4 -14 Q12.4 -22.4 6 -20.6 Q0 -23.6 -6 -20.6 Q-12.4 -22.4 -17.4 -14Z" fill="#c8642a"/>` },
+  pixie:{ back:`<path d="M-16.4 -18 C-18.4 -36 18.4 -36 16.4 -18Z" fill="#c8642a"/>`, front:`<path d="M-17 -14 C-18.6 -43 17.6 -45 17.2 -19 Q11 -23 4 -26.6 Q-2 -21.6 -9 -24.6 Q-13 -21.6 -17 -14Z" fill="#c8642a"/>` },
+  braids:{ back:`<path d="M-14.6 -20 Q-21 -6 -16.4 13 M14.6 -20 Q21 -6 16.4 13" stroke="#c8642a" stroke-width="7.4" fill="none" stroke-linecap="round"/><path d="M-19.6 -8 l4 2 M-19.4 -1 l4 2 M-18.4 6 l4 2 M19.6 -8 l-4 2 M19.4 -1 l-4 2 M18.4 6 l-4 2" stroke="#000" stroke-opacity=".2" stroke-width="1"/><circle cx="-16.4" cy="14" r="2.4" fill="#ff5c86"/><circle cx="16.4" cy="14" r="2.4" fill="#ff5c86"/>`, front:`<path d="M-17.4 -14 C-18.6 -43 18.6 -43 17.4 -14 C14.4 -26 4 -29.4 0 -30.6 C-4 -29.4 -14.4 -26 -17.4 -14Z" fill="#c8642a"/><path d="M0 -36.4 L0 -30" stroke="#000" stroke-opacity=".25"/>` },
+  twintails:{ back:`<path d="M-14.6 -30.4 Q-31 -26 -26.6 -5 Q-22.4 3 -19.4 -7.4 Q-22.4 -20 -12.6 -25.6Z M14.6 -30.4 Q31 -26 26.6 -5 Q22.4 3 19.4 -7.4 Q22.4 -20 12.6 -25.6Z" fill="#c8642a"/><circle cx="-15" cy="-29.6" r="2.8" fill="#ff5c86"/><circle cx="15" cy="-29.6" r="2.8" fill="#ff5c86"/>`, front:`<path d="M-17.4 -14 C-18.6 -43 18.6 -43 17.4 -14 Q12.4 -22.4 6 -20.6 Q0 -23.6 -6 -20.6 Q-12.4 -22.4 -17.4 -14Z" fill="#c8642a"/>` },
+  wavy:{ back:`<path d="M-19.4 -22 C-23.4 -44.4 23.4 -44.4 19.4 -22 Q23.4 -12 19.4 -2 Q23.4 8 17.4 14.6 Q8 18.6 0 16.4 Q-8 18.6 -17.4 14.6 Q-23.4 8 -19.4 -2 Q-23.4 -12 -19.4 -22Z" fill="#c8642a"/>`, front:`<path d="M-17.4 -13 C-18.6 -43 18.6 -43 17.4 -14 C14.4 -25 2 -30 -8 -23 C-11 -21 -14.4 -17.6 -17.4 -13Z" fill="#c8642a"/>` },
+  highbun:{ back:'', front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -30 0 -30 C-8 -30 -14.4 -24 -16.8 -16Z" fill="#c8642a"/><circle cx="0" cy="-41" r="7.4" fill="#c8642a"/><path d="M-6 -35.4 Q0 -37.4 6 -35.4" stroke="#ff5c86" stroke-width="2.2" fill="none"/>` },
+  afropuffs:{ back:`<circle cx="-15" cy="-34" r="9.4" fill="#c8642a"/><circle cx="15" cy="-34" r="9.4" fill="#c8642a"/>`, front:`<path d="M-16.8 -16 C-17.8 -43 17.8 -43 16.8 -16 C14.4 -24 8 -29.6 0 -29.6 C-8 -29.6 -14.4 -24 -16.8 -16Z" fill="#c8642a"/>` }
 };
 const LOOKS = {
-  hair:{short:['Corti','Short'], bun:['Chignon','Bun'], long:['Lunghi','Long'], pony:['Coda','Ponytail'], curly:['Ricci','Curly'], mohawk:['Cresta','Mohawk'], bald:['Pelato','Bald']},
+  hair:{ short:['Spettinati','Messy','m'], buzz:['Rasati','Buzz cut','m'], sidepart:['Riga di lato','Side part','m'], quiff:['Ciuffo','Quiff','m'], slick:['All\'indietro','Slicked back','m'], mullet:['Mullet','Mullet','m'], afro:['Afro','Afro','m'], receding:['Stempiato','Receding','m'], mohawk:['Cresta','Mohawk','m'], bald:['Pelato','Bald','m'],
+          bun:['Chignon','Bun','f'], highbun:['Chignon alto','High bun','f'], long:['Lunghi lisci','Long straight','f'], wavy:['Lunghi mossi','Long wavy','f'], bob:['Caschetto','Bob','f'], pixie:['Corti sbarazzini','Pixie','f'], pony:['Coda','Ponytail','f'], twintails:['Codini','Pigtails','f'], braids:['Trecce','Braids','f'], afropuffs:['Afro a ciuffi','Afro puffs','f'], curly:['Ricci','Curly','u'] },
   hairColor:['#c8642a','#6b3e26','#222222','#e8c36a','#eeeeee','#3f6fd1','#e87aa8','#4f9a4a','#8a5ac8'],
   skin:['#f6cfa7','#eab48a','#c98b5e','#a46a43','#7a4a2c','#5a3520'],
   outfit:['#d9a93b','#3f9a8c','#d64545','#3f6fd1','#e87aa8','#4f9a4a','#8a5ac8','#2b2d31','#eceff2'],
@@ -1920,13 +1937,16 @@ async function runDeco(o){
 }
 
 /* ================= CUSTOMISE PANEL (look + house) ================= */
+function hairChips(cur, act){ const it=LANG==='it'; const mine=Object.entries(LOOKS.hair).filter(([k,n])=>n[2]===H.kind||n[2]==='u'), other=Object.entries(LOOKS.hair).filter(([k,n])=>n[2]!==H.kind&&n[2]!=='u');
+  const b=([k,n])=>`<button type="button" class="${cur===k?'on':''}" data-act="${act}:${k}" ${act==='cut'?`data-bk="cut" data-bv="${k}"`:''}>${n[it?0:1]}</button>`;
+  return mine.map(b).join('') + (window.__allHair ? other.map(b).join('') : `<button type="button" class="more" data-act="allhair:1" ${act==='cut'?'data-bk="allhair" data-bv="1"':''}>${it?'＋ altre':'＋ more'}</button>`); }
 function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
 function openCustom(tab){
   tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
   let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div>`;
   if (tab==='shop'){ h+=shopHTML(); }
   else if (tab==='look'){
-    h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${Object.entries(LOOKS.hair).map(([k,n])=>`<button type="button" class="${L.hair===k?'on':''}" data-act="hair:${k}">${n[it?0:1]}</button>`).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${hairChips(L.hair, 'hair')}</div>`;
     h+=`<p class="lbl">${it?'Colore capelli':'Hair colour'}</p><div class="sws">${LOOKS.hairColor.map(c=>sw(c,'hairColor:'+c,L.hairColor===c)).join('')}</div>`;
     h+=`<p class="lbl">${it?'Pelle':'Skin'}</p><div class="sws">${LOOKS.skin.map(c=>sw(c,'skin:'+c,L.skin===c)).join('')}</div>`;
     h+=`<p class="lbl">${it?'Maglia':'Top'}</p><div class="sws">${LOOKS.outfit.map(c=>sw(c,'outfit:'+c,L.outfit===c)).join('')}</div>`;
@@ -1956,7 +1976,7 @@ function openCustom(tab){
   $('sheetBody').querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{ closeSheet(); runDeco({add:b.dataset.place}); });
   $('sheetBody').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
     const [k,v]=b.dataset.act.split(/:(.*)/s);
-    if (tab==='look'){ if (k==='glasses') setLook('glasses', !(H.look&&H.look.glasses!==false)); else setLook(k,v); openCustom('look'); return; }
+    if (tab==='look'){ if (k==='allhair'){ window.__allHair=true; openCustom('look'); return; } if (k==='glasses') setLook('glasses', !(H.look&&H.look.glasses!==false)); else setLook(k,v); openCustom('look'); return; }
     const r=window.__decoRoom;
     if (k==='room'){ window.__decoRoom=v; if (!H.visit && v!==H.room){ const id=++runId; gotoRoom(v,240,id); } openCustom('home'); return; }
     if (H.visit){ say(LANG==='it'?'Non è casa mia, non tocco niente.':'Not my house, hands off.',2500); return; }
@@ -2040,7 +2060,7 @@ const PASSERS = {
   }
 };
 function srand(...k){ let h=7; for (const v of k){ const n=typeof v==='string'?[...v].reduce((a,c)=>a*31+c.charCodeAt(0),0):v; h=(h*31+n)%2147483647; } let x=Math.sin(h*12.9898+78.233)*43758.5453; return x-Math.floor(x); }
-function randomLook(kind, seed){ if (seed!=null){ const pk=(a,i)=>a[Math.floor(srand(seed,i)*a.length)]; return {hair:pk(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly'],1), hairColor:pk(LOOKS.hairColor,2), skin:pk(LOOKS.skin,3), glasses:srand(seed,4)<.4, outfit:pk(LOOKS.outfit,5), pants:pk(LOOKS.pants,6)}; } const pick=a=>a[Math.floor(Math.random()*a.length)]; return {hair:pick(kind==='f'?['bun','long','pony','curly']:['short','bald','mohawk','curly']), hairColor:pick(LOOKS.hairColor), skin:pick(LOOKS.skin), glasses:Math.random()<.4, outfit:pick(LOOKS.outfit), pants:pick(LOOKS.pants)}; }
+function randomLook(kind, seed){ if (seed!=null){ const pk=(a,i)=>a[Math.floor(srand(seed,i)*a.length)]; return {hair:pk(kind==='f'?['bun','highbun','long','wavy','bob','pixie','pony','twintails','braids','afropuffs','curly']:['short','buzz','sidepart','quiff','slick','mullet','afro','receding','mohawk','bald','curly'],1), hairColor:pk(LOOKS.hairColor,2), skin:pk(LOOKS.skin,3), glasses:srand(seed,4)<.4, outfit:pk(LOOKS.outfit,5), pants:pk(LOOKS.pants,6)}; } const pick=a=>a[Math.floor(Math.random()*a.length)]; return {hair:pick(kind==='f'?['bun','highbun','long','wavy','bob','pixie','pony','twintails','braids','afropuffs','curly']:['short','buzz','sidepart','quiff','slick','mullet','afro','receding','mohawk','bald','curly']), hairColor:pick(LOOKS.hairColor), skin:pick(LOOKS.skin), glasses:Math.random()<.4, outfit:pick(LOOKS.outfit), pants:pick(LOOKS.pants)}; }
 async function passerBy(r, sl){
   if (H.room!==r || !PL.topic || PL.passer) return; if (sl==null) sl=Math.floor(Date.now()/1000);
   const kind=srand(sl,r,3)<.5?'f':'m', fromLeft=srand(sl,r,4)<.5;
@@ -2774,13 +2794,13 @@ function barberDo(kind, val){ const it=LANG==='it'; if (H.room!=='barber'){ say(
 function openBarber(){ const it=LANG==='it'; const L=H.look||{};
   const ch=(kind,obj,cur)=>Object.entries(obj).map(([k,v])=>`<button type="button" class="${cur===k?'on':''}" data-bk="${kind}" data-bv="${k}">${v[it?0:1]}</button>`).join('');
   sheet(`<h3>💈 ${it?'Barbiere Salvatore':'Salvatore the barber'}</h3><p class="lbl">🪙 ${LIFE.pippi} Pippi</p>
-  <p class="lbl">${it?'Taglio':'Cut'} (${BARBER_PRICES.cut} 🪙)</p><div class="chips">${ch('cut',LOOKS.hair,L.hair)}</div>
+  <p class="lbl">${it?'Taglio':'Cut'} (${BARBER_PRICES.cut} 🪙)</p><div class="chips">${hairChips(L.hair,'cut')}</div>
   <p class="lbl">${it?'Colore':'Colour'} (${BARBER_PRICES.color} 🪙)</p><div class="sws">${LOOKS.hairColor.map(c=>`<button type="button" class="sw${L.hairColor===c?' on':''}" style="background:${c}" data-bk="color" data-bv="${c}"></button>`).join('')}</div>
   <p class="lbl">${it?'Barba':'Beard'} (${BARBER_PRICES.beard} 🪙)</p><div class="chips">${ch('beard',BEARDS,L.beard||'none')}</div>
   <p class="lbl">${it?'Tatuaggi':'Tattoos'} (${BARBER_PRICES.tattoo} 🪙 · ${it?'rimozione':'removal'} ${BARBER_PRICES.untattoo} 🪙)</p><div class="chips">${ch('tattoo',TATTOOS,L.tattoo||'none')}</div>
   <p class="muted small">${it?'Salvatore è bravo. Quasi sempre.':'Salvatore is good. Almost always.'}</p><button class="ghost close" id="shClose">${tr('c_close')}</button>`);
   $('shClose').onclick=closeSheet;
-  $('sheetBody').querySelectorAll('[data-bk]').forEach(b=>b.onclick=()=>{ let k=b.dataset.bk, v=b.dataset.bv; if (k==='tattoo' && v==='none') k='untattoo'; closeSheet(); barberDo(k,v); }); }
+  $('sheetBody').querySelectorAll('[data-bk]').forEach(b=>b.onclick=()=>{ let k=b.dataset.bk, v=b.dataset.bv; if (k==='allhair'){ window.__allHair=true; openBarber(); return; } if (k==='tattoo' && v==='none') k='untattoo'; closeSheet(); barberDo(k,v); }); }
 
 /* ================= MARKET & GIFTS between friends ================= */
 function friendSend(name, code, msg){ fetch(`${NTFY}/${topicOf(name,code)}-db`,{method:'POST',body:JSON.stringify({...msg, id:msg.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6), from:H.name, fromTopic:topicOf(H.name,H.code)})}).catch(()=>{}); }
@@ -3656,7 +3676,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='33';
+const BUILD='34';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
