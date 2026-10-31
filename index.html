@@ -113,6 +113,13 @@
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
   .lookbtn { left:46px !important; }
+  #stats { font-size:.95em; opacity:.95; }
+  .rain line { stroke:#cfe6ff; stroke-width:1.2; opacity:.55; animation:rain .5s linear infinite; } @keyframes rain { to { transform:translate(-8px,26px); } }
+  .snow circle { fill:#fff; opacity:.85; animation:snow 4s linear infinite; } @keyframes snow { to { transform:translate(10px,40px); } }
+  .jobbar { position:absolute; left:6px; right:6px; bottom:6px; display:none; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; z-index:8; }
+  .jobbar.show { display:flex; } .jobbar span { color:#fff; font-weight:700; text-shadow:0 1px 3px #000; font-size:13px; }
+  .jobbar button { padding:7px 10px; font-size:14px; background:rgba(255,200,61,.95); }
+  .casres { font-size:20px; text-align:center; margin:12px 0; min-height:28px; font-weight:700; }
   .mtiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
   .mtile { display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px; background:#262a31; color:var(--fg); border:2px solid transparent; font-size:14px; font-weight:600; }
   .mtile .me { font-size:26px; line-height:1.1; } .mtile small { color:var(--accent); font-size:11px; font-weight:500; } .mtile.on { border-color:var(--accent); }
@@ -220,14 +227,16 @@
       <g id="hol"></g>
       <g id="front"></g>
       <g id="spawnF"></g>
+      <g id="wx" pointer-events="none"></g>
       <g id="fx"></g>
     </svg>
     <div class="vignette"></div>
     <div class="flash" id="flash"></div>
-    <div class="hud"><div class="rec" id="camName">REC · CAM 1 · LIVING ROOM</div><div id="clock"></div></div>
+    <div class="hud"><div class="rec" id="camName">REC · CAM 1 · LIVING ROOM</div><div id="clock"></div><div id="stats"></div></div>
     <div class="mini"><svg id="mini" viewBox="0 0 104 70"></svg></div>
     <div class="bubble" id="bubble"></div>
     <div class="caption" id="caption"></div>
+    <div class="jobbar" id="jobbar"></div>
     <div class="incoming" id="incoming"><span id="incomingTxt">📞 Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
   </div>
   <form class="cmd" id="f" autocomplete="off">
@@ -303,7 +312,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 
 /* ================= WORLD STATE ================= */
 const ST = {
-  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false,woods:false,disco:false,pizzeria:false},
+  dark:{living:false,kitchen:false,bathroom:false,bedroom:false,garden:false,park:false,piazza:false,beach:false,woods:false,disco:false,pizzeria:false,bisca:false,prive:false},
   o:{ tv:{on:false}, radio:{on:false}, plant:{grow:1}, fridge:{open:false}, stove:{on:false}, kitchen_sink:{on:false}, coffee:{on:false},
       cushion:{on:true}, toilet:{}, bathroom_sink:{on:false}, shower:{on:false}, wardrobe:{open:false}, computer:{on:false}, grill:{on:false}, flowers:{grow:1} }
 };
@@ -320,7 +329,9 @@ const ROOMS = {
   beach:   { name:'BEACH',       cam:8,  mx:54, my:2,  mw:24, mh:32, out:1 },
   woods:   { name:'WOODS',       cam:9,  mx:80, my:2,  mw:22, mh:32, out:1 },
   disco:   { name:'DISCO',       cam:10, mx:28, my:36, mw:24, mh:32, out:1 },
-  pizzeria:{ name:'PIZZA',       cam:11, mx:54, my:36, mw:24, mh:32, out:1 }
+  pizzeria:{ name:'PIZZA',       cam:11, mx:54, my:36, mw:24, mh:32, out:1 },
+  bisca:   { name:'???',         cam:13, mx:80, my:36, mw:22, mh:16, out:1, secret:1 },
+  prive:   { name:'PRIVÉ',       cam:12, mx:80, my:52, mw:22, mh:16, out:1, secret:1 }
 };
 /* x = where the tenant stands to use it (beside it, so they don't hide it); sy = standing depth; seat/lie = hip position */
 const OBJ = {
@@ -366,6 +377,10 @@ const OBJ = {
   dancefloor:{room:'disco',x:200,fx:{x:200,y:250},desc:'light-up dance floor (dance, disco)'},
   oven:{room:'pizzeria',x:340,fx:{x:390,y:200},desc:'wood-fired pizza oven (cook pizza)'},
   pizza_table:{room:'pizzeria',x:150,seat:{x:100,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:155,y:196},desc:'table with chair (sit and eat pizza)'},
+  slot:{room:'bisca',x:360,fx:{x:410,y:170},desc:'slot machine (play: opens the casino)'},
+  card_table:{room:'bisca',x:200,seat:{x:150,y:208,legs:{lL:16,kL:-8,lR:-16,kR:8}},fx:{x:230,y:196},desc:'green gambling table (roulette, dice)'},
+  velvet_sofa:{room:'prive',x:120,seat:{x:120,y:200,legs:{lL:18,kL:-10,lR:-18,kR:10}},desc:'velvet sofa in the privé (sit)'},
+  champagne:{room:'prive',x:330,fx:{x:360,y:196},desc:'champagne bucket'},
   hammock:{room:'garden',x:380,lie:{x:396,y:203,bend:35},seat:{x:380,y:212},desc:'hammock (lie)'}
 };
 for (const k in OBJ) OBJ[k].id=k;
@@ -558,6 +573,23 @@ function drawRoom(r){
     <rect x="118" y="196" width="76" height="8" fill="#fff"/><g fill="#d64545">${Array.from({length:7},(_,i)=>`<rect x="${118+i*11}" y="196" width="5" height="8"/>`).join('')}</g><rect x="152" y="204" width="5" height="44" fill="#5a3a22"/><ellipse cx="160" cy="194" rx="14" ry="3.5" fill="#f2c14e"/><g fill="#d64545"><circle cx="155" cy="193" r="1.6"/><circle cx="163" cy="194" r="1.6"/><circle cx="160" cy="192" r="1.4"/></g>
     <rect x="84" y="166" width="5" height="82" fill="#5a3a22"/><rect x="84" y="200" width="32" height="6" rx="2" fill="#7a4a2c"/><rect x="111" y="206" width="4" height="42" fill="#5a3a22"/>`;
   }
+  if (r==='bisca'){
+    b+=`<rect width="480" height="300" fill="#1b120c"/><g stroke="#2a1d14" stroke-width="2">${Array.from({length:12},(_,j)=>`<line x1="0" y1="${j*20}" x2="480" y2="${j*20}"/>`).join('')}</g>
+    <rect y="232" width="480" height="68" fill="#3a2414"/><rect y="230" width="480" height="3" fill="#000" opacity=".4"/>
+    <line x1="230" y1="0" x2="230" y2="88" stroke="#555"/><path d="M200 112 L260 112 L246 88 L214 88Z" fill="#2d6a4f"/><ellipse cx="230" cy="150" rx="140" ry="60" fill="#ffd166" opacity=".08"/>
+    <ellipse cx="230" cy="206" rx="88" ry="16" fill="#5a3a22"/><ellipse cx="230" cy="202" rx="80" ry="12" fill="#1f7a3a"/><rect x="222" y="214" width="16" height="34" fill="#3a2414"/>
+    <circle cx="200" cy="200" r="3" fill="#d64545"/><circle cx="208" cy="201" r="3" fill="#2b2d31"/><circle cx="260" cy="199" r="3" fill="#d64545"/><rect x="236" y="196" width="10" height="7" rx="1" fill="#fff"/><rect x="214" y="198" width="9" height="6" rx="1" fill="#fff"/>
+    <rect x="130" y="166" width="5" height="82" fill="#3a2414"/><rect x="130" y="200" width="30" height="6" rx="2" fill="#6b4a2b"/><rect x="155" y="206" width="4" height="42" fill="#3a2414"/>
+    <rect x="384" y="140" width="56" height="100" rx="8" fill="#9b2226"/><rect x="392" y="152" width="40" height="26" rx="3" fill="#111"/><text x="412" y="170" text-anchor="middle" font-size="12">🍒7️⃣🔔</text><rect x="394" y="186" width="36" height="8" rx="2" fill="#ffd166"/><line x1="444" y1="160" x2="452" y2="140" stroke="#c0c7d0" stroke-width="3"/><circle cx="452" cy="138" r="5" fill="#d64545"/>
+    <text x="60" y="80" font-family="Fredoka, sans-serif" font-size="14" fill="#c9a227" opacity=".7">♠ ♥ ♦ ♣</text>`;
+  }
+  if (r==='prive'){
+    b+=`<rect width="480" height="300" fill="#2a0f2e"/><g fill="#3d1744">${Array.from({length:10},(_,i)=>`<rect x="${i*48+4}" y="0" width="40" height="232" rx="20"/>`).join('')}</g>
+    <rect y="232" width="480" height="68" fill="#1a0a1d"/><text x="240" y="70" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="26" font-weight="700" fill="#ffd166">PRIVÉ</text>
+    <path d="M60 236 L60 186 Q120 168 180 186 L180 236Z" fill="#7b2cbf"/><rect x="54" y="200" width="132" height="22" rx="8" fill="#9d4edd"/><rect x="58" y="222" width="6" height="22" fill="#111"/><rect x="176" y="222" width="6" height="22" fill="#111"/>
+    <path d="M346 236 L374 236 L370 200 L350 200Z" fill="#c0c7d0"/><path d="M354 200 L356 172 L362 172 L364 200Z" fill="#1b4332"/><rect x="355" y="168" width="8" height="5" fill="#d4af37"/>
+    ${['#ff5c86','#ffd166','#4cc9f0'].map((c,i)=>`<circle cx="${280+i*60}" cy="20" r="6" fill="${c}"/><path d="M${280+i*60} 26 L${250+i*60} 232 L${310+i*60} 232Z" fill="${c}" opacity=".08"/>`).join('')}`;
+  }
   b=decorate(r,b);
   backL.innerHTML=b; frontL.innerHTML=frontFor(r);
   darkOv.setAttribute('opacity', dark ? (r==='garden'?.55:.66) : 0);
@@ -582,8 +614,8 @@ function frontFor(r){
 function drawMini(){
   let s='';
   const town=!!ROOMS[H.room].out;
-  if (town){ s+=`<rect x="2" y="36" width="24" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="91" y="54" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text><text x="14" y="50" text-anchor="middle" font-size="4.4" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
-  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue;
+  if (town){ s+=`<rect x="2" y="36" width="24" height="32" rx="3" fill="#3a3f48" stroke="#596170"/><text x="91" y="${LIFE.bisca||LIFE.prive?66:54}" text-anchor="middle" font-size="4.2" font-family="JetBrains Mono, monospace" fill="#ffc83d">🔍 MAP</text><text x="14" y="50" text-anchor="middle" font-size="4.4" font-family="JetBrains Mono, monospace" fill="#aab2bd">HOME</text>`; }
+  for (const k in ROOMS){ const R=ROOMS[k], cur=k===H.room; if (!!R.out!==town) continue; if (R.secret && !cur && !(k==='bisca'?LIFE.bisca:LIFE.prive)) continue;
     s+=`<rect x="${R.mx}" y="${R.my}" width="${R.mw}" height="${R.mh}" rx="3" fill="${k==='beach'?'#2a7fc4':k==='park'?'#3f6e35':k==='piazza'?'#7a6a5c':k==='woods'?'#24513a':k==='disco'?'#4a2a6e':k==='pizzeria'?'#a0522d':k==='garden'?(ST.dark[k]?'#1f3320':'#3f6e35'):(ST.dark[k]?'#1b1d22':'#3a3f48')}" stroke="${cur?'#ffc83d':'#596170'}" stroke-width="${cur?1.6:.8}"/>
     <text x="${R.mx+R.mw/2}" y="${R.my+R.mh/2+(k==='garden'?-20:-6)}" font-size="${R.out?4.4:5.2}" text-anchor="middle" font-size="5.2" font-family="JetBrains Mono, monospace" fill="${cur?'#ffc83d':'#aab2bd'}">${R.name.split(' ')[0]}</text>`;
   }
@@ -1143,7 +1175,7 @@ async function walkTo(x, id, fast, sy){
   if (alive(id)) setPose('idle');
 }
 let miniT=0; function drawMiniThrottled(){ const n=performance.now(); if(n-miniT>120){ miniT=n; drawMini(); } }
-function setRoom(r){ const wasRoom=H.room; H.room=r; if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
+function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); }catch(e){} },0); if (wasRoom!==r){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
 async function standUp(id){
   if (H.inShower){ H.inShower=false; drawRoom(H.room); }
   if (H.lying){ const o=OBJ[H.lying]; H.lying=null; if(o.room===H.room) drawRoom(H.room); setPose('idle'); await tween({Y:STAND, X:o.x}, 380, id); }
@@ -1170,6 +1202,7 @@ function normColor(c){ if(!c) return null; c=String(c).toLowerCase().trim(); if(
 
 async function runScript(steps, id){
   try { if (typeof shareScript==='function') shareScript(steps); } catch(e){}
+  try { lifeFromSteps(steps); } catch(e){}
   for (const s of steps){ if(!alive(id)) return; try { await doStep(s, id); } catch(e){ console.warn('step failed', s, e); } }
   if (!alive(id)) return;
   await sleep(600); if(!alive(id)) return;
@@ -1336,7 +1369,7 @@ TOWN (outside the house, public): park, beach, piazza, woods, disco, pizzeria. G
 Objects (id [room] description):
 ${objs}
 
-NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}${peopleHere().length?` People in this scene: ${peopleHere().map(describePerson).join('; ')}. The tenant is at x=${Math.round(H.X)}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
+NOW: in ${H.room}${H.seat?`, sitting on ${H.seat}`:''}${H.lying?`, lying on ${H.lying}`:''}${H.inShower?', inside the shower':''}. Holding: ${H.prop||H.bodyProp||'nothing'}. Costume: ${H.costume}. Size ${H.size.toFixed(2)}. Object states: ${states||'all off/closed'}. ${H.visit?`You are VISITING ${H.visit.name}'s house (they are here too).`:''}Money: ${LIFE.pippi} Pippi. Hunger ${Math.round(100-LIFE.food)}%, hygiene ${Math.round(LIFE.clean)}% (${LIFE.clean<30?'smelly, flies around':'ok'}). Weather outside: ${weatherNow()}. Phone time ${new Date().toTimeString().slice(0,5)}${isNight()?' (night: it stays daylight, but night things happen)':''}. ${peopleHere().length?` People in this scene: ${peopleHere().map(describePerson).join('; ')}. The tenant is at x=${Math.round(H.X)}.`:''}${H.guest?`${H.guest.name} is visiting you right now.`:''} ${C.partnerNPC?`Lives with partner ${C.partnerNPC.name} (${C.me&&C.me.status}), currently in the ${C.partnerNPC.room}.`:'Lives alone.'} Lights off in: ${dark}.
 
 STEPS (JSON objects, run in order)
 {"do":"goto","object":"<id>"} | {"do":"goto","room":"<room>","x":0-480} (x<0 or >480 = off camera). Add "run":true to run.
@@ -1699,6 +1732,7 @@ function freeX(r){ const used=((DECO[r]||{}).items||[]).map(i=>+i.x); for (const
 function decoApply(o){
   let r=o.room&&HOUSE_ROOMS.includes(o.room)?o.room:(HOUSE_ROOMS.includes(H.room)?H.room:'living');
   const it=LANG==='it';
+  if (o.add && DECOR[o.add] && !owns(o.add)) return (LANG==='it'?`Non ce l'ho. Costa ${DECOR[o.add].p} Pippi: scrivi “compra ${DECOR[o.add].it[0]}”.`:`Don't own it. ${DECOR[o.add].p} Pippi: type “buy ${DECOR[o.add].en[0]}”.`);
   if (o.add && DECOR[o.add]){
     const D=DECOR[o.add];
     if (D.only==='out' && r!=='garden') r='garden';
@@ -1738,6 +1772,7 @@ async function runDeco(o){
   await sleep(900);
   const r=decoApply({...o, room:target});
   if (r===null){ setPose('shrug'); say(LANG==='it'?'Non c\'è niente del genere qui.':'There\'s nothing like that here.',2500); await sleep(1500); setPose('idle'); return; }
+  if (typeof r==='string'&&!HOUSE_ROOMS.includes(r)){ setPose('shrug'); say(r,3500); await sleep(1500); setPose('idle'); return; }
   setPose('cheer'); say(typeof r==='string'&&!HOUSE_ROOMS.includes(r)?r:(LANG==='it'?['Fatto. Arredatore nato.','Ecco. Stile.','Ora sì che è casa mia.'][Math.floor(Math.random()*3)]:['Done. Natural designer.','There. Style.','Now it feels like home.'][Math.floor(Math.random()*3)]),2600);
   await sleep(1800); if (alive(id)) setPose('idle');
 }
@@ -1746,8 +1781,9 @@ async function runDeco(o){
 function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
 function openCustom(tab){
   tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
-  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button></div>`;
-  if (tab==='look'){
+  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div>`;
+  if (tab==='shop'){ h+=shopHTML(); }
+  else if (tab==='look'){
     h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${Object.entries(LOOKS.hair).map(([k,n])=>`<button type="button" class="${L.hair===k?'on':''}" data-act="hair:${k}">${n[it?0:1]}</button>`).join('')}</div>`;
     h+=`<p class="lbl">${it?'Colore capelli':'Hair colour'}</p><div class="sws">${LOOKS.hairColor.map(c=>sw(c,'hairColor:'+c,L.hairColor===c)).join('')}</div>`;
     h+=`<p class="lbl">${it?'Pelle':'Skin'}</p><div class="sws">${LOOKS.skin.map(c=>sw(c,'skin:'+c,L.skin===c)).join('')}</div>`;
@@ -1763,7 +1799,7 @@ function openCustom(tab){
     const fc=out?['#5d9b4a','#7cbf7a','#3f7a3a','#c9b37a','#a9adb5','#e6d8ba']:['#a0703f','#6b4a2b','#d9c3a0','#a9adb5','#2b2d31','#3f6fd1','#d64545','#f4f1ea'];
     h+=`<p class="lbl">${out?(it?'Staccionata':'Fence'):(it?'Pareti':'Walls')}</p><div class="sws">${(out?['#f7f2e6','#8b5a2b','#d64545','#3f6fd1','#2b2d31','#7cbf7a']:wc).map(c=>sw(c,'wall:'+c,d.wall===c)).join('')}</div>`;
     h+=`<p class="lbl">${out?(it?'Prato':'Lawn'):(it?'Pavimento':'Floor')}</p><div class="sws">${fc.map(c=>sw(c,'floor:'+c,d.floor===c)).join('')}</div>`;
-    h+=`<p class="lbl">${it?'Aggiungi':'Add'}</p><div class="chips">${Object.entries(DECOR).filter(([k,D])=>out?D.out:D.only!=='out').map(([k,D])=>`<button type="button" data-act="add:${k}">＋ ${(it?D.it:D.en)[0]}</button>`).join('')}</div>`;
+    h+=`<p class="lbl">${it?'Aggiungi':'Add'}</p><div class="chips">${Object.entries(DECOR).filter(([k,D])=>(out?D.out:D.only!=='out') && owns(k)).map(([k,D])=>`<button type="button" data-act="add:${k}">＋ ${(it?D.it:D.en)[0]}</button>`).join('')}</div>`;
     if ((d.items||[]).length) h+=`<p class="lbl">${it?'In questa stanza':'In this room'}</p><div class="chips">${d.items.map((x,i)=>`<button type="button" data-act="del:${i}">✕ ${(it?DECOR[x.k].it:DECOR[x.k].en)[0]}</button>`).join('')}</div>`;
     h+=`<p class="muted small">${it?'Puoi anche scrivere: “metti un acquario”, “pareti rosa”, “togli il gatto”.':'You can also type: “add an aquarium”, “pink walls”, “remove the cat”.'}</p>`;
   }
@@ -1771,6 +1807,8 @@ function openCustom(tab){
   sheet(h);
   $('shClose').onclick=closeSheet;
   $('sheetBody').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openCustom(b.dataset.tab));
+  $('sheetBody').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ buy(b.dataset.buy); openCustom('shop'); });
+  $('sheetBody').querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{ closeSheet(); runDeco({add:b.dataset.place}); });
   $('sheetBody').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
     const [k,v]=b.dataset.act.split(/:(.*)/s);
     if (tab==='look'){ if (k==='glasses') setLook('glasses', !(H.look&&H.look.glasses!==false)); else setLook(k,v); openCustom('look'); return; }
@@ -1790,7 +1828,9 @@ const PLACES = {
   piazza:{ it:['piazza','bar','caffè','caffe','gelateria','centro'], en:['piazza','square','cafe','café','town','downtown'] },
   woods: { it:['bosco','foresta','campeggio','falò'], en:['woods','forest','campfire','camping'] },
   disco: { it:['discoteca','disco','a ballare','in pista'], en:['disco','club','nightclub','dancing'] },
-  pizzeria:{ it:['pizzeria','pizza'], en:['pizzeria','pizza place'] }
+  pizzeria:{ it:['pizzeria','pizza'], en:['pizzeria','pizza place'] },
+  bisca:{ it:['bisca'], en:['gambling den','den'] },
+  prive:{ it:['privé','prive'], en:['privé','vip room'] }
 };
 /* operational bots: they have a job and a post, and serve you when you ask */
 const L2=(it,en)=>({it,en});
@@ -1798,29 +1838,38 @@ const BOTS = {
   park:[{name:'Gino', kind:'m', role:L2('giardiniere','gardener'), post:230, work:['sweep','water'], look:{hair:'bald',hairColor:'#eeeeee',skin:'#eab48a',glasses:true,outfit:'#4f9a4a',pants:'#8a5a3a'},
          lines:L2(['Non calpestate le aiuole!','Trent\'anni che pulisco \'sto parco.','Chi ha lasciato la cacca del cane? Eh?'],['Keep off the flowerbeds!','Thirty years sweeping this park.','Who left the dog poo? Eh?'])}],
   piazza:[{name:'Nico', kind:'m', role:L2('barista','barista'), post:200, work:['cook','present'], look:{hair:'short',hairColor:'#222222',skin:'#a46a43',glasses:false,outfit:'#eceff2',pants:'#2b2d31'},
-         sells:[{re:/(caff|espresso|cappuccin|coffee|macchiat)/, prop:'mug', it:'caffè', en:'coffee'},{re:/(spritz|birra|beer|aperitiv|vino|wine|drink)/, prop:'glass', it:'spritz', en:'spritz'}],
+         sells:[{re:/(caff|espresso|cappuccin|coffee|macchiat)/, prop:'mug', it:'caffè', en:'coffee', price:2, food:5},{re:/(spritz|birra|beer|aperitiv|vino|wine|drink)/, prop:'glass', it:'spritz', en:'spritz', price:4, food:5}],
          lines:L2(['Caffè? Cappuccino? Spritz?','Qui il caffè è vero, mica quello della macchinetta.'],['Coffee? Cappuccino? Spritz?','Real coffee here, not machine stuff.'])},
           {name:'Zoe', kind:'f', role:L2('gelataia','ice-cream seller'), post:362, work:['present','wave'], look:{hair:'pony',hairColor:'#8a5ac8',skin:'#f6cfa7',glasses:true,outfit:'#ff8fab',pants:'#eceff2'},
-         sells:[{re:/(gelat|ice ?cream|cono|cono)/, prop:'icecream', it:'gelato', en:'ice cream'}],
+         sells:[{re:/(gelat|ice ?cream|cono|cono)/, prop:'icecream', it:'gelato', en:'ice cream', price:3, food:15}],
          lines:L2(['Gelato artigianale! Pistacchio vero!','Cono o coppetta?'],['Artisan gelato! Real pistachio!','Cone or cup?'])}],
   beach:[{name:'Luna', kind:'f', role:L2('bagnina','lifeguard'), post:330, work:['look','point'], look:{hair:'long',hairColor:'#e8c36a',skin:'#c98b5e',glasses:false,outfit:'#d64545',pants:'#d64545'},
          lines:L2(['Non fate il bagno dopo mangiato!','FFFFIIII! Tu, esci dall\'acqua!','Bandiera gialla, gente.'],['No swimming right after lunch!','WHEEET! You, out of the water!','Yellow flag, people.'])},
          {name:'Bob', kind:'m', role:L2('venditore di cocco','coconut seller'), post:420, roam:120, work:['present','wave'], look:{hair:'mohawk',hairColor:'#d64545',skin:'#7a4a2c',glasses:false,outfit:'#2fb5a8',pants:'#eceff2'},
-         sells:[{re:/(cocco|coconut|bibit|bevand|drink|acqua|water)/, prop:'can', it:'cocco', en:'coconut'}],
+         sells:[{re:/(cocco|coconut|bibit|bevand|drink|acqua|water)/, prop:'can', it:'cocco', en:'coconut', price:3, food:12}],
          lines:L2(['Cocco bello! Cocco fresco!','Cocco, bibite, cocco!'],['Coconut! Fresh coconut!','Coconut, drinks, coconut!'])}],
   woods:[{name:'Rino', kind:'m', role:L2('guardia forestale','park ranger'), post:390, work:['look','point'], look:{hair:'short',hairColor:'#6b3e26',skin:'#eab48a',glasses:false,outfit:'#5a6b3a',pants:'#8a5a3a'},
-         sells:[{re:/(marshmallow|wurstel|salsicc|sausage)/, prop:'stick', it:'marshmallow', en:'marshmallow'}],
-         lines:L2(['Occhio al fuoco!','Quei funghi non si mangiano. Fidati.','Ho visto un orso. Forse.'],['Mind the fire!','Don\'t eat those mushrooms. Trust me.','I saw a bear. Maybe.'])}],
+         sells:[{re:/(marshmallow|wurstel|salsicc|sausage)/, prop:'stick', it:'marshmallow', en:'marshmallow', price:1, food:8}],
+         lines:L2(['Occhio al fuoco!','Quei funghi non si mangiano. Fidati.','Ho visto un orso. Forse.','Quel vecchio abete a sinistra... la gente ci bussa. Toc toc toc... toc toc. Mah.'],['Mind the fire!','Don\'t eat those mushrooms. Trust me.','I saw a bear. Maybe.','That old fir on the left... people knock on it. Knock knock knock... knock knock. Weird.'])}],
   disco:[{name:'DJ Max', kind:'m', role:L2('DJ','DJ'), post:405, work:['conduct','dance','disco'], look:{hair:'mohawk',hairColor:'#4cc9f0',skin:'#7a4a2c',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'},
          lines:L2(['Mani in alto!','Questa la mettevo nel \'98!','Più forte? PIÙ FORTE!'],['Hands up!','I played this one in \'98!','Louder? LOUDER!'])},
          {name:'Tony', kind:'m', role:L2('barman','bartender'), post:60, work:['cook','present'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#2b2d31',pants:'#2b2d31'},
-         sells:[{re:/(cocktail|drink|shot|birra|beer|mojito|gin|vodka|spritz)/, prop:'glass', it:'cocktail', en:'cocktail'}],
+         sells:[{re:/(cocktail|drink|shot|birra|beer|mojito|gin|vodka|spritz)/, prop:'glass', it:'cocktail', en:'cocktail', price:5, food:3}],
          lines:L2(['Cosa ti preparo?','Analcolico? Ma sei serio?'],['What can I get you?','Alcohol-free? Seriously?'])}],
+  bisca:[{name:'Ercole', kind:'m', role:L2('croupier','croupier'), post:290, work:['present','look'], look:{hair:'short',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#2b2d31',pants:'#2b2d31'},
+         lines:L2(['Fate il vostro gioco.','Qui si gioca pulito. Niente bari.','Rien ne va plus.'],['Place your bets.','Clean games here. No cheats.','Rien ne va plus.'])},
+         {name:'Gina', kind:'f', role:L2('giocatrice','gambler'), post:110, work:['think','cheer','cry'], look:{hair:'curly',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#c77dff',pants:'#2b2d31'},
+         lines:L2(['Stasera me lo sento.','Ho perso la pensione. Di nuovo.','Il 17 esce, vedrai.'],['I feel lucky tonight.','Lost my pension. Again.','17 is coming, you\'ll see.'])}],
+  prive:[{name:'Jacques', kind:'m', role:L2('sommelier','sommelier'), post:330, work:['present','look'], look:{hair:'short',hairColor:'#eeeeee',skin:'#f6cfa7',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'},
+         sells:[{re:/(champagne|bollicin|prosecco|vino|wine)/, prop:'glass', it:'champagne', en:'champagne', price:20, food:0}],
+         lines:L2(['Champagne, monsieur?','Solo il meglio, nel privé.'],['Champagne?','Only the best, in the privé.'])},
+         {name:'Ambra', kind:'f', role:L2('ospite VIP','VIP guest'), post:200, work:['dance','disco','laugh'], look:{hair:'long',hairColor:'#e8c36a',skin:'#c98b5e',glasses:false,outfit:'#d4af37',pants:'#2b2d31'},
+         lines:L2(['Tesoro, che outfit... coraggioso.','Qui dentro non entra chiunque.'],['Darling, that outfit... brave.','Not just anyone gets in here.'])}],
   pizzeria:[{name:'Totò', kind:'m', role:L2('pizzaiolo','pizza maker'), post:300, work:['cook'], look:{hair:'bald',hairColor:'#222222',skin:'#eab48a',glasses:false,outfit:'#eceff2',pants:'#eceff2'},
-         sells:[{re:/(pizz|margherit|diavol|capricc|formagg|calzon)/, prop:'pizza', it:'pizza', en:'pizza'}],
+         sells:[{re:/(pizz|margherit|diavol|capricc|formagg|calzon)/, prop:'pizza', it:'pizza', en:'pizza', price:6, food:40}],
          lines:L2(['L\'ananas sulla pizza? Fuori!','Impasto a 72 ore, signori.','Margherita, la regina.'],['Pineapple on pizza? Get out!','72-hour dough, folks.','Margherita, the queen.'])},
          {name:'Sara', kind:'f', role:L2('cameriera','waitress'), post:220, roam:90, work:['present','idle'], look:{hair:'bun',hairColor:'#222222',skin:'#c98b5e',glasses:true,outfit:'#d64545',pants:'#2b2d31'},
-         sells:[{re:/(birra|beer|coca|bibit|acqua|water|vino|wine)/, prop:'bottle', it:'birra', en:'beer'}],
+         sells:[{re:/(birra|beer|coca|bibit|acqua|water|vino|wine)/, prop:'bottle', it:'birra', en:'beer', price:3, food:5}],
          lines:L2(['Accomodatevi!','Il conto? Dopo, dopo.'],['Take a seat!','The bill? Later, later.'])}]
 };
 /* random passers-by: rude but funny */
@@ -1842,7 +1891,9 @@ async function passerBy(r, sl){
   const kind=srand(sl,r,3)<.5?'f':'m', fromLeft=srand(sl,r,4)<.5;
   const name=PASSERS.names[Math.floor(srand(sl,r,5)*PASSERS.names.length)];
   const n=makeNPC({name, kind, room:r, x:fromLeft?-50:530}); npcLook(n, randomLook(kind, sl)); n.bot=true; n.passer=true; n.role=L2('passante','passer-by'); PL.passer=n;
-  const gags=PASSERS.gags[LANG==='it'?'it':'en']; const g=gags[Math.floor(srand(sl,r,6)*gags.length)];
+  const gags=PASSERS.gags[LANG==='it'?'it':'en']; let g=gags[Math.floor(srand(sl,r,6)*gags.length)];
+  if (LIFE.clean<30 && srand(sl,r,9)<.6) g={p:'facepalm', s:LANG==='it'?'Madonna che puzza! Lavati, porco cane!':'God, the stink! Take a shower, mate!'};
+  else if (LIFE.food<20 && srand(sl,r,9)<.4) g={p:'laugh', s:LANG==='it'?'Sento il tuo stomaco da qui. Mangia qualcosa!':'I can hear your stomach from here. Eat something!'};
   try {
     await npcWalk(n, [110,190,280,360][Math.floor(srand(sl,r,7)*4)]); if (H.room!==r) return;
     n.dir=fromLeft?1:-1; npcPose(n, POSES[g.p]?g.p:'idle'); npcSay(n, g.s, 3200);
@@ -1856,18 +1907,22 @@ async function serve(bot, item){
   if (bot.busy) return; bot.busy=true;
   const it=LANG==='it';
   try {
+    const price=item.price||0;
+    if (LIFE.pippi<price){ npcPose(bot,'no'); npcSay(bot, it?`Sono ${price} Pippi. Non li hai? Vai a lavorare!`:`That's ${price} Pippi. Broke? Go to work!`); await sleep(2200); npcPose(bot,'idle'); return; }
+    if (price) addPippi(-price);
     npcSay(bot, it?`Una ${item.it}? Arriva!`.replace('Una caffè','Un caffè').replace('Una gelato','Un gelato').replace('Una cocco','Un cocco').replace('Una cocktail','Un cocktail').replace('Una marshmallow','Un marshmallow'):`One ${item.en}? Coming up!`);
     npcPose(bot,'cook'); await sleep(2600);
     bot.P.propR.innerHTML=PROPS[item.prop]?PROPS[item.prop].s:'';
     await npcWalk(bot, clamp(H.X+(H.X<240?50:-50),30,450)); bot.dir=H.X>bot.X?1:-1;
-    npcPose(bot,'present'); npcSay(bot, it?['Ecco qua!','Offre la casa. Stavolta.','Sono 5 euro. Scherzo.'][Math.floor(Math.random()*3)]:['Here you go!','On the house. This time.','That\'s five quid. Kidding.'][Math.floor(Math.random()*3)]);
-    await sleep(900); bot.P.propR.innerHTML=''; if (PROPS[item.prop]) setProp(item.prop); H.dir=bot.X>H.X?1:-1; setPose('cheer'); setTimeout(()=>setPose('idle'),1300);
+    npcPose(bot,'present'); npcSay(bot, it?['Ecco qua!','Buon appetito!','Torna presto!'][Math.floor(Math.random()*3)]:['Here you go!','Enjoy!','Come back soon!'][Math.floor(Math.random()*3)]);
+    await sleep(900); bot.P.propR.innerHTML=''; if (PROPS[item.prop]) setProp(item.prop); if (item.food) feed(item.food); H.dir=bot.X>H.X?1:-1; setPose('cheer'); setTimeout(()=>setPose('idle'),1300);
     await sleep(1400); npcPose(bot,'idle'); await npcWalk(bot, bot.post);
   } finally { bot.busy=false; }
 }
 /* returns true if a worker took the order */
 function orderFrom(cmd){
   const t=String(cmd).toLowerCase();
+  if (H.room==='beach' && isNight() && PL.bots.some(b=>b.smuggler)){ const k=['pirate_chest','skull_lamp'].find(k=>[...PREMIUM[k].it,...PREMIUM[k].en].some(w=>t.includes(w))); if (k){ if (buy(k)) setTimeout(()=>runDeco({add:k}),1200); return true; } }
   if (!/(ordin|vorrei|voglio|dammi|mi dai|portami|prendo|fammi|un |una |order|i'?d like|i want|give me|get me|bring me|can i have|one )/.test(t)) return false;
   for (const n of PL.bots){ if (!n.sells) continue; for (const it of n.sells) if (it.re.test(t)){ serve(n, it); return true; } }
   return false;
@@ -1898,6 +1953,7 @@ function enterPlace(r){
       if (clash){ const id=++runId; walkTo(freeSpot(H.X+(H.X<240?GAP:-GAP),'me'), id); } }, 2500);
   PL.hb=setInterval(()=>{ const now=Date.now(), moved=Math.abs(H.X-PL.lastX)>5; if ((moved && now-PL.lastSent>3000) || now-PL.lastSent>12000){ PL.lastSent=now; PL.lastX=H.X; postPlace({t:'here', ...myPublic()}); } }, 1000);
   PL.sweep=setInterval(()=>{ const now=Date.now(); for (const id in PL.peers){ if (now-PL.peers[id].last>30000){ removeNPC(PL.peers[id].n); delete PL.peers[id]; } } }, 5000);
+  setTimeout(()=>nightExtras(r), 800);
   PL.bots=(BOTS[r]||[]).map(b=>{ const n=makeNPC({name:b.name, kind:b.kind, room:r, x:b.post}); npcLook(n,b.look); n.bot=true; n.post=b.post; n.roam=b.roam||25; n.work=b.work; n.sells=b.sells; n.role=b.role; n.lines=b.lines; return n; });
   clearInterval(PL.passT); PL.passSlot=Math.floor(Date.now()/60000);
   PL.passT=setInterval(()=>{ const sl=Math.floor(Date.now()/60000); if (sl===PL.passSlot) return; const off=Math.floor(srand(sl,r,1)*25000); if (srand(sl,r,2)<.7){ PL.passSlot=sl; setTimeout(()=>{ if (H.room===r) passerBy(r, sl); }, off); } else PL.passSlot=sl; }, 1000);
@@ -1995,11 +2051,216 @@ function openMap(){
   const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
   sheet(`<h3>🗺️ ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
     <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,5).map(tile).join('')}</div>
-    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(5).map(tile).join('')}</div>
+    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(5).map(tile).join('')}${LIFE.bisca?tile(['bisca','🎲',it?'Bisca':'Den']):''}${LIFE.prive?tile(['prive','🍾','Privé']):''}</div>
     <button class="ghost close" id="shClose">${tr('c_close')}</button>`);
   $('shClose').onclick=closeSheet;
-  $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r!==H.room) goPlace(r); });
+  $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r===H.room) return; if (r==='bisca') enterHidden('bisca'); else if (r==='prive'){ if (isNight()){ goPlace('disco').then(()=>{ const id=++runId; setRoom('prive'); H.X=-40; walkTo(180,id); }); } else say(LANG==='it'?'Il privé apre alle 22.':'The privé opens at 10pm.',2500); } else goPlace(r); });
 }
+/* ================= LIFE: Pippi, hunger, hygiene ================= */
+const LIFE = (()=>{ let d=null; try { d=JSON.parse(localStorage.getItem('subservientLife')||'null'); } catch(e){} return Object.assign({pippi:50, food:80, clean:80, t:Date.now(), owned:[], bisca:false, prive:false}, d||{}); })();
+function saveLife(){ LIFE.t=Date.now(); try{ localStorage.setItem('subservientLife', JSON.stringify(LIFE)); }catch(e){} renderStats(); }
+(function decayOffline(){ const mins=Math.min(600,(Date.now()-(LIFE.t||Date.now()))/60000); LIFE.food=Math.max(0,LIFE.food-mins/3); LIFE.clean=Math.max(0,LIFE.clean-mins/4); })();
+function addPippi(n){ LIFE.pippi=Math.max(0,Math.round(LIFE.pippi+n)); saveLife(); if (n) txt(clamp(H.X,30,450), STAND-150, (n>0?'+':'')+n+' 🪙', n>0?'#ffd166':'#ff453a', 16); }
+function feed(n){ LIFE.food=clamp(LIFE.food+n,0,100); saveLife(); }
+function wash(n){ LIFE.clean=clamp(LIFE.clean+n,0,100); saveLife(); if (LIFE.clean>=30) clearFlies(); }
+function renderStats(){ const e=$('stats'); if(!e) return; const f=Math.round(LIFE.food), c=Math.round(LIFE.clean);
+  e.innerHTML=`🪙 ${LIFE.pippi} · <span style="color:${f<25?'#ff6b6b':''}">🍔 ${f}%</span> · <span style="color:${c<30?'#ff6b6b':''}">🧼 ${c}%</span> · ${WX_ICON[weatherNow()]}${isNight()?' 🌙':''}`; }
+const FOOD_PROPS={sandwich:20, apple:10, banana:10, icecream:15, pizza:35, cake:25};
+function lifeFromSteps(steps){
+  let ate=0, washed=0;
+  for (const s of steps||[]){
+    if (FOOD_PROPS[s.prop]) ate=Math.max(ate, FOOD_PROPS[s.prop]);
+    if (s.pose==='eat') ate=Math.max(ate, 20);
+    if (s.pose==='shower' || s.at==='shower' || (s.do==='set' && s.object==='shower' && s.state==='on')) washed=100;
+    if (s.pose==='scrub' || s.pose==='brush' || s.pose==='swim') washed=Math.max(washed, 25);
+  }
+  if (ate) setTimeout(()=>feed(ate), 1500);
+  if (washed) setTimeout(()=>wash(washed), 2000);
+}
+let flyT=null;
+function clearFlies(){ clearInterval(flyT); flyT=null; }
+setInterval(()=>{
+  LIFE.food=Math.max(0,LIFE.food-1/6); LIFE.clean=Math.max(0,LIFE.clean-1/8); saveLife();
+  if (LIFE.clean<30 && !flyT) flyT=setInterval(()=>{ const h=headPt(); txt(h.x+rnd(-22,22), h.y+rnd(-10,14), '🪰', '#222', 10); }, 900);
+  if (LIFE.clean>=30) clearFlies();
+}, 20000);
+setInterval(()=>{ if (!H.code || caption.textContent.startsWith('>')) return; const it=LANG==='it';
+  if (LIFE.food<20 && Math.random()<.5){ txt(H.X+14, STAND-70, 'GRRR', '#c0392b', 12); say(it?['Ho una fame da lupi...','Il mio stomaco sta parlando.','Datemi da mangiare o mordo.'][Math.floor(Math.random()*3)]:['Starving...','My stomach is talking.','Feed me or I bite.'][Math.floor(Math.random()*3)], 2500); }
+  else if (LIFE.clean<25 && Math.random()<.4){ say(it?['Mi sa che puzzo un po\'.','Le mosche mi adorano.','Una doccia non mi farebbe male.'][Math.floor(Math.random()*3)]:['I might smell a bit.','The flies love me.','A shower wouldn\'t hurt.'][Math.floor(Math.random()*3)], 2500); }
+}, 70000);
+
+/* ================= TIME + WEATHER (same for every friend) ================= */
+const isNight=()=>{ const h=new Date().getHours(); return h>=22 || h<6; };
+const WX_ICON={sun:'☀️', cloud:'⛅', rain:'🌧️', snow:'❄️', storm:'⛈️'};
+function weatherNow(){ const slot=Math.floor(Date.now()/(20*60000)); let x=Math.sin(slot*12.9898)*43758.5453; x=x-Math.floor(x);
+  return x<.5?'sun':x<.7?'cloud':x<.87?'rain':x<.93?'snow':'storm'; }
+const OUTDOOR=r=>['garden','park','beach','piazza','woods'].includes(r);
+let wxKey='', stormT=null;
+function drawWeather(){
+  const w=weatherNow(), out=OUTDOOR(H.room), key=w+(out?1:0)+H.room; if (key===wxKey) return; wxKey=key;
+  const L=$('wx'); if(!L) return; clearInterval(stormT); stormT=null;
+  if (!out || w==='sun'){ L.innerHTML=''; renderStats(); return; }
+  let g='';
+  if (w!=='snow') g+=`<rect width="480" height="300" fill="#5a6470" opacity="${w==='cloud'?.16:.26}"/>`;
+  if (w==='rain'||w==='storm') g+=`<g class="rain">${Array.from({length:70},()=>{ const x=Math.random()*520-20, y=Math.random()*300; return `<line x1="${x.toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x-4).toFixed(0)}" y2="${(y+12).toFixed(0)}"/>`; }).join('')}</g>`;
+  if (w==='snow') g+=`<rect width="480" height="300" fill="#dfe8f2" opacity=".12"/><g class="snow">${Array.from({length:55},()=>`<circle cx="${(Math.random()*480).toFixed(0)}" cy="${(Math.random()*300).toFixed(0)}" r="${(1+Math.random()*2).toFixed(1)}"/>`).join('')}</g>`;
+  L.innerHTML=g;
+  if (w==='storm') stormT=setInterval(()=>{ if (OUTDOOR(H.room) && Math.random()<.5){ flash(); setTimeout(()=>txt(rnd(80,400),60,'⚡','#ffd166',30),60); } }, 7000);
+  renderStats();
+}
+setInterval(()=>{ const before=wxKey; drawWeather(); if (before && wxKey!==before && OUTDOOR(H.room)){ const w=weatherNow(); const it=LANG==='it';
+  const l={rain:it?'Piove. Ovviamente.':'Rain. Of course.', snow:it?'Nevica! Ma sul serio?':'Snow! Seriously?', storm:it?'Temporale! Mamma mia.':'Thunderstorm! Yikes.', sun:it?'È uscito il sole.':'Sun\'s out.', cloud:it?'Si sta annuvolando.':'Clouding over.'}[w]; say(l,2500); } }, 30000);
+
+/* ================= JOBS (earn Pippi) ================= */
+const JOBS = {
+  pizzeria:{it:'pizzaiolo', en:'pizza maker', pose:'cook', prop:'pizza', items:[['🍕','Margherita'],['🌶️','Diavola'],['🧀','4 Formaggi'],['🍄','Capricciosa'],['🥟','Calzone']]},
+  piazza:{it:'barista', en:'barista', pose:'cook', prop:'mug', items:[['☕','Caffè'],['🥛','Cappuccino'],['🍹','Spritz'],['🍦','Gelato'],['🥐','Cornetto']]},
+  beach:{it:'venditore in spiaggia', en:'beach vendor', pose:'present', prop:'can', items:[['🥥','Cocco'],['🥤','Bibita'],['🍉','Anguria'],['🧊','Ghiacciolo'],['🕶️','Occhiali']]},
+  disco:{it:'DJ', en:'DJ', pose:'conduct', prop:null, items:[['🕺','Dance'],['🎸','Rock'],['🎤','Pop'],['💿','Anni 90'],['🎷','Jazz']]},
+  park:{it:'giardiniere', en:'gardener', pose:'sweep', prop:'broom', items:[['🧹','Spazza'],['💧','Annaffia'],['✂️','Pota'],['🗑️','Svuota cestino'],['🌷','Pianta fiori']]},
+  woods:{it:'boscaiolo', en:'lumberjack', pose:'strain', prop:'stick', items:[['🪵','Legna'],['🍄','Funghi'],['🔥','Falò'],['🫐','Mirtilli'],['🌰','Castagne']]}
+};
+let JOB=null;
+async function startJob(){
+  const J0=JOBS[H.room]; const it=LANG==='it';
+  if (!J0){ say(it?'Qui non assumono nessuno.':'Nobody\'s hiring here.',2500); return; }
+  if (JOB) return;
+  JOB={round:0, earned:0, room:H.room};
+  say(it?`Turno da ${J0.it}! 5 clienti, rispondi veloce.`:`Shift as ${J0.en}! 5 customers, be quick.`, 3000);
+  await sleep(1500);
+  for (let r=0; r<5; r++){
+    if (!JOB || H.room!==JOB.room) break;
+    JOB.round=r+1;
+    const want=J0.items[Math.floor(Math.random()*J0.items.length)];
+    const kind=Math.random()<.5?'f':'m', left=Math.random()<.5;
+    const c=makeNPC({name:PASSERS.names[Math.floor(Math.random()*PASSERS.names.length)], kind, room:H.room, x:left?-50:530}); npcLook(c, randomLook(kind)); c.bot=true;
+    await npcWalk(c, clamp(H.X+(left?-70:70),40,440)); c.dir=H.X>c.X?1:-1; H.dir=c.X>H.X?1:-1;
+    npcSay(c, `${want[0]} ${want[1]}${it?', grazie!':', please!'}`, 6000);
+    const opts=[want, ...J0.items.filter(x=>x!==want).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+    const t0=performance.now();
+    const pickd=await new Promise(res=>{
+      const bar=$('jobbar'); bar.innerHTML=`<span>${r+1}/5</span>`+opts.map((o,i)=>`<button type="button" data-o="${i}">${o[0]} ${o[1]}</button>`).join(''); bar.classList.add('show');
+      const to=setTimeout(()=>res(null), 6500);
+      bar.querySelectorAll('button').forEach(b=>b.onclick=()=>{ clearTimeout(to); res(opts[+b.dataset.o]); });
+    });
+    $('jobbar').classList.remove('show');
+    if (pickd===want){
+      const pay=6+Math.max(0,Math.round(4-(performance.now()-t0)/1500));
+      setPose(J0.pose); if (J0.prop) setProp(J0.prop); await sleep(900); setPose('present'); await sleep(500);
+      npcPose(c,'cheer','happy'); npcSay(c, it?['Perfetto!','Grande!','Mitico!'][r%3]:['Perfect!','Great!','Legend!'][r%3]); JOB.earned+=pay; addPippi(pay);
+    } else {
+      setPose('shrug'); npcPose(c,'angry','angry'); npcSay(c, it?(pickd?['Ho chiesto un\'altra cosa, rincoglionito!','Ma sei sordo?','Ma vaffanculo!'][r%3]:'Mi addormento qui. Ciao.'):(pickd?['I asked for something else, idiot!','Are you deaf?','Oh, screw you!'][r%3]:'I\'m falling asleep. Bye.'));
+    }
+    await sleep(1400); setPose('idle'); setProp(null);
+    await npcWalk(c, left?-60:540); removeNPC(c);
+  }
+  const tot=JOB?JOB.earned:0; JOB=null;
+  say(it?`Turno finito: ${tot} Pippi guadagnati.`:`Shift over: earned ${tot} Pippi.`, 3500);
+  setProp('mug');
+}
+
+/* ================= SHOP (premium items) ================= */
+const PREMIUM = {
+  jacuzzi:{p:150, it:['idromassaggio','jacuzzi'], en:['hot tub','jacuzzi'], only:'out', out:1, rug:1, svg:`<ellipse rx="56" ry="12" fill="#8a6a4a"/><ellipse rx="50" ry="8" fill="#7fd4f5"/>${[-30,-10,12,30].map(x=>`<circle cx="${x}" cy="-3" r="2" fill="#fff" opacity=".8"/>`).join('')}`},
+  goldstatue:{p:220, it:['statua d\'oro','statua'], en:['gold statue','statue'], out:1, svg:`<rect x="-14" y="-10" width="28" height="10" fill="#6b4a2b"/><circle cx="0" cy="-48" r="8" fill="#d4af37"/><path d="M-10 -40 L10 -40 L8 -10 L-8 -10Z" fill="#d4af37"/><path d="M-10 -38 L-20 -54 M10 -38 L20 -54" stroke="#d4af37" stroke-width="5"/>`},
+  arcade:{p:90, it:['cabinato','videogioco arcade','arcade'], en:['arcade machine','arcade'], svg:`<path d="M-18 0 L-18 -66 L18 -66 L18 0Z" fill="#3a0ca3"/><rect x="-13" y="-58" width="26" height="20" fill="#4cc9f0"/><rect x="-13" y="-32" width="26" height="8" fill="#222"/><circle cx="-6" cy="-28" r="2.5" fill="#ff5c86"/><circle cx="4" cy="-28" r="2.5" fill="#ffd166"/>`},
+  neon:{p:40, it:['insegna al neon','neon'], en:['neon sign','neon'], wall:1, svg:`<rect x="-40" y="-12" width="80" height="24" rx="6" fill="#1a1a2e"/><text x="0" y="5" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="13" font-weight="700" fill="#ff5c86">PIPPI ♥</text>`},
+  throne:{p:160, it:['trono'], en:['throne'], svg:`<path d="M-20 0 L-20 -40 L-16 -74 L0 -84 L16 -74 L20 -40 L20 0Z" fill="#c1121f"/><rect x="-24" y="-30" width="48" height="10" fill="#d4af37"/><circle cx="0" cy="-68" r="4" fill="#d4af37"/>`},
+  parrot:{p:60, it:['pappagallo'], en:['parrot'], out:1, svg:`<line x1="0" y1="0" x2="0" y2="-40" stroke="#555" stroke-width="2"/><line x1="-12" y1="-40" x2="12" y2="-40" stroke="#6b4a2b" stroke-width="3"/><ellipse cx="0" cy="-50" rx="6" ry="9" fill="#e63946"/><circle cx="2" cy="-60" r="5" fill="#e63946"/><path d="M6 -60 l5 2 l-5 2z" fill="#ffd166"/><path d="M-2 -44 l-4 10 l6 -6z" fill="#3a86ff"/>`},
+  jukebox:{p:80, it:['jukebox'], en:['jukebox'], svg:`<path d="M-20 0 L-20 -44 Q0 -72 20 -44 L20 0Z" fill="#9b2226"/><path d="M-14 -40 Q0 -62 14 -40Z" fill="#ffd166"/><rect x="-14" y="-34" width="28" height="18" fill="#222"/><rect x="-10" y="-12" width="20" height="8" fill="#e9c46a"/>`},
+  showcase:{p:100, it:['vetrina trofei','vetrina','trofei'], en:['trophy case','trophies'], svg:`<rect x="-26" y="-70" width="52" height="70" fill="#6b4a2b"/><rect x="-22" y="-66" width="44" height="62" fill="#cfe8ef" opacity=".7"/><path d="M-12 -46 h8 v-6 h-8z M-14 -52 q4 -8 12 0" fill="#d4af37"/><circle cx="10" cy="-52" r="5" fill="#d4af37"/><rect x="-14" y="-26" width="10" height="12" fill="#c0c7d0"/><path d="M6 -14 l4 -12 l4 12z" fill="#d4af37"/>`},
+  /* night-only, from the smuggler on the beach */
+  pirate_chest:{p:70, night:1, it:['forziere pirata','forziere'], en:['pirate chest','chest'], out:1, svg:`<rect x="-20" y="-20" width="40" height="20" fill="#7a4a24"/><path d="M-20 -20 Q0 -36 20 -20Z" fill="#8b5a2b"/><rect x="-3" y="-22" width="6" height="8" fill="#d4af37"/><circle cx="-10" cy="-21" r="2" fill="#ffd166"/><circle cx="12" cy="-21" r="2" fill="#ffd166"/>`},
+  skull_lamp:{p:50, night:1, it:['lampada teschio','teschio'], en:['skull lamp','skull'], svg:`<rect x="-6" y="-6" width="12" height="6" fill="#333"/><circle cx="0" cy="-16" r="10" fill="#f1f1e6"/><circle cx="-4" cy="-17" r="2.5" fill="#222"/><circle cx="4" cy="-17" r="2.5" fill="#222"/><rect x="-4" y="-9" width="8" height="3" fill="#222"/>`}
+};
+Object.entries(PREMIUM).forEach(([k,v])=>{ DECOR[k]={...v, premium:1}; });
+const owns=k=>!DECOR[k]||!DECOR[k].premium||LIFE.owned.includes(k);
+function buy(k){ const D=PREMIUM[k]; const it=LANG==='it'; if (!D) return false; if (LIFE.owned.includes(k)){ say(it?'Ce l\'ho già.':'Already got it.',2000); return false; }
+  if (LIFE.pippi<D.p){ say(it?`Costa ${D.p} Pippi e ne ho ${LIFE.pippi}. Devo lavorare.`:`It's ${D.p} Pippi and I have ${LIFE.pippi}. Back to work.`,3000); return false; }
+  addPippi(-D.p); LIFE.owned.push(k); saveLife(); say(it?`Comprato! Ora lo metto in casa.`:`Bought! I'll put it at home.`,2500); return true; }
+function shopHTML(){ const it=LANG==='it';
+  const rows=Object.entries(PREMIUM).filter(([k,D])=>!D.night).map(([k,D])=>`<div class="req"><div><svg viewBox="-40 -90 80 96" width="34" height="40">${D.svg}</svg> ${(it?D.it:D.en)[0]}</div><div class="btns">${LIFE.owned.includes(k)?`<button type="button" data-place="${k}">${it?'Metti':'Place'}</button>`:`<button type="button" data-buy="${k}">${D.p} 🪙</button>`}</div></div>`).join('');
+  return `<p class="lbl">🪙 ${LIFE.pippi} Pippi</p>${rows}<p class="muted small">${it?'I Pippi si guadagnano scrivendo “lavora” al bar, in pizzeria, in spiaggia, in disco, al parco o nel bosco. E poi c\'è chi dice che nel bosco si vinca di più...':'Earn Pippi by typing “work” at the café, pizzeria, beach, disco, park or woods. Rumour has it the woods pay better...'}</p>`; }
+
+/* ================= SECRET: the gambling den in the woods ================= */
+let knocks=[];
+function knockTree(){
+  const now=performance.now(); knocks.push(now); knocks=knocks.filter(t=>now-t<4500);
+  txt(rnd(20,50), rnd(150,200), 'toc', '#fff', 12);
+  const k=knocks; if (k.length>=5){ const d=k.slice(-5).map((t,i,a)=>i?t-a[i-1]:0);
+    if (d[1]<550 && d[2]<550 && d[3]>650 && d[3]<2200 && d[4]<550){ knocks=[]; openBisca(); } }
+}
+async function openBisca(){
+  const id=++runId; const it=LANG==='it';
+  spawn({id:'biscadoor', x:30, y:250, svg:`<rect x="-11" y="-34" width="22" height="34" rx="2" fill="#120b06"/><rect x="-11" y="-34" width="22" height="34" rx="2" fill="none" stroke="#c9a227" stroke-width="1.5"/><circle cx="6" cy="-16" r="1.6" fill="#c9a227"/>`});
+  say(it?'Ma... una porta nell\'albero?!':'Wait... a door in the tree?!', 2500);
+  await walkTo(46, id); if (!alive(id)) return;
+  LIFE.bisca=true; saveLife(); despawn('biscadoor');
+  setRoom('bisca'); H.X=-40; await walkTo(150, id);
+  say(it?'Una bisca clandestina. Niente soldi veri, solo Pippi.':'A secret gambling den. No real money, just Pippi.', 3200);
+}
+function enterHidden(r){ const id=++runId; (async()=>{ if (H.room!=='woods' && r==='bisca'){ await goPlace('woods'); } if (r==='bisca') openBisca(); })(); }
+/* games: fair odds, no cheats */
+const SLOT=['🍒','🍋','🔔','⭐','7️⃣'];
+function playGame(game, bet, choice){
+  const it=LANG==='it'; bet=Math.max(1,Math.min(+bet||10, 500));
+  if (H.room!=='bisca') return {msg:it?'Qui non si gioca.':'No gambling here.'};
+  if (LIFE.pippi<bet) return {msg:it?`Non hai ${bet} Pippi.`:`You don't have ${bet} Pippi.`};
+  addPippi(-bet); let win=0, show='';
+  if (game==='slot'){ const r=[0,1,2].map(()=>SLOT[Math.floor(Math.random()*5)]); show=r.join(' ');
+    if (r[0]===r[1]&&r[1]===r[2]) win = r[0]==='7️⃣'? bet*20 : bet*8; else if (r[0]===r[1]||r[1]===r[2]||r[0]===r[2]) win=bet; }
+  else if (game==='roulette'){ const n=Math.floor(Math.random()*37); const reds=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]; const col=n===0?'verde':reds.includes(n)?'rosso':'nero';
+    show=`${n} ${col==='rosso'?'🔴':col==='nero'?'⚫':'🟢'}`; const c=String(choice||'rosso').toLowerCase();
+    if (/^\d+$/.test(c)) { if (+c===n) win=bet*36; } else { const want=/ner|black/.test(c)?'nero':'rosso'; if (col===want) win=bet*2; } }
+  else { const me=[1,2].map(()=>1+Math.floor(Math.random()*6)), hs=[1,2].map(()=>1+Math.floor(Math.random()*6)); const a=me[0]+me[1], b=hs[0]+hs[1];
+    show=`${it?'Tu':'You'} 🎲${me.join('+')}=${a} · ${it?'Banco':'House'} 🎲${hs.join('+')}=${b}`; if (a>b) win=bet*2; else if (a===b) win=bet; }
+  if (win) addPippi(win);
+  const id=++runId; const net=win-bet;
+  if (net>0){ setPose('cheer','happy'); startFx('confetti'); setTimeout(stopFx,1800); } else if (net<0){ setPose('cry','sad'); } else setPose('shrug');
+  setTimeout(()=>{ if (alive(id)) setPose('idle'); }, 2200);
+  const cr=PL.bots.find(b=>b.name==='Ercole'); if (cr) npcSay(cr, net>0?(it?'Complimenti. Il banco paga.':'Congrats. The house pays.'):net<0?(it?'Il banco ringrazia.':'The house thanks you.'):(it?'Pari.':'Push.'));
+  return {msg:`${show} → ${net>0?'+'+net:net} 🪙`, net};
+}
+function openCasino(){
+  const it=LANG==='it'; let game=window.__game||'slot', bet=window.__bet||10, col=window.__col||'rosso';
+  const g=(k,e,n)=>`<button type="button" class="${game===k?'on':''}" data-g="${k}">${e} ${n}</button>`;
+  sheet(`<h3>🎲 ${it?'Bisca':'Gambling den'}</h3><p class="lbl">🪙 ${LIFE.pippi} Pippi</p>
+    <div class="chips">${g('slot','🎰','Slot')}${g('roulette','🎡','Roulette')}${g('dice','🎲',it?'Dadi':'Dice')}</div>
+    ${game==='roulette'?`<div class="chips" style="margin-top:8px">${['rosso','nero'].map(c=>`<button type="button" class="${col===c?'on':''}" data-c="${c}">${c==='rosso'?'🔴':'⚫'} ${it?c:(c==='rosso'?'red':'black')}</button>`).join('')}</div>`:''}
+    <p class="lbl">${it?'Puntata':'Bet'}</p><div class="chips">${[5,10,25,50,100].map(b=>`<button type="button" class="${bet===b?'on':''}" data-b="${b}">${b}</button>`).join('')}</div>
+    <div id="casRes" class="casres">${window.__casRes||''}</div>
+    <div class="col"><button type="button" id="casPlay">${it?'Gioca!':'Play!'}</button><button class="ghost close" id="shClose">${tr('c_close')}</button></div>
+    <p class="muted small">${game==='slot'?(it?'Tre uguali ×8, tre 7 ×20, due uguali: ti ridanno la puntata.':'Three alike ×8, three 7s ×20, two alike: bet back.'):game==='roulette'?(it?'Rosso o nero ×2. Lo zero vince il banco.':'Red or black ×2. Zero goes to the house.'):(it?'Tu contro il banco: più alto ×2, pari ti ridanno la puntata.':'You vs the house: higher ×2, tie gets your bet back.')}</p>`);
+  $('shClose').onclick=()=>{ window.__casRes=''; closeSheet(); };
+  $('sheetBody').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ window.__game=b.dataset.g; openCasino(); });
+  $('sheetBody').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{ window.__bet=+b.dataset.b; openCasino(); });
+  $('sheetBody').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ window.__col=b.dataset.c; openCasino(); });
+  $('casPlay').onclick=async()=>{ $('casRes').textContent=game==='slot'?'🎰 . . .':game==='roulette'?'🎡 . . .':'🎲 . . .'; await sleep(700); const r=playGame(game, bet, col); window.__casRes=r.msg; openCasino(); };
+}
+
+/* ================= NIGHT: smuggler on the beach, password for the privé ================= */
+const PASSWORDS=['mortadella','fagiolino','pipistrello','canotto','supercazzola','mozzarella','ciabatta','tarallucci'];
+const passwordToday=()=>{ const d=new Date(); return PASSWORDS[(d.getFullYear()*372+d.getMonth()*31+d.getDate())%PASSWORDS.length]; };
+function nightExtras(r){
+  if (!isNight()) return;
+  const it=LANG==='it';
+  if (r==='beach'){ const n=makeNPC({name:it?'Il Contrabbandiere':'The Smuggler', kind:'m', room:r, x:60}); npcLook(n,{hair:'bald',hairColor:'#222222',skin:'#a46a43',glasses:true,outfit:'#2b2d31',pants:'#2b2d31'}); n.bot=true; n.post=60; n.roam=10; n.work=['look','think']; n.role={it:'contrabbandiere',en:'smuggler'};
+    n.lines={it:['Psst. Roba rara, solo di notte.','Forziere pirata, lampada teschio. Non chiedere da dove vengono.'],en:['Psst. Rare stuff, nights only.','Pirate chest, skull lamp. Don\'t ask where from.']}; n.smuggler=true; PL.bots.push(n); }
+  if (r==='piazza'){ setTimeout(()=>{ if (H.room!=='piazza') return; const n=makeNPC({name:it?'L\'Ubriaco':'The Drunk', kind:'m', room:r, x:-50}); npcLook(n, randomLook('m')); n.bot=true; n.passer=true;
+    (async()=>{ await npcWalk(n, clamp(H.X-70,40,440)); npcPose(n,'twist'); npcSay(n, it?`*hic* La parola d'ordine del privé... è "${passwordToday()}" *hic*`:`*hic* The privé password... is "${passwordToday()}" *hic*`, 5000); await sleep(5200); await npcWalk(n,540); removeNPC(n); })(); }, rnd(6000,14000)); }
+}
+async function tryPrive(cmd){
+  if (H.room!=='disco') return false;
+  const t=cmd.toLowerCase(); const it=LANG==='it';
+  if (!/(privé|prive|privè|vip|tony|parola d'ordine|password)/.test(t) && !t.includes(passwordToday())) return false;
+  const tony=PL.bots.find(b=>b.name==='Tony');
+  if (!isNight()){ if (tony) npcSay(tony, it?'Il privé apre alle 22. Torna stanotte.':'The privé opens at 10pm. Come back tonight.'); return true; }
+  if (!t.includes(passwordToday())){ if (tony) npcSay(tony, it?'Parola d\'ordine? No? Allora niente.':'Password? No? Then no.'); return true; }
+  if (tony) npcSay(tony, it?'Prego, si accomodi.':'This way, please.');
+  LIFE.prive=true; saveLife(); const id=++runId; await walkTo(20,id); setRoom('prive'); H.X=-40; await walkTo(180,id);
+  say(it?'Il privé. Divanetti di velluto e champagne.':'The privé. Velvet sofas and champagne.',3000); return true;
+}
+
 /* ================= VISITS: go to a friend's house (they must open the door) ================= */
 H.visit=null;      // when I'm a guest: {topic, name, kind}
 H.guest=null;      // when I host: {topic, name, kind, npc}
@@ -2128,6 +2389,18 @@ $('f').addEventListener('submit', async e=>{
   if (visM && /casa|visit|visita|\bda\b|go to/i.test(cmd)){ i.value=''; goVisit(visM[1], visM[2]); return; }
   if (/^\s*(torna a casa|vai a casa|go home|torna indietro|esci)\s*$/i.test(cmd) && H.visit){ leaveVisit(); return; }
   if (/^\s*(manda via|caccia|kick out|send home)\b/i.test(cmd) && H.guest){ sendTo(H.guest.topic,{t:'kick'}); const n=H.guest.npc; npcWalk(n,-60).then(()=>removeNPC(n)); H.guest=null; say(LANG==='it'?'Ciao ciao!':'Bye bye!'); return; }
+  if (H.room==='bisca' && /^\s*(esci|vai via|torna nel bosco|leave|exit|go out)\b/i.test(cmd)){ i.value=''; const id=++runId; (async()=>{ await walkTo(-50,id); setRoom('woods'); H.X=30; await walkTo(80,id); })(); return; }
+  if (H.room==='prive' && /^\s*(esci|vai via|torna in pista|leave|exit|go out)\b/i.test(cmd)){ i.value=''; const id=++runId; (async()=>{ await walkTo(-50,id); setRoom('disco'); H.X=20; await walkTo(90,id); })(); return; }
+  if (H.room==='bisca' && /(gioca|slot|roulette|dadi|punta|scommett|play|bet|dice|casino|casinò)/i.test(cmd)){ i.value=''; const m=cmd.match(/(\d+)/); if (m) window.__bet=+m[1]; if (/roulette/i.test(cmd)) window.__game='roulette'; else if (/dad|dice/i.test(cmd)) window.__game='dice'; else if (/slot/i.test(cmd)) window.__game='slot'; if (/ner|black/i.test(cmd)) window.__col='nero'; else if (/ross|red/i.test(cmd)) window.__col='rosso'; openCasino(); return; }
+  if (/^\s*(lavora|lavoro|vai a lavorare|fai un turno|turno|work|get a job|do a shift)\b/i.test(cmd)){ i.value=''; startJob(); return; }
+  if (/^\s*(negozio|shop|store|compra|buy)\s*$/i.test(cmd)){ i.value=''; openCustom('shop'); return; }
+  { const bm=cmd.match(/^\s*(?:compra|comprare|buy)\s+(.+)$/i); if (bm){ const t=bm[1].toLowerCase(); const k=Object.keys(PREMIUM).find(k=>[...PREMIUM[k].it,...PREMIUM[k].en].some(w=>t.includes(w))); if (k){ i.value='';
+      if (PREMIUM[k].night && !(H.room==='beach' && isNight())){ say(LANG==='it'?'Questa roba la vende solo qualcuno in spiaggia, di notte...':'Only someone on the beach sells that, at night...',3000); return; }
+      if (buy(k)) setTimeout(()=>runDeco({add:k}), 1200); return; } } }
+  if (/(soldi|pippi|portafoglio|quanti soldi|money|wallet)/i.test(cmd) && cmd.length<30){ i.value=''; say((LANG==='it'?'Ho ':'I have ')+LIFE.pippi+' Pippi. '+(LIFE.pippi<20?(LANG==='it'?'Povero in canna.':'Broke.'):''),2500); return; }
+  if (H.room==='disco' && await tryPrive(cmd)){ i.value=''; return; }
+  const plc0 = placeFromText(cmd); if ((plc0==='bisca' && !LIFE.bisca) || (plc0==='prive' && !LIFE.prive)){ i.value=''; say(LANG==='it'?'Bisca? Privé? Non so di cosa parli.':'A den? Privé? No idea what you mean.',2500); return; }
+  if (plc0==='bisca' && H.room!=='bisca' && /(vai|torna|andiamo|go)/i.test(cmd)){ i.value=''; enterHidden('bisca'); return; }
   const plc = placeFromText(cmd);
   if (plc && /(vai|andiamo|\bva\b|andare|portami|corri|usciamo|esci|go|take me|walk|run|head|let'?s)/i.test(cmd) && !/casa (di|da)/i.test(cmd)){ i.value=''; goPlace(plc); return; }
   if (PLACES[H.room] && /^\s*(torna a casa|vai a casa|torna indietro|go home|go back home|casa)\s*[.!]*$/i.test(cmd)){ i.value=''; goPlace('living'); return; }
@@ -2643,6 +2916,9 @@ applyLang();
   });
   document.addEventListener('pointerdown',e=>{ if (!ready()) return; if (e.target.closest('input,button,label,#callbox,.incoming,.mynum')) return; e.preventDefault();
     if (e.target.closest('.mini')){ openMap(); return; }
+    if (H.room==='woods' || H.room==='bisca'){ try { const pt=scene.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const sp=pt.matrixTransform(scene.getScreenCTM().inverse());
+      if (H.room==='woods' && sp.x<72 && sp.y>70 && sp.y<255){ knockTree(); focusCmd(); return; }
+      if (H.room==='bisca' && ((sp.x>380 && sp.y>130 && sp.y<245) || (sp.x>140 && sp.x<320 && sp.y>185 && sp.y<250))){ if (sp.x>380) window.__game='slot'; openCasino(); return; } } catch(err){} }
     const n = NPCS.find(x=>x.room===H.room && x.g.contains(e.target));
     const intro=x=>(LANG==='it'?'Sono ':'I\'m ')+x.name+(x.code?' '+x.code:'')+(x.role?', '+x.role[LANG==='it'?'it':'en']:'')+(x.bot?' 🤖':'');
     if (!n && holG.contains(e.target)){ say((LANG==='it'?'Sono ':'I\'m ')+H.name+' '+H.code, 2200); focusCmd(); return; }
@@ -2691,7 +2967,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='23';
+const BUILD='24';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
