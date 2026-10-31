@@ -81,11 +81,11 @@ function avApplyLook(){ const f=F();
 async function avGo(r, first){
   if (AV.busy && !first) return;
   const gate=AV_ENTER[r] && AV_ENTER[r].before; if (!first && gate){ AV.busy=true; let ok; try{ ok=await gate(); } finally{ AV.busy=false; } if (ok===false) return; }
-  setRoom(r); AV.st.room=r; avSave(); H.X=(AV_ENTER[r]&&AV_ENTER[r].x)||60; H.destX=null; camX=H.X; avSpawn(r); avApplyLook(); closeSheet(); avRender();
+  setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=(AV_ENTER[r]&&AV_ENTER[r].x)||60; H.destX=null; camX=H.X; avSpawn(r); avApplyLook(); closeSheet(); avRender();
   if (first) return;
   const after=AV_ENTER[r] && AV_ENTER[r].after; if (after){ AV.busy=true; try{ await after(); } catch(e){ console.log(e); } finally{ AV.busy=false; avRender(); } }
 }
-function avKick(r){ setRoom(r); AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyLook(); avRender(); }
+function avKick(r){ setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyLook(); avRender(); }
 function avMap(){
   const it=LANG==='it';
   sheet(`<h3 style="margin:0 0 10px">🗺️ ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div><button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:10px">✕ ${it?'Chiudi':'Close'}</button>`);
@@ -176,7 +176,7 @@ function avCode(len, title){ return new Promise(res=>{ const d=Array(len).fill(0
     $('avCodeOk').onclick=()=>{ closeSheet(); res(d.join('')); }; $('avCodeNo').onclick=()=>{ closeSheet(); res(null); }; };
   draw(); }); }
 async function avStart(){
-  document.body.classList.add('adv'); avLoad(); avBar();
+  document.body.classList.add('adv'); avLoad(); avBar(); try{ $('advMusic').textContent=MUS.on?'🎵':'🔇'; $('advMusic').onclick=e=>{ e.stopPropagation(); musToggle(); }; }catch(x){}
   $('title').innerHTML=`vAIn <span>${T('Avventura','Adventure')}</span>`;
   try { applyCostume('pajamas'); setProp(null); } catch(e){}
   await avGo(AV.st.room||AV_START.room, true); avRender(); setTimeout(()=>window.fitCam&&fitCam(),50);

@@ -189,6 +189,7 @@
   body.adv .advbar { display:flex; flex-direction:column; margin-top:6px; flex:none; min-height:0; }
   body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs button { font-size:16px; padding:12px 2px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
   body.adv form#f, body.adv #kbd, body.adv .kbbar, body.adv #callbox, body.adv .social, body.adv .mynum, body.adv #btnLook, body.adv #btnNew, body.adv .jobbar { display:none !important; }
+  .advbar { position:relative; } .advmus { position:absolute; right:0; top:-2px; background:none; border:none; font-size:18px; padding:0 4px; }
   .advline { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; color:#ffd166; text-align:center; min-height:18px; margin-bottom:4px; }
   .advrow { display:flex; flex-direction:column; gap:6px; }
   .advverbs { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; flex:none; }
@@ -325,7 +326,7 @@
     <div class="advtext" id="advText"></div><div class="advtoast" id="advToast"></div>
     <div class="incoming" id="incoming"><span id="incomingTxt">📞 Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
   </div>
-  <div class="advbar" id="advbar"><div class="advline" id="advLine"></div><div class="advrow"><div class="advverbs" id="advVerbs"></div><div class="advinv" id="advInv"></div><div class="advdlg" id="advDlg" style="display:none"></div></div></div>
+  <div class="advbar" id="advbar"><div class="advline" id="advLine"></div><button type="button" id="advMusic" class="advmus">🎵</button><div class="advrow"><div class="advverbs" id="advVerbs"></div><div class="advinv" id="advInv"></div><div class="advdlg" id="advDlg" style="display:none"></div></div></div>
   <form class="cmd" id="f" autocomplete="off">
     <input id="cmd" maxlength="200" placeholder="Tell Holgen what to do…" aria-label="Command">
     <button type="button" id="kbBack" class="kbback" aria-label="Keyboard" style="display:none">🎹</button>
@@ -391,12 +392,14 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/engine.js?v=45"></script>
-<script src="adv/minigames.js?v=45"></script>
-<script src="adv/c1-data.js?v=45"></script>
-<script src="adv/c1-story-a.js?v=45"></script>
-<script src="adv/c1-story-b.js?v=45"></script>
-<script src="adv/c1-story-c.js?v=45"></script>
+<script src="adv/music.js?v=46"></script>
+<script src="adv/engine.js?v=46"></script>
+<script src="adv/minigames.js?v=46"></script>
+<script src="adv/c1-data.js?v=46"></script>
+<script src="adv/c1-story-a.js?v=46"></script>
+<script src="adv/c1-story-b.js?v=46"></script>
+<script src="adv/c1-story-c.js?v=46"></script>
+<script src="adv/c1-story-d.js?v=46"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -3944,7 +3947,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='45';
+const BUILD='46';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
