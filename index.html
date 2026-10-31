@@ -120,6 +120,13 @@
   .fly2 { animation:fly2 31s linear infinite; } @keyframes fly2 { from { transform:translate(560px,0); } to { transform:translate(-120px,-20px); } }
   .flutter { animation:flutter 6s ease-in-out infinite; } @keyframes flutter { 0%,100% { transform:translate(205px,225px) scale(1,1); } 25% { transform:translate(225px,212px) scale(.4,1); } 50% { transform:translate(240px,220px) scale(1,1); } 75% { transform:translate(220px,230px) scale(.4,1); } }
   .sway { animation:sway 5s ease-in-out infinite; transform-origin:185px 39px; } @keyframes sway { 50% { transform:skewX(1.5deg); } }
+  .foam { animation:foam 3.5s ease-in-out infinite; } @keyframes foam { 50% { transform:translate(-14px,3px); } }
+  .ripple { animation:ripple 2.6s ease-out infinite; transform-origin:330px 232px; } @keyframes ripple { from { transform:scale(.4); opacity:1; } to { transform:scale(1.4); opacity:0; } }
+  .fog { animation:fog 14s ease-in-out infinite; } @keyframes fog { 50% { transform:translateX(30px); } }
+  .fireflies circle { animation:ffly 2.4s ease-in-out infinite alternate; } .fireflies circle:nth-child(2n) { animation-delay:-1.2s; } @keyframes ffly { from { opacity:.1; transform:translate(0,0); } to { opacity:1; transform:translate(6px,-8px); } }
+  .beam1 { animation:beam 4s ease-in-out infinite; transform-origin:240px 40px; } .beam2 { animation:beam 5s ease-in-out infinite reverse; transform-origin:240px 40px; } @keyframes beam { 0%,100% { transform:rotate(-14deg); } 50% { transform:rotate(14deg); } }
+  .sparkle circle { animation:spk 1.4s ease-in-out infinite alternate; } .sparkle circle:nth-child(odd) { animation-delay:-.7s; } @keyframes spk { from { opacity:0; } to { opacity:1; } }
+  .smoke { animation:smoke 3s ease-out infinite; } @keyframes smoke { from { transform:translateY(0); opacity:.8; } to { transform:translateY(-30px); opacity:0; } }
   .side { display:contents; }
   .wrap { overflow:hidden; }
   .info { flex:1 1 auto; min-height:0; overflow:auto; display:flex; flex-direction:column; justify-content:flex-start; }
@@ -2285,11 +2292,36 @@ function roomDetails(r){
     <g transform="translate(250 196)"><rect x="-8" y="-4" width="12" height="4" fill="#3a86ff"/><rect x="-6" y="-8" width="11" height="4" fill="#e9c46a"/></g>
     <g transform="translate(200 266)"><ellipse cx="-7" cy="0" rx="7" ry="3" fill="#e87aa8"/><ellipse cx="7" cy="1" rx="7" ry="3" fill="#e87aa8"/><circle cx="-10" cy="-1" r="2" fill="#fff"/><circle cx="4" cy="0" r="2" fill="#fff"/></g>
 `;
-  if (r==='garden') return `<g fill="#5e9a4e">${[250,272,294].map(x=>`<circle cx="${x}" cy="210" r="14"/>`).join('')}</g><g fill="#ff5c86">${[248,262,280,296].map((x,i)=>`<circle cx="${x}" cy="${202+(i%2)*6}" r="2"/>`).join('')}</g>
+  if (r==='garden') return `<g fill="#000" opacity=".07">${Array.from({length:31},(_,i)=>`<rect x="${i*16+9}" y="176" width="3" height="38"/>`).join('')}</g><g fill="#fff" opacity=".35">${Array.from({length:31},(_,i)=>`<rect x="${i*16+2}" y="176" width="2" height="38"/>`).join('')}</g>
+    <g stroke="#5a3a22" stroke-opacity=".45" fill="none"><path d="M96 240 Q100 200 96 150 M104 236 Q107 190 103 140"/></g><g fill="#000" opacity=".1"><circle cx="100" cy="110" r="40"/></g>
+    <g class="ripple"><circle cx="0" cy="0" r="0"/></g>
+    <g fill="#5e9a4e">${[250,272,294].map(x=>`<circle cx="${x}" cy="210" r="14"/>`).join('')}</g><g fill="#ff5c86">${[248,262,280,296].map((x,i)=>`<circle cx="${x}" cy="${202+(i%2)*6}" r="2"/>`).join('')}</g>
     <g transform="translate(18 252)"><rect x="-2" y="-36" width="4" height="36" fill="#6b4a2b"/><rect x="-12" y="-50" width="24" height="16" rx="7" fill="#3a86ff"/><rect x="10" y="-50" width="3" height="10" fill="#d64545"/></g>
     ${[120,170,210].map((x,i)=>`<ellipse cx="${x}" cy="${272+(i%2)*6}" rx="12" ry="4" fill="#bdb5a6"/>`).join('')}
     <g class="fly1"><path d="M0 0 l4 -4 l1 4 l4 -4" stroke="#333" stroke-width="1.4" fill="none" transform="translate(40 60)"/></g>
     <g class="flutter" transform="translate(205 225)"><path d="M0 0 q-6 -7 -8 0 q2 6 8 0 q6 -7 8 0 q-2 6 -8 0" fill="#ffd166"/></g>`;
+  const birds=`<g class="fly1"><path d="M0 0 l4 -4 l1 4 l4 -4" stroke="#333" stroke-width="1.4" fill="none" transform="translate(60 50)"/></g><g class="fly2"><path d="M0 0 l3 -3 l1 3 l3 -3" stroke="#333" stroke-width="1.2" fill="none" transform="translate(140 80)"/></g>`;
+  if (r==='park') return birds+`<g fill="#000" opacity=".08">${[110,150,190,230,270,310,350,390].map((x,i)=>`<ellipse cx="${x}" cy="${266-(i%2)*4}" rx="9" ry="3"/>`).join('')}</g>
+    <rect x="94" y="203" width="92" height="2" fill="#fff" opacity=".3"/><rect x="96" y="172" width="88" height="2" fill="#fff" opacity=".25"/><ellipse cx="140" cy="249" rx="54" ry="5" fill="url(#ctShadow)"/>
+    <g class="ripple"><ellipse cx="330" cy="232" rx="30" ry="4" fill="none" stroke="#fff" stroke-opacity=".6"/></g><g fill="#ff9fb8">${[30,48,420,436].map((x,i)=>`<circle cx="${x}" cy="${206+(i%2)*5}" r="2.4"/>`).join('')}</g>`;
+  if (r==='beach') return birds+`<g class="fly1"><path d="M0 0 q5 -6 10 0 q5 -6 10 0" stroke="#fff" stroke-width="1.8" fill="none" transform="translate(300 60)"/></g>
+    <g class="foam"><path d="M0 201 Q20 196 40 201 T80 201 T120 201 T160 201 T200 201 T240 201 T280 201 T320 201 T360 201 T400 201 T440 201 T480 201" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/></g>
+    <g fill="#c9a86a" opacity=".5">${Array.from({length:60},(_,i)=>`<circle cx="${(i*83)%480}" cy="${210+((i*37)%88)}" r=".9"/>`).join('')}</g>
+    <path d="M112 152 L62 168 M112 152 L87 160 M112 152 L137 160 M112 152 L162 152" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><ellipse cx="120" cy="268" rx="44" ry="6" fill="url(#ctShadow)"/>
+    <g transform="translate(200 258)"><path d="M-8 0 Q0 -10 8 0Z" fill="#e76f51"/><circle cx="0" cy="-2" r="1.5" fill="#fff"/></g><g transform="translate(380 266)"><path d="M0 0 l5 -2 l2 4z" fill="#f4a261"/></g>`;
+  if (r==='woods') return birds+`<rect width="480" height="300" fill="#e8f4ea" opacity=".08"/><g class="fog"><ellipse cx="120" cy="205" rx="140" ry="10" fill="#fff" opacity=".18"/><ellipse cx="380" cy="210" rx="120" ry="8" fill="#fff" opacity=".14"/></g>
+    <g stroke="#3a2414" stroke-opacity=".35"><path d="M24 248 L26 120 M32 248 L30 140"/><path d="M466 248 L464 130 M472 248 L474 150"/></g>
+    <g class="fireflies" fill="#fff9b0">${[[80,150],[200,120],[300,170],[420,140],[360,110]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6"/>`).join('')}</g>
+    <g transform="translate(330 252)"><path d="M-10 0 Q-8 -8 0 -8 Q8 -8 10 0Z" fill="#6b4a2b"/><path d="M-6 -6 Q0 -14 6 -6" fill="#4f9a4a"/></g>`;
+  if (r==='piazza') return birds+`<g fill="#000" opacity=".12">${[[12,58,4,3],[134,86,5,3],[262,46,4,4],[374,76,4,3]].map(([x,y,w,h])=>Array.from({length:w*h},(_,k)=>`<rect x="${x+(k%w)*26}" y="${y+Math.floor(k/w)*34+20}" width="14" height="3"/>`).join('')).join('')}</g>
+    <g fill="#e63946">${[[16,78],[42,78],[138,106],[164,106],[266,66],[292,66],[378,96],[404,96]].map(([x,y])=>`<rect x="${x}" y="${y}" width="10" height="4" rx="1" fill="#6b4a2b"/><circle cx="${x+2}" cy="${y-1}" r="2"/><circle cx="${x+6}" cy="${y-2}" r="2" fill="#ffd166"/>`).join('')}</g>
+    <g stroke="#2b2d31" stroke-width="1.2">${[[250,110,110],[360,140,120]].map(([x,y,w])=>`<line x1="${x}" y1="${y}" x2="${x+w}" y2="${y}"/>${Array.from({length:Math.floor(w/8)},(_,k)=>`<line x1="${x+k*8}" y1="${y}" x2="${x+k*8}" y2="${y+12}"/>`).join('')}`).join('')}</g>
+    <g fill="#fff" opacity=".12">${Array.from({length:24},(_,i)=>`<ellipse cx="${10+i*20}" cy="${236+(i%3)*18}" rx="7" ry="2"/>`).join('')}</g>`;
+  if (r==='disco') return `<g class="beam1"><path d="M240 40 L120 240 L180 240Z" fill="#ff5c86" opacity=".14"/></g><g class="beam2"><path d="M240 40 L300 240 L360 240Z" fill="#4cc9f0" opacity=".14"/></g>
+    <g fill="#111">${[38].map(x=>`<circle cx="${x}" cy="180" r="7"/><circle cx="${x}" cy="216" r="9"/>`).join('')}</g><g class="sparkle" fill="#fff">${[[120,60],[350,80],[200,30],[420,50]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.4"/>`).join('')}</g>`;
+  if (r==='pizzeria') return `<g transform="translate(160 20)"><line x1="0" y1="0" x2="0" y2="20" stroke="#6b4a2b"/>${[0,1,2,3].map(i=>`<ellipse cx="${(i%2?3:-3)}" cy="${24+i*8}" rx="4" ry="5" fill="#f4f1ea" stroke="#ddd"/>`).join('')}</g>
+    <g transform="translate(450 20)"><line x1="0" y1="0" x2="0" y2="16" stroke="#6b4a2b"/>${[0,1,2,3,4].map(i=>`<path d="M${(i%2?2:-2)} ${18+i*7} q3 4 0 8 q-3 -4 0 -8z" fill="#d00"/>`).join('')}</g>
+    <g stroke="#7a3a1a" stroke-opacity=".5">${Array.from({length:6},(_,j)=>`<line x1="${340+j*4}" y1="${180+j*9}" x2="${440-j*4}" y2="${180+j*9}"/>`).join('')}</g><g class="smoke"><circle cx="390" cy="92" r="6" fill="#bbb" opacity=".5"/><circle cx="395" cy="80" r="8" fill="#ccc" opacity=".35"/></g>`;
   if (['park','beach','woods','piazza'].includes(r)) return `<g class="fly1"><path d="M0 0 l4 -4 l1 4 l4 -4" stroke="#333" stroke-width="1.4" fill="none" transform="translate(60 50)"/></g><g class="fly2"><path d="M0 0 l3 -3 l1 3 l3 -3" stroke="#333" stroke-width="1.2" fill="none" transform="translate(140 80)"/></g>${r==='beach'?`<g class="fly1"><path d="M0 0 q5 -6 10 0 q5 -6 10 0" stroke="#fff" stroke-width="1.8" fill="none" transform="translate(300 60)"/></g>`:''}`;
   return '';
 }
@@ -3700,7 +3732,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='36';
+const BUILD='37';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
