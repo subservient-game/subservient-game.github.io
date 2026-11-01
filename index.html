@@ -335,22 +335,22 @@
     <div class="jobbar" id="jobbar"></div>
     <div class="objmenu" id="objmenu"></div>
     <div class="advtext" id="advText"></div><div class="advtoast" id="advToast"></div>
-    <div class="incoming" id="incoming"><span id="incomingTxt">📞 Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
+    <div class="incoming" id="incoming"><span id="incomingTxt">Incoming call</span><button class="green" id="btnAnswer" data-i="answer">Answer</button><button class="red" id="btnDecline" data-i="decline">Decline</button></div>
   </div>
   <div class="advbar" id="advbar"><div class="advline" id="advLine"></div><button type="button" id="advMusic" class="advmus">🎵</button><div class="advrow"><div class="advverbs" id="advVerbs"></div><div class="advinv" id="advInv"></div><div class="advdlg" id="advDlg" style="display:none"></div></div></div>
   <form class="cmd" id="f" autocomplete="off">
     <input id="cmd" maxlength="200" placeholder="Tell Holgen what to do…" aria-label="Command">
-    <button type="button" id="kbBack" class="kbback" aria-label="Keyboard" style="display:none">🎹</button>
+    <button type="button" id="kbBack" class="kbback" aria-label="Keyboard" style="display:none"></button>
     <button type="submit" id="go">Go</button>
   </form>
   <div class="kbd" id="kbd"></div>
-  <div class="kbbar"><button type="button" id="kbToggle" class="kbtog">⌨️ tastiera del telefono</button></div>
+  <div class="kbbar"><button type="button" id="kbToggle" class="kbtog">tastiera del telefono</button></div>
   <button type="button" class="mynum" id="mynum"></button>
   <div class="social" id="social"></div>
   <div id="ver" style="font-size:12px;opacity:.45;padding:2px 4px">versione</div>
   <div class="sheet" id="sheet"><div class="sheetBody card" id="sheetBody"></div></div>
   <div class="callbox" id="callbox">
-    <div class="callhead"><span id="callTitle">📞 Call</span><button class="red" id="btnHang" type="button" data-i="hangup">Hang up</button></div>
+    <div class="callhead"><span id="callTitle">Call</span><button class="red" id="btnHang" type="button" data-i="hangup">Hang up</button></div>
     <div class="log" id="log"></div>
     <form id="chatF" autocomplete="off"><input id="chatIn" maxlength="200" data-ip="saysth" placeholder="Say something…" aria-label="Message"><button type="submit" data-i="send">Send</button></form>
   </div>
@@ -403,22 +403,22 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=59"></script>
-<script src="adv/music.js?v=59"></script>
-<script src="adv/icons.js?v=59"></script>
-<script src="adv/engine.js?v=59"></script>
-<script src="adv/minigames.js?v=59"></script>
-<script src="adv/c1-data.js?v=59"></script>
-<script src="adv/c1-story-a.js?v=59"></script>
-<script src="adv/c1-story-b.js?v=59"></script>
-<script src="adv/c1-story-c.js?v=59"></script>
-<script src="adv/c1-story-d.js?v=59"></script>
-<script src="adv/c1-story-e.js?v=59"></script>
-<script src="adv/c1-story-f.js?v=59"></script>
-<script src="adv/c2.js?v=59"></script>
-<script src="adv/c3.js?v=59"></script>
-<script src="adv/c4.js?v=59"></script>
-<script src="adv/c5.js?v=59"></script>
+<script src="adv/ui-icons.js?v=63"></script>
+<script src="adv/music.js?v=63"></script>
+<script src="adv/icons.js?v=63"></script>
+<script src="adv/engine.js?v=63"></script>
+<script src="adv/minigames.js?v=63"></script>
+<script src="adv/c1-data.js?v=63"></script>
+<script src="adv/c1-story-a.js?v=63"></script>
+<script src="adv/c1-story-b.js?v=63"></script>
+<script src="adv/c1-story-c.js?v=63"></script>
+<script src="adv/c1-story-d.js?v=63"></script>
+<script src="adv/c1-story-e.js?v=63"></script>
+<script src="adv/c1-story-f.js?v=63"></script>
+<script src="adv/c2.js?v=63"></script>
+<script src="adv/c3.js?v=63"></script>
+<script src="adv/c4.js?v=63"></script>
+<script src="adv/c5.js?v=63"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -1974,7 +1974,7 @@ function onPhoneData(d){
   if (d.t==='hang' && call && call.topic===d.fromTopic){ log('sys', tr('chatclosed', call.peerName)); }
 }
 function ringAnim(){ const id=++runId; stopFx(); (async()=>{ await standUp(id); setProp('phone'); setPose('scared'); say(tr('ring'),2500,true); await sleep(1200); if(alive(id)&&call&&call.state==='incoming') setPose('phone'); })(); }
-function openCallBox(){ $('callTitle').textContent=`📞 ${call.peerName}`; $('callbox').classList.add('show'); $('log').innerHTML=''; }
+function openCallBox(){ $('callTitle').innerHTML=UI_IC('phone',18)+' '+esc(call.peerName); $('callbox').classList.add('show'); $('log').innerHTML=''; }
 function log(who, t){ const d=document.createElement('div'); d.className=who; d.textContent=t; $('log').appendChild(d); $('log').scrollTop=1e6; }
 function endCall(msg){
   if(!call) return; $('incoming').classList.remove('show');
@@ -2168,7 +2168,7 @@ function hairChips(cur, act){ const it=LANG==='it'; const mine=Object.entries(LO
 function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
 function openCustom(tab){
   tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
-  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div>`;
+  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">${UI_IC('look',20)} ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">${UI_IC('living',20)} ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">${UI_IC('bag',20)} ${it?'Negozio':'Shop'}</button></div>`;
   if (tab==='shop'){ h+=shopHTML(); }
   else if (tab==='look'){
     h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${hairChips(L.hair, 'hair')}</div>`;
@@ -3893,7 +3893,7 @@ function openOptions(){ const it=LANG==='it', adv=!!window.ADV;
   $('opResAll').onclick=()=>confirmDo(it?'Cancellare TUTTO? Profilo, casa, arredi, Pippi, avventura. Non si torna indietro.':'Erase EVERYTHING? Profile, house, furniture, Pippi, adventure. No going back.',()=>{ try{ KEYS.concat(['subservientSeen','subservientCache2']).forEach(k=>localStorage.removeItem(k)); }catch(e){} location.hash=''; location.reload(); });
 }
 $('btnOpt').onclick=openOptions;
-try { $('btnNew').innerHTML=UI_IC('profile',22); $('btnLook').innerHTML=UI_IC('look',22); $('btnOpt').innerHTML=UI_IC('options',22); $('btnAdv').innerHTML=UI_IC('advmenu',22); } catch(e){}
+try { $('kbBack').innerHTML=UI_IC('keys',22); $('btnNew').innerHTML=UI_IC('profile',22); $('btnLook').innerHTML=UI_IC('look',22); $('btnOpt').innerHTML=UI_IC('options',22); $('btnAdv').innerHTML=UI_IC('advmenu',22); } catch(e){}
 
 $('btnNew').onclick=openSetup; $('btnLook').onclick=()=>openCustom('look');
 $('btnCancelSetup').onclick=()=>{ $('setup').classList.add('hide'); if (window.focusCmd) focusCmd(); };
@@ -3907,9 +3907,9 @@ $('btnReset').onclick=async()=>{
 /* ================= LANGUAGE ================= */
 const I18N = {
   en:{ who:'Who lives here?', pickTxt:'Pick your tenant, give them a name and a 3-digit code. Name + code is their phone number.', name:'Name', movein:'Move in', answer:'Answer', decline:'Decline', hangup:'Close', saysth:'Say something…', send:'Send',
-       start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`📞 ${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
+       start:'Type a command below…', waiting:'Awaiting orders…', ph:n=>`Tell ${n} what to do…`, calling:n=>`${n} is calling…`, pickedup:n=>`${n} picked up!`, busy:n=>`${n} is busy.`, declined:n=>`${n} declined.`, hungup:n=>`${n} hung up.`,
        ring:'Ring ring!', ring2:'Ring… ring…', self:'Calling myself? Bold.', nosignal:'No signal right now. Try again in a moment.', already:'Already on the phone.', nobody:n=>`Nobody called ${n} is home right now.`,
-       hello:'Oh. A camera. Great.', yourkey:'🧠 Your Gemini key (optional)', keyhelp:'Free at aistudio.google.com/apikey — it stays only on this phone.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI busy, retrying in a few seconds', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
+       hello:'Oh. A camera. Great.', yourkey:'Your Gemini key (optional)', keyhelp:'Free at aistudio.google.com/apikey — it stays only on this phone.', chatwith:n=>`Chat with ${n}. Their game must be open to read you.`, chatopened:n=>`${n} opened a chat with you`, chatclosed:n=>`${n} closed the chat`, aioff:'AI busy, retrying in a few seconds', aion:'AI connected', cancel:'Cancel', restartAll:'Start over from scratch', restartSure:'Sure? Everything is lost. Tap again', c_offline:'Community offline right now.', c_setup:'The community is not set up yet (Firebase config missing).', c_notset:'Single-player mode', c_connecting:'Connecting to the neighbourhood…',
        c_single:'Single', c_dating:n=>`Dating ${n}`, c_engaged:n=>`Engaged to ${n}`, c_married:n=>`Married to ${n}`, c_weddingon:d=>`wedding ${d}`, c_rel:'Relationships',
        c_askhint:'Ask someone out with their number (name + code).', c_numph:'e.g. Marco 123', c_ask:'Ask out', c_propose:'Propose', c_plan:'Plan the wedding', c_breakup:'Break up', c_divorce:'Divorce', c_close:'Close', c_sure:'Sure? Tap again',
        c_when:'Date and time', c_guests:'Guests (numbers, comma separated)', c_planhint:n=>`${n} will get the invitation to confirm. Guests get an invite and can watch the ceremony.`, c_sendinv:'Send invitations', c_invsent:'Invitations sent!', c_missing:n=>`(not found: ${n})`,
@@ -3917,9 +3917,9 @@ const I18N = {
        c_req_date:n=>`❤️ ${n} asks you out`, c_req_propose:n=>`💎 ${n} wants to marry you!`, c_req_wedding:n=>`💒 ${n} has planned your wedding`, c_req_breakup:n=>`💔 ${n} broke up with you`,
        c_nopartner:'I\'m single, there\'s nobody to leave.', c_brokeup:n=>`It's over with ${n}.`, c_proposed:n=>`Ring sent to ${n}. Fingers crossed.`, c_needdating:'I need to be dating someone first.', c_needengaged:'We need to be engaged first.', c_taken:'I\'m already taken.', c_nonumber:'No one with that number.', c_asked:n=>`Asked ${n} out. Waiting…`, c_weddingof:n=>`Wedding of ${n}`, yourcode:'Your 3-digit code', yournum:'Your number', howcall:n=>`friends chat with “call ${n}” or visit with “go to ${n}'s house”`, needcode:'I need the 3-digit code too: “call Marco 123”.', taken:'That number is taken. Tap your number below to pick another code.', callingOut:'Calling', noanswer:'No answer. (Is their game open?)', ended:'Call ended.', talking:n=>`Talking to ${n}`, pronto:'Hello?', huh:'Huh?', refuse:'Not that kind of website.' },
   it:{ who:'Chi abita qui?', pickTxt:'Scegli il tuo inquilino, dagli un nome e un codice di 3 cifre. Nome + codice è il suo numero di telefono.', name:'Nome', movein:'Trasloca', answer:'Rispondi', decline:'Rifiuta', hangup:'Chiudi', saysth:'Scrivi qualcosa…', send:'Invia',
-       start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`📞 Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
+       start:'Scrivi un comando qui sotto…', waiting:'In attesa di ordini…', ph:n=>`Di' a ${n} cosa fare…`, calling:n=>`Ti chiama ${n}…`, pickedup:n=>`${n} ha risposto!`, busy:n=>`${n} è occupato.`, declined:n=>`${n} ha rifiutato.`, hungup:n=>`${n} ha riattaccato.`,
        ring:'Driiin driiin!', ring2:'Tuu… tuu…', self:'Chiamare me stesso? Audace.', nosignal:'Niente campo adesso. Riprova tra poco.', already:'Sono già al telefono.', nobody:n=>`Nessuno di nome ${n} è in casa adesso.`,
-       hello:'Ah. Una telecamera. Fantastico.', yourkey:'🧠 La tua chiave Gemini (facoltativa)', keyhelp:'Gratis su aistudio.google.com/apikey — resta solo su questo telefono.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA occupata, riprovo tra pochi secondi', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
+       hello:'Ah. Una telecamera. Fantastico.', yourkey:'La tua chiave Gemini (facoltativa)', keyhelp:'Gratis su aistudio.google.com/apikey — resta solo su questo telefono.', chatwith:n=>`Chat con ${n}. Per leggerti deve avere il gioco aperto.`, chatopened:n=>`${n} ti ha scritto`, chatclosed:n=>`${n} ha chiuso la chat`, aioff:'IA occupata, riprovo tra pochi secondi', aion:'IA collegata', cancel:'Annulla', restartAll:'Ricomincia da zero', restartSure:'Sicuro? Si perde tutto. Tocca di nuovo', c_offline:'Comunità non raggiungibile adesso.', c_setup:'La comunità non è ancora configurata (manca la configurazione Firebase).', c_notset:'Modalità giocatore singolo', c_connecting:'Mi collego al quartiere…',
        c_single:'Single', c_dating:n=>`Fidanzato/a con ${n}`, c_engaged:n=>`Promesso/a a ${n}`, c_married:n=>`Sposato/a con ${n}`, c_weddingon:d=>`nozze ${d}`, c_rel:'Relazioni',
        c_askhint:'Chiedi di uscire a qualcuno col suo numero (nome + codice).', c_numph:'es. Marco 123', c_ask:'Chiedi di uscire', c_propose:'Fai la proposta', c_plan:'Organizza il matrimonio', c_breakup:'Lascia', c_divorce:'Divorzia', c_close:'Chiudi', c_sure:'Sicuro? Tocca di nuovo',
        c_when:'Data e ora', c_guests:'Invitati (numeri separati da virgola)', c_planhint:n=>`${n} riceverà l'invito da confermare. Gli invitati ricevono l'invito e possono assistere alla cerimonia.`, c_sendinv:'Manda gli inviti', c_invsent:'Inviti spediti!', c_missing:n=>`(non trovati: ${n})`,
@@ -4035,7 +4035,7 @@ const KB_LAYERS={
   acc:[['à','è','é','ì','ò','ù','á','í','ó','ú'],['À','È','É','Ì','Ò','Ù','ç','ñ','ü','ö'],['⇧','\'','"','-','?','!',',','.','⌫'],['abc','123','😀',' ','.','⏎']],
   emo:[['😂','🤣','😍','😎','🙄','😡','😱','🤢','😴','🤡'],['👍','👎','👏','🙏','💪','🎉','❤️','🔥','💩','🍕'],['🍺','🍷','⚽','🎤','🎲','💰','🚗','🌧️','⌫'],['abc','123','àè',' ','.','⏎']]
 };
-function kbRender(){ const el=$('kbd'); if (!el) return; const L=KB_LAYERS[KB.layer]; try{ $('kbToggle').textContent = LANG==='it' ? '⌨️ usa la tastiera del telefono' : '⌨️ use the phone keyboard'; }catch(e){}
+function kbRender(){ const el=$('kbd'); if (!el) return; const L=KB_LAYERS[KB.layer]; try{ $('kbToggle').innerHTML = UI_IC('keys',16)+' '+(LANG==='it' ? 'usa la tastiera del telefono' : 'use the phone keyboard'); }catch(e){}
   el.innerHTML=L.map(row=>`<div class="kr">${row.map(k=>{ const cls=k===' '?'sp':(['⇧','⌫','123','abc','#+=','àè','😀','⏎'].includes(k)?'fn':''); const lab=k===' '?(LANG==='it'?'spazio':'space'):k==='⏎'?(LANG==='it'?'Invio':'Go'):(KB.layer==='abc'&&k.length===1&&(KB.shift||KB.caps)?k.toUpperCase():k);
     return `<div class="kk ${cls}${k==='⇧'&&(KB.shift||KB.caps)?' on':''}${k==='⏎'?' go':''}" data-k="${k.replace(/"/g,'&quot;')}">${lab==='⇧'&&KB.caps?'⇪':lab}</div>`; }).join('')}</div>`).join(''); }
 function kbTarget(){ const t=KB.target; return (t && document.body.contains(t) && t.offsetParent!==null) ? t : $('cmd'); }
@@ -4062,7 +4062,7 @@ function kbSetup(){
   KB.on = touch && pref!=='native';
   const kb=$('kbd'); kb.style.display=KB.on?'':'none'; $('kbBack').style.display=(touch && !KB.on)?'':'none';
   ['cmd','chatIn'].forEach(id=>{ const el=$(id); if (KB.on) el.setAttribute('inputmode','none'); else el.removeAttribute('inputmode'); });
-  $('kbToggle').textContent = LANG==='it' ? '⌨️ usa la tastiera del telefono' : '⌨️ use the phone keyboard';
+  $('kbToggle').innerHTML = UI_IC('keys',16)+' '+(LANG==='it' ? 'usa la tastiera del telefono' : 'use the phone keyboard');
   if (KB.on) kbRender();
   try{ window.fitCam && fitCam(); }catch(e){}
 }
@@ -4096,7 +4096,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='62';
+const BUILD='63';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);

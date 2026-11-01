@@ -67,3 +67,6 @@ Object.assign(UI_ART,{
   storm:`<path d="M12 26 Q4 26 6 18 Q8 12 14 14 Q16 4 26 6 Q34 4 36 14 Q44 14 42 22 Q40 26 34 26Z" fill="#6c737b" ${UK}/><path d="M24 28 L18 38 H24 L20 46 L30 34 H24 L28 28Z" fill="#f4d03f" ${UK}/>`,
   moon:`<path d="M30 6 Q14 10 14 24 Q14 38 30 42 Q16 44 10 32 Q4 18 16 8 Q22 4 30 6Z" fill="#f4efe6" ${UK}/>`
 });
+Object.assign(UI_ART,{ keys:`<rect x="4" y="12" width="40" height="26" rx="4" fill="#3a3f48" ${UK}/>${[0,1,2,3,4].map(i=>`<rect x="${8+i*7}" y="16" width="5" height="5" rx="1" fill="#eceff2"/><rect x="${8+i*7}" y="23" width="5" height="5" rx="1" fill="#eceff2"/>`).join('')}<rect x="14" y="30" width="20" height="4" rx="1" fill="#eceff2"/>`,
+  piuma:`<path d="M38 6 Q20 10 12 30 L8 42 L14 34 Q32 30 38 6Z" fill="#1d1d24" ${UK}/><path d="M36 8 Q22 22 9 41" stroke="#555" stroke-width="1.6" fill="none"/>`,
+  sacco:`<path d="M14 14 Q24 20 34 14 L40 40 Q24 46 8 40Z" fill="#a0724a" ${UK}/><path d="M16 10 Q24 4 32 10 L30 16 Q24 18 18 16Z" fill="#8a5a3a" ${UK}/><circle cx="24" cy="30" r="6" fill="#c9a227" ${UK}/>` });
