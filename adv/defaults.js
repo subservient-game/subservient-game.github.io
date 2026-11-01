@@ -191,9 +191,13 @@ const SELF={
 const VOW=/^[aeiouhàèéìòù]/i, LO=/^(s[^aeiou]|z|gn|ps|x|y|pn)/i;
 function artIt(w){ const first=w.split(/\s+/)[0].toLowerCase().replace(/[^a-zàèéìòù]/g,''); const end=first.slice(-1);
   let g='m', pl=false;
-  if (end==='a') g='f'; else if (end==='i') pl=true; else if (end==='e' && /(ie|he)$/.test(first)) { g='f'; pl=true; } else if (/(gione|zione|sione|tà|tù)$/.test(first)) g='f';
+  if (end==='a') g='f'; else if (end==='i') pl=true; else if (end==='e'){ if (/(ice|ione|ie|he)$/.test(first)) { g='f'; if (/(ie|he)$/.test(first)) pl=true; } else if (/(one|ore|ale|ile|ente|ante|ese|ere|ume|ame|ime)$/.test(first)) {} else { g='f'; pl=true; } } else if (/(tà|tù)$/.test(first)) g='f';
+  if (/^(chiave|nave|parete|rete|notte|fonte|carne|gente|neve|sete|fame|fune|torre|botte|lente|pelle|vite|chiave|madre|moglie|frase|classe)$/.test(first)) { g='f'; pl=false; }
+  if (/^(uova|braccia|dita|lenzuola|ossa)$/.test(first)) { g='f'; pl=true; }
   if (/^(mano|radio|foto|moto|auto|dinamo)$/.test(first)) { g='f'; pl=false; }
   if (/^(problema|sistema|pigiama|programma|cinema|clima|tema|telegramma|panorama|diploma|pianeta|poeta|pirata|papa)$/.test(first)) g='m';
+  const OV={barbecue:['il',0],baule:['il',0],mare:['il',0],champagne:['lo',0],lampione:['il',0],ponte:['il',0],campione:['il',0],pettine:['il',0],latte:['il',0],pesce:['il',0],pane:['il',0],sale:['il',0],fiume:['il',0],cane:['il',0],pile:['il',0],dente:['il',0],fiore:['il',0],cuore:['il',0],sole:['il',0],nome:['il',0],volume:['il',0],croce:['la',0],lapide:['la',0],consolle:['la',0],cassaforte:['la',0],noce:['la',0],selce:['la',0],cambiale:['la',0],slot:['la',0],chiavi:['le',1],piume:['le',1],ossa:['le',1],gomme:['le',1],acque:['le',1]};
+  if (OV[first]) return [OV[first][0], !!OV[first][1]];
   let a; if (pl) a = g==='f'?'le':(VOW.test(first)||LO.test(first)?'gli':'i'); else if (g==='f') a = VOW.test(first)?"l'":'la'; else a = VOW.test(first)?"l'":(LO.test(first)?'lo':'il');
   return [a,pl]; }
 const CONTR={a:{il:'al',lo:'allo',"l'":"all'",la:'alla',i:'ai',gli:'agli',le:'alle'},su:{il:'sul',lo:'sullo',"l'":"sull'",la:'sulla',i:'sui',gli:'sugli',le:'sulle'},in:{il:'nel',lo:'nello',"l'":"nell'",la:'nella',i:'nei',gli:'negli',le:'nelle'},di:{il:'del',lo:'dello',"l'":"dell'",la:'della',i:'dei',gli:'degli',le:'delle'},da:{il:'dal',lo:'dallo',"l'":"dall'",la:'dalla',i:'dai',gli:'dagli',le:'dalle'}};
@@ -205,6 +209,7 @@ function fillIt(s, key, w){ if (!w) return s.split('{'+key+'}').join('').split('
 function fillEn(s, key, w){ return s.split('{'+key+'}').join(w?'the '+w:'').split('{'+key.toUpperCase()+'}').join(w?'The '+w:''); }
 function names(t,item){ const n=low(avName(t)||''); const i=item?low(avItemName(item)):''; return [n,i]; }
 function say(line, t, item, npcId){ const [n,i]=names(t,item); const a=fillIt(fillIt(line[0],'n',n),'i',i).replace(/\[([^|\]]*)\|([^\]]*)\]/g,'$1'), b=fillEn(fillEn(line[1],'n',n),'i',i); return npcId? np(npcId,a,b) : me(a,b); }
+window.AV_DEF={G,C,NPC,SELF};
 window.avDefault=function(verb, t, item){
   const v=(item && (verb==='use'||verb==='give'))?'combo':verb;
   if (t.type==='npc'){
