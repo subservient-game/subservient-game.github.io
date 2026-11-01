@@ -1,0 +1,24 @@
+/* ================= CAPITOLO 4 — LA STOPPA PER LA FIACCOLA (un ciuffo dei baffi di Baffo) E IL GEYSER PRIMA DELLA LAVA ================= */
+Object.assign(AV_ITEMS,{ ciuffo:['〰️','Ciuffo di baffi','Tuft of moustache'] });
+AV_ICONS.ciuffo=`<path d="M6 26 Q14 14 24 24 Q34 14 42 26 Q34 22 24 30 Q14 22 6 26Z" fill="#5a3a1c" stroke="#2b2b2b" stroke-width="2"/><path d="M10 25 Q16 20 22 25 M26 25 Q32 20 38 25" stroke="#8a5a2b" stroke-width="1.4" fill="none"/>`;
+AV_TROPHIES.push(['stoppa','Hai fatto una fiaccola con un ciuffo dei baffi di Baffo. Brucia per ore e puzza di gasolio.','Made a torch with a tuft of Baffo\'s moustache. Burns for hours and smells of diesel.'],['geyser','Hai saltato il geyser al momento giusto. Le chiappe sono salve. Per ora.','Jumped the geyser at the right moment. Your bum is safe. For now.']);
+(()=>{ const old=AV_S['c4|use:rami:liana']; const h=async(t,item,...r)=>{ const f=F(); const need=['rami','liana','foglie'];
+  if (need.every(x=>avHas(x)) && !f.tuftIn){ if (!avHas('ciuffo')){ f.tuftAsk=1; avSave(); return me('Rami, foglie e liana: la struttura c\'è. Ma senza qualcosa che prenda fuoco subito e duri, la fiaccola si spegne in due minuti. Serve stoppa. Peli unti, tipo. Molto unti. Conosco un baffo che fa al caso mio.','Branches, leaves and vine: the frame\'s there. But without something that catches fast and lasts, the torch dies in two minutes. I need tow. Greasy hair, say. Very greasy. I know a moustache that fits the bill.'); }
+    avDel('ciuffo'); f.tuftIn=1; avSave(); avTrophy('stoppa','Hai fatto una fiaccola con un ciuffo dei baffi di Baffo. Brucia per ore e puzza di gasolio.','Made a torch with a tuft of Baffo\'s moustache. Burns for hours and smells of diesel.'); }
+  return old(t,item,...r); }; ['use:rami:liana','use:rami:foglie','use:liana:foglie'].forEach(k=>AV_S['c4|'+k]=h); })();
+(()=>{ const old=AV_S['c4|talk:baffo']; AV_S['c4|talk:baffo']=async(...a)=>{ const f=F();
+  if (f.tuftAsk && !f.tuftIn && !avHas('ciuffo') && !f.baffoLeft){ const o=await avChoose([['Baffo, mi serve un ciuffo dei tuoi baffi.','Baffo, I need a tuft of your moustache.'],['Altro...','Something else...']]);
+    if (o===0){ await np('baffo','I MIEI BAFFI?! Sono l\'unica cosa che mia madre ha amato di me! ...Quanto mi dai?','MY MOUSTACHE?! The only thing my mother loved about me! ...How much will you give me?');
+      const c=await avChoose([['Il cinque per cento in più del tesoro.','Five percent more of the treasure.'],['Niente, ma ti dico che sono i baffi più belli dell\'isola.','Nothing, but I\'ll say it\'s the finest moustache on the island.'],['Te lo strappo nel sonno.','I\'ll rip it off while you sleep.']]);
+      if (c===2) return np('baffo','Provaci e ti affogo nella laguna con la tua lente al collo.','Try it and I\'ll drown you in the lagoon with your lens round your neck.');
+      if (c===0) return np('baffo','Il cinque in più? Ho già il quaranta, vuol dire quarantacinque. Ma tu non mi pagherai mai niente. Lo so. Lo sento. No.','Five more? I\'ve got forty already, so forty-five. But you\'ll never pay me anything. I know. I feel it. No.');
+      avAdd('ciuffo'); await npcAct('baffo','flex',1200); return np('baffo','...I più belli dell\'isola? Davvero? Tieni, ne taglio un ciuffo. Ricrescono. Come le mie truffe. Sono unti di brillantina e gasolio: bruceranno per giorni.','...The finest on the island? Really? Here, I\'ll cut a tuft. It grows back. Like my scams. They\'re greasy with brilliantine and diesel: they\'ll burn for days.'); } }
+  return old(...a); }; })();
+(()=>{ const old=AV_S['c4|use:lava']; const h=async(...a)=>{ const f=F();
+  if (!f.lavaCrossed && f.gate1 && f.gate2 && f.gate3 && f.sandFixed && f.lantern && !f.geyserOk){ await avSay('voice', T('Prima delle pietre, un geyser sputa vapore bollente sul sentiero a intervalli. Devi passare quando si calma.','Before the stones, a geyser spews scalding steam over the path at intervals. You must pass when it calms down.'));
+    const ok=await (window.avShave||avShaveGame)(4); if (!ok) return me('FSSSS! Mi becca in pieno. Ora ho le chiappe lesse. Riprovo.','HISSSS! It gets me full on. Now my bum\'s boiled. Again.');
+    f.geyserOk=1; avSave(); avTrophy('geyser','Hai saltato il geyser al momento giusto. Le chiappe sono salve. Per ora.','Jumped the geyser at the right moment. Your bum is safe. For now.'); }
+  return old(...a); }; AV_S['c4|use:lava']=h; AV_S['c4|use:lava:sandali']=h; })();
+(()=>{ const H=AV_CHS[4].HINTS; H.unshift(
+  [()=>F().tuftAsk && !F().tuftIn && !avHas('ciuffo'),'Per la stoppa della fiaccola: chiedi a Baffo un ciuffo dei suoi baffi. Fagli un complimento.','For the torch tow: ask Baffo for a tuft of his moustache. Pay him a compliment.'],
+  [()=>avHas('ciuffo'),'Ora costruisci la fiaccola: rami, foglie e liana.','Now build the torch: branches, leaves and vine.']); })();
