@@ -113,7 +113,7 @@
   .callbox.show .log div { padding:2px 8px; }
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
-  .lookbtn { left:46px !important; } .optbtn { left:92px !important; } body.adv .optbtn { left:46px !important; } .newbtn svg { display:block; } .newbtn { padding:3px 8px !important; }
+  .lookbtn { left:0 !important; } .optbtn { left:46px !important; } body.adv .optbtn { left:46px !important; } #btnNew { display:none !important; } .newbtn svg { display:block; } .newbtn { padding:3px 8px !important; }
   .objmenu { position:absolute; display:none; flex-direction:column; gap:4px; z-index:9; background:rgba(20,24,30,.94); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:6px; min-width:130px; max-width:62%; box-shadow:0 8px 24px rgba(0,0,0,.45); }
   .objmenu.show { display:flex; } .objmenu .omt { color:var(--accent); font-weight:700; font-size:13px; padding:2px 6px 4px; }
   .objmenu button { background:#2a2f37; color:#eef0f3; font-size:13px; font-weight:500; padding:7px 10px; text-align:left; border-radius:8px; }
@@ -404,95 +404,95 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=102"></script>
-<script src="adv/music.js?v=102"></script>
-<script src="adv/icons.js?v=102"></script>
-<script src="adv/engine.js?v=102"></script>
-<script src="adv/minigames.js?v=102"></script>
-<script src="adv/c1-data.js?v=102"></script>
-<script src="adv/c1-story-a.js?v=102"></script>
-<script src="adv/c1-story-b.js?v=102"></script>
-<script src="adv/c1-story-c.js?v=102"></script>
-<script src="adv/c1-story-d.js?v=102"></script>
-<script src="adv/c1-story-e.js?v=102"></script>
-<script src="adv/c1-story-f.js?v=102"></script>
-<script src="adv/c1-ballo.js?v=102"></script>
-<script src="adv/c1-mozzarella.js?v=102"></script>
-<script src="adv/c1-puntina.js?v=102"></script>
-<script src="adv/c1-sigaro.js?v=102"></script>
-<script src="adv/c1-sardine.js?v=102"></script>
-<script src="adv/c1-morra.js?v=102"></script>
-<script src="adv/c1-cravatta.js?v=102"></script>
-<script src="adv/c1-lumino.js?v=102"></script>
-<script src="adv/c1-rasatura.js?v=102"></script>
-<script src="adv/c1-dadi.js?v=102"></script>
-<script src="adv/c1-cane.js?v=102"></script>
-<script src="adv/c1-impronta.js?v=102"></script>
-<script src="adv/c1-radio.js?v=102"></script>
-<script src="adv/c1-armadio.js?v=102"></script>
-<script src="adv/c1-monete.js?v=102"></script>
-<script src="adv/c1-avvocato.js?v=102"></script>
-<script src="adv/c2.js?v=102"></script>
-<script src="adv/c2-extra.js?v=102"></script>
-<script src="adv/c2-tessere.js?v=102"></script>
-<script src="adv/c2-pacco.js?v=102"></script>
-<script src="adv/c2-torcia.js?v=102"></script>
-<script src="adv/c2-barca.js?v=102"></script>
-<script src="adv/c2-tombola.js?v=102"></script>
-<script src="adv/c2-carrello.js?v=102"></script>
-<script src="adv/c2-allarme.js?v=102"></script>
-<script src="adv/c2-fiammiferi.js?v=102"></script>
-<script src="adv/c2-piccioni.js?v=102"></script>
-<script src="adv/c2-sveglia.js?v=102"></script>
-<script src="adv/c2-strappo.js?v=102"></script>
-<script src="adv/c2-urna.js?v=102"></script>
-<script src="adv/c2-topi.js?v=102"></script>
-<script src="adv/c2-pisello.js?v=102"></script>
-<script src="adv/c2-dialetto.js?v=102"></script>
-<script src="adv/c2-ruggine.js?v=102"></script>
-<script src="adv/c3.js?v=102"></script>
-<script src="adv/c3-extra.js?v=102"></script>
-<script src="adv/c3-totem.js?v=102"></script>
-<script src="adv/c3-bussola.js?v=102"></script>
-<script src="adv/c3-sabbie.js?v=102"></script>
-<script src="adv/c3-pescedoro.js?v=102"></script>
-<script src="adv/c3-cocco.js?v=102"></script>
-<script src="adv/c3-sale.js?v=102"></script>
-<script src="adv/c3-tribu.js?v=102"></script>
-<script src="adv/c3-prove.js?v=102"></script>
-<script src="adv/c3-barzelletta.js?v=102"></script>
-<script src="adv/c3-cassa.js?v=102"></script>
-<script src="adv/c3-banana.js?v=102"></script>
-<script src="adv/c3-stelle.js?v=102"></script>
-<script src="adv/c4.js?v=102"></script>
-<script src="adv/c4-extra.js?v=102"></script>
-<script src="adv/c4-sandali.js?v=102"></script>
-<script src="adv/c4-lanterna.js?v=102"></script>
-<script src="adv/c4-labirinto.js?v=102"></script>
-<script src="adv/c4-ragu.js?v=102"></script>
-<script src="adv/c4-percentuali.js?v=102"></script>
-<script src="adv/c4-occhiali.js?v=102"></script>
-<script src="adv/c4-porte.js?v=102"></script>
-<script src="adv/c4-grotta.js?v=102"></script>
-<script src="adv/c4-ricordi.js?v=102"></script>
-<script src="adv/c4-baffi.js?v=102"></script>
-<script src="adv/c4-semi.js?v=102"></script>
-<script src="adv/c4-memory.js?v=102"></script>
-<script src="adv/c4-pipistrelli.js?v=102"></script>
-<script src="adv/c5.js?v=102"></script>
-<script src="adv/c5-extra.js?v=102"></script>
-<script src="adv/c5-processo.js?v=102"></script>
-<script src="adv/c5-acquasanta.js?v=102"></script>
-<script src="adv/c5-mescola.js?v=102"></script>
-<script src="adv/c5-ultima.js?v=102"></script>
-<script src="adv/c5-giornale.js?v=102"></script>
-<script src="adv/c5-baffo.js?v=102"></script>
-<script src="adv/c5-ingredienti.js?v=102"></script>
-<script src="adv/c5-forno.js?v=102"></script>
-<script src="adv/c5-ricettario.js?v=102"></script>
-<script src="adv/c5-processo2.js?v=102"></script>
-<script src="adv/c5-trappola.js?v=102"></script>
-<script src="adv/c6.js?v=102"></script>
+<script src="adv/ui-icons.js?v=103"></script>
+<script src="adv/music.js?v=103"></script>
+<script src="adv/icons.js?v=103"></script>
+<script src="adv/engine.js?v=103"></script>
+<script src="adv/minigames.js?v=103"></script>
+<script src="adv/c1-data.js?v=103"></script>
+<script src="adv/c1-story-a.js?v=103"></script>
+<script src="adv/c1-story-b.js?v=103"></script>
+<script src="adv/c1-story-c.js?v=103"></script>
+<script src="adv/c1-story-d.js?v=103"></script>
+<script src="adv/c1-story-e.js?v=103"></script>
+<script src="adv/c1-story-f.js?v=103"></script>
+<script src="adv/c1-ballo.js?v=103"></script>
+<script src="adv/c1-mozzarella.js?v=103"></script>
+<script src="adv/c1-puntina.js?v=103"></script>
+<script src="adv/c1-sigaro.js?v=103"></script>
+<script src="adv/c1-sardine.js?v=103"></script>
+<script src="adv/c1-morra.js?v=103"></script>
+<script src="adv/c1-cravatta.js?v=103"></script>
+<script src="adv/c1-lumino.js?v=103"></script>
+<script src="adv/c1-rasatura.js?v=103"></script>
+<script src="adv/c1-dadi.js?v=103"></script>
+<script src="adv/c1-cane.js?v=103"></script>
+<script src="adv/c1-impronta.js?v=103"></script>
+<script src="adv/c1-radio.js?v=103"></script>
+<script src="adv/c1-armadio.js?v=103"></script>
+<script src="adv/c1-monete.js?v=103"></script>
+<script src="adv/c1-avvocato.js?v=103"></script>
+<script src="adv/c2.js?v=103"></script>
+<script src="adv/c2-extra.js?v=103"></script>
+<script src="adv/c2-tessere.js?v=103"></script>
+<script src="adv/c2-pacco.js?v=103"></script>
+<script src="adv/c2-torcia.js?v=103"></script>
+<script src="adv/c2-barca.js?v=103"></script>
+<script src="adv/c2-tombola.js?v=103"></script>
+<script src="adv/c2-carrello.js?v=103"></script>
+<script src="adv/c2-allarme.js?v=103"></script>
+<script src="adv/c2-fiammiferi.js?v=103"></script>
+<script src="adv/c2-piccioni.js?v=103"></script>
+<script src="adv/c2-sveglia.js?v=103"></script>
+<script src="adv/c2-strappo.js?v=103"></script>
+<script src="adv/c2-urna.js?v=103"></script>
+<script src="adv/c2-topi.js?v=103"></script>
+<script src="adv/c2-pisello.js?v=103"></script>
+<script src="adv/c2-dialetto.js?v=103"></script>
+<script src="adv/c2-ruggine.js?v=103"></script>
+<script src="adv/c3.js?v=103"></script>
+<script src="adv/c3-extra.js?v=103"></script>
+<script src="adv/c3-totem.js?v=103"></script>
+<script src="adv/c3-bussola.js?v=103"></script>
+<script src="adv/c3-sabbie.js?v=103"></script>
+<script src="adv/c3-pescedoro.js?v=103"></script>
+<script src="adv/c3-cocco.js?v=103"></script>
+<script src="adv/c3-sale.js?v=103"></script>
+<script src="adv/c3-tribu.js?v=103"></script>
+<script src="adv/c3-prove.js?v=103"></script>
+<script src="adv/c3-barzelletta.js?v=103"></script>
+<script src="adv/c3-cassa.js?v=103"></script>
+<script src="adv/c3-banana.js?v=103"></script>
+<script src="adv/c3-stelle.js?v=103"></script>
+<script src="adv/c4.js?v=103"></script>
+<script src="adv/c4-extra.js?v=103"></script>
+<script src="adv/c4-sandali.js?v=103"></script>
+<script src="adv/c4-lanterna.js?v=103"></script>
+<script src="adv/c4-labirinto.js?v=103"></script>
+<script src="adv/c4-ragu.js?v=103"></script>
+<script src="adv/c4-percentuali.js?v=103"></script>
+<script src="adv/c4-occhiali.js?v=103"></script>
+<script src="adv/c4-porte.js?v=103"></script>
+<script src="adv/c4-grotta.js?v=103"></script>
+<script src="adv/c4-ricordi.js?v=103"></script>
+<script src="adv/c4-baffi.js?v=103"></script>
+<script src="adv/c4-semi.js?v=103"></script>
+<script src="adv/c4-memory.js?v=103"></script>
+<script src="adv/c4-pipistrelli.js?v=103"></script>
+<script src="adv/c5.js?v=103"></script>
+<script src="adv/c5-extra.js?v=103"></script>
+<script src="adv/c5-processo.js?v=103"></script>
+<script src="adv/c5-acquasanta.js?v=103"></script>
+<script src="adv/c5-mescola.js?v=103"></script>
+<script src="adv/c5-ultima.js?v=103"></script>
+<script src="adv/c5-giornale.js?v=103"></script>
+<script src="adv/c5-baffo.js?v=103"></script>
+<script src="adv/c5-ingredienti.js?v=103"></script>
+<script src="adv/c5-forno.js?v=103"></script>
+<script src="adv/c5-ricettario.js?v=103"></script>
+<script src="adv/c5-processo2.js?v=103"></script>
+<script src="adv/c5-trappola.js?v=103"></script>
+<script src="adv/c6.js?v=103"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4174,7 +4174,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='102';
+const BUILD='103';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
