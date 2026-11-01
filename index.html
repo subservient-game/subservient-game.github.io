@@ -403,24 +403,25 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=66"></script>
-<script src="adv/music.js?v=66"></script>
-<script src="adv/icons.js?v=66"></script>
-<script src="adv/engine.js?v=66"></script>
-<script src="adv/minigames.js?v=66"></script>
-<script src="adv/c1-data.js?v=66"></script>
-<script src="adv/c1-story-a.js?v=66"></script>
-<script src="adv/c1-story-b.js?v=66"></script>
-<script src="adv/c1-story-c.js?v=66"></script>
-<script src="adv/c1-story-d.js?v=66"></script>
-<script src="adv/c1-story-e.js?v=66"></script>
-<script src="adv/c1-story-f.js?v=66"></script>
-<script src="adv/c2.js?v=66"></script>
-<script src="adv/c2-extra.js?v=66"></script>
-<script src="adv/c3.js?v=66"></script>
-<script src="adv/c3-extra.js?v=66"></script>
-<script src="adv/c4.js?v=66"></script>
-<script src="adv/c5.js?v=66"></script>
+<script src="adv/ui-icons.js?v=67"></script>
+<script src="adv/music.js?v=67"></script>
+<script src="adv/icons.js?v=67"></script>
+<script src="adv/engine.js?v=67"></script>
+<script src="adv/minigames.js?v=67"></script>
+<script src="adv/c1-data.js?v=67"></script>
+<script src="adv/c1-story-a.js?v=67"></script>
+<script src="adv/c1-story-b.js?v=67"></script>
+<script src="adv/c1-story-c.js?v=67"></script>
+<script src="adv/c1-story-d.js?v=67"></script>
+<script src="adv/c1-story-e.js?v=67"></script>
+<script src="adv/c1-story-f.js?v=67"></script>
+<script src="adv/c2.js?v=67"></script>
+<script src="adv/c2-extra.js?v=67"></script>
+<script src="adv/c3.js?v=67"></script>
+<script src="adv/c3-extra.js?v=67"></script>
+<script src="adv/c4.js?v=67"></script>
+<script src="adv/c4-extra.js?v=67"></script>
+<script src="adv/c5.js?v=67"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4098,7 +4099,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='66';
+const BUILD='67';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
