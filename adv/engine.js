@@ -2,7 +2,7 @@
 const AV = { verb:null, item:null, busy:false, npcs:[], st:null, dlg:null, skip:null };
 const T=(it,en)=>LANG==='it'?it:(en||it);
 const AVT=T;
-const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','🗺️ Mappa','🗺️ Map']];
+const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','Mappa','Map']];
 /* content tables, filled by the chapter files */
 const AV_ITEMS={}, AV_PLACES={}, AV_HS={}, AV_CAST={}, AV_S={}, AV_HINTS=[], AV_ENTER={}, AV_COINS={};
 const AV_HS2={}, AV_CAST2={}, AV_HINTS2=[], AV_ENTER2={}; let AV_INTRO2=null, AV_TITLE2=['',''], AV_START2={room:'bedroom', open:[], keep:[]};
@@ -28,7 +28,7 @@ function avOpen(r){ if (!AV.st.open.includes(r)){ AV.st.open.push(r); avSave(); 
 function avTrophy(id, it, en){ if (AV.st.tro.includes(id)) return; AV.st.tro.push(id); avSave(); setTimeout(()=>avToast('🏆 '+T(it,en)),1400); }
 function avCoin(id){ if (AV.st.coins.includes(id)) return false; AV.st.coins.push(id); avSave(); try{ LIFE.pippi+=5; saveLife(); }catch(e){} avToast('🪙 '+T('Pippi d\'oro trovato! ','Golden Pippi found! ')+AV.st.coins.length+'/'+Object.keys(AV_COINS).length);
   if (AV.st.coins.length===Object.keys(AV_COINS).length) avTrophy('coins','Tutti i Pippi d\'oro! Taccagno patentato.','All golden Pippi! Certified tightwad.'); return true; }
-function avToast(t){ const el=$('advToast'); if(!el) return; el.textContent=t; el.classList.add('show'); clearTimeout(avToast.t); avToast.t=setTimeout(()=>el.classList.remove('show'),2600); }
+function avToast(t){ const el=$('advToast'); if(!el) return; el.innerHTML=esc(t).replace(/^🎒/,UI_IC('bag',18)).replace(/^🗺️/,UI_IC('map',18)).replace(/^🏆/,UI_IC('trophy',18)).replace(/^🪙/,UI_IC('coin',18)); el.classList.add('show'); clearTimeout(avToast.t); avToast.t=setTimeout(()=>el.classList.remove('show'),2600); }
 const avItemName=i=>AV_ITEMS[i]?AV_ITEMS[i][LANG==='it'?1:2]:i;
 const avName=t=>{ if (!t) return ''; if (t.type==='item') return avItemName(t.id).toLowerCase(); if (t.type==='self') return T('te stesso','yourself'); if (t.type==='npc') return castOf(t.id).name[LANG==='it'?0:1]; return t.n[LANG==='it'?0:1]; };
 /* ---------- bar ---------- */
@@ -40,7 +40,7 @@ function avRender(){
   if (!$('advVerbs')||!AV.st) return;
   if (AV.dlg){ $('advVerbs').style.display='none'; $('advInv').style.display='none'; $('advDlg').style.display=''; return; }
   $('advVerbs').style.display=''; $('advInv').style.display=''; $('advDlg').style.display='none';
-  $('advVerbs').innerHTML=AV_VERBS.map(v=>`<button type="button" class="av${AV.verb===v[0]?' on':''}" data-v="${v[0]}">${v[LANG==='it'?1:2]}</button>`).join('');
+  $('advVerbs').innerHTML=AV_VERBS.map(v=>`<button type="button" class="av${AV.verb===v[0]?' on':''}" data-v="${v[0]}">${v[0]==='map'?UI_IC('map',18)+' ':''}${v[LANG==='it'?1:2]}</button>`).join('');
   $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${AV.item===i?' on':''}" data-i="${i}"><b>${avIcon(i)}</b><span>${avItemName(i)}</span></button>`).join('') : `<div class="aiempty">${T('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
   avSentence();
 }
@@ -52,7 +52,7 @@ async function avSay(who, text){
   el.innerHTML=`${nm?`<b style="color:${c}">${esc(nm)}</b> `:''}<span style="color:${who==='voice'?'#ffd166':c}">${esc(text)}</span>`; el.classList.add('show');
   const n=(who==='me'||who==='voice')?null:AV.npcs.find(x=>x.avId===who);
   if (n){ n.dir=H.X>n.X?1:-1; if (!n.keep) npcPose(n, Math.random()<.5?'point':'present','happy'); } else if (who==='me' && !H.seat && !H.lying){ if (['idle','point','present'].includes(H.pose)) setPose(Math.random()<.5?'point':'present'); }
-  await avWait(Math.min(7000, 1500+text.length*50));
+  await avWait(Math.min(9500, 4000+text.length*50));
   if (n && !n.keep) npcPose(n,'idle'); else if (who==='me' && ['point','present'].includes(H.pose)) setPose('idle');
   el.classList.remove('show');
 }
@@ -98,7 +98,7 @@ function avGoLater(r){ const t=setInterval(()=>{ if (!AV.busy && !AV.dlg){ clear
 function avKick(r){ setRoom(r); try{ musRoom(r); }catch(x){} AV.st.room=r; avSave(); H.X=60; camX=60; avSpawn(r); avApplyLook(); avRender(); }
 function avMap(){
   const it=LANG==='it';
-  sheet(`<h3 style="margin:0 0 10px">🗺️ ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div><button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:10px">✕ ${it?'Chiudi':'Close'}</button>`);
+  sheet(`<h3 style="margin:0 0 10px">${UI_IC('map',26)} ${it?'Dove vai?':'Where to?'}</h3><div class="mtiles">${AV.st.open.map(r=>`<button type="button" class="mtile${r===H.room?' on':''}" data-avgo="${r}"><span class="me">${UI_IC(r,34)||AV_PLACES[r][0]}</span><span>${AV_PLACES[r][it?1:2]}</span></button>`).join('')}</div><button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:10px">✕ ${it?'Chiudi':'Close'}</button>`);
   $('avClose').onclick=()=>closeSheet();
   $('sheetBody').querySelectorAll('[data-avgo]').forEach(b=>b.onclick=()=>{ const r=b.dataset.avgo; closeSheet(); if (r!==H.room) avGo(r); });
 }
@@ -107,9 +107,9 @@ function avMenu(){
   const nx=CHN()+1, ended=(CHN()===1?AV.st.f.endDone:(CHN()===2?AV.st.f.end2:(AV_CHS[CHN()]&&AV_CHS[CHN()].ended()))), hasNext=nx===2?!!AV_INTRO2:!!(AV_CHS[nx]&&AV_CHS[nx].intro);
   sheet(`<h3 style="margin:0 0 6px">🗺️ ${(CHT()?CHT().title:(CH2()?AV_TITLE2:AV_TITLE))[it?0:1]}</h3>${(ended && hasNext)?`<button type="button" id="avCh2" style="width:100%;margin-bottom:10px;background:#c9a227">▶️ ${it?'Inizia il Capitolo '+nx:'Start Chapter '+nx}</button>`:''}
    <p style="opacity:.8;font-size:14px;margin:0 0 8px">${it?'Tocca un\'azione, poi una cosa o una persona. Senza azione, toccando la scena vedi cosa si può usare. Per "Usa" e "Dai" scegli prima un oggetto; "Usa" + oggetto + altro oggetto li combina.':'Tap an action, then a thing or person. With no action, tapping the scene shows what you can use. For "Use" and "Give" pick an item first; "Use" + item + another item combines them.'}</p>
-   <p style="font-size:13px;margin:0 0 10px">⏱️ ${mins} min · 🪙 ${st.coins.length}/${Object.keys(AV_COINS).length} · 🏆 ${st.tro.length}</p>
-   <button type="button" id="avHint" style="width:100%;margin-bottom:8px">💡 ${it?'Suggerimento':'Hint'}</button>
-   <button type="button" id="avTro" class="ghost" style="width:100%;margin-bottom:8px">🏆 ${it?'Trofei':'Trophies'}</button>
+   <p style="font-size:13px;margin:0 0 10px">⏱️ ${mins} min · ${UI_IC('coin',16)} ${st.coins.length}/${Object.keys(AV_COINS).length} · ${UI_IC('trophy',16)} ${st.tro.length}</p>
+   <button type="button" id="avHint" style="width:100%;margin-bottom:8px">${UI_IC('hint',20)} ${it?'Suggerimento':'Hint'}</button>
+   <button type="button" id="avTro" class="ghost" style="width:100%;margin-bottom:8px">${UI_IC('trophy',20)} ${it?'Trofei':'Trophies'}</button>
    <button type="button" id="avRestart" class="ghost" style="width:100%;margin-bottom:8px;color:#ff8a80">${it?'Ricomincia l\'avventura':'Restart the adventure'}</button>
    <button type="button" id="avExit" class="ghost" style="width:100%">🌐 ${it?'Torna al gioco online':'Back to the online game'}</button>
    <button type="button" class="ghost close" id="avClose" style="width:100%;margin-top:8px">✕ ${it?'Chiudi':'Close'}</button>`);
@@ -190,7 +190,7 @@ function avCode(len, title){ return new Promise(res=>{ const d=Array(len).fill(0
 async function avStartCh2(){ const st=AV.st; st.ch1=JSON.parse(JSON.stringify({f:st.f, inv:st.inv})); st.ch=2; st.f={c1end:1, intro:1}; st.inv=st.inv.filter(i=>AV_START2.keep.includes(i)); st.open=AV_START2.open.slice(); st.room=AV_START2.room; st.hints=0; st.play2=0; avSave(); await avGo(st.room, true); avRender(); if (AV_INTRO2){ AV.busy=true; try{ await AV_INTRO2(); } finally { AV.busy=false; avRender(); } } }
 async function avStartChN(n){ const st=AV.st, C=AV_CHS[n]; st['ch'+st.ch]=JSON.parse(JSON.stringify({f:st.f, inv:st.inv})); st.ch=n; st.f={intro:1}; st.inv=st.inv.filter(i=>C.start.keep.includes(i)); st.open=C.start.open.slice(); st.room=C.start.room; st.hints=0; avSave(); await avGo(st.room, true); avRender(); if (C.intro){ AV.busy=true; try{ await C.intro(); } finally { AV.busy=false; avRender(); } } }
 async function avStart(){
-  document.body.classList.add('adv'); avLoad(); avBar(); try{ $('advMusic').textContent=MUS.on?'🎵':'🔇'; $('advMusic').onclick=e=>{ e.stopPropagation(); musToggle(); }; }catch(x){}
+  document.body.classList.add('adv'); avLoad(); avBar(); try{ $('advMusic').innerHTML=UI_IC(MUS.on?'musicOn':'musicOff',22); $('advMusic').onclick=e=>{ e.stopPropagation(); musToggle(); }; }catch(x){}
   $('title').innerHTML=`vAIn <span>${T('Avventura','Adventure')}</span>`;
   try { applyCostume('pajamas'); setProp(null); } catch(e){}
   await avGo(AV.st.room||AV_START.room, true); avRender(); setTimeout(()=>window.fitCam&&fitCam(),50);

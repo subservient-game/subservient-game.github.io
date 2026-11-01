@@ -27,6 +27,6 @@ function musStart(){ if (!MUS.on) return; try{
   if (!MUS.timer){ MUS.next=MUS.ctx.currentTime+.1; MUS.timer=setInterval(musTick, 120); } } catch(e){} }
 function musStop(){ clearInterval(MUS.timer); MUS.timer=null; try{ MUS.ctx && MUS.ctx.suspend(); }catch(e){} }
 function musRoom(r){ const t=MUS_ROOM(r); if (t!==MUS.track){ MUS.track=t; MUS.step=0; } }
-function musToggle(){ MUS.on=!MUS.on; try{ localStorage.setItem('vainMusic', MUS.on?'on':'off'); }catch(e){} if (MUS.on) musStart(); else musStop(); const b=$('advMusic'); if (b) b.textContent=MUS.on?'🎵':'🔇'; }
-document.addEventListener('visibilitychange',()=>{ if (!window.ADV) return; if (document.hidden) musStop(); else if (MUS.on && MUS.ctx) musStart(); });
-['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ if (window.ADV && MUS.on && !MUS.timer) musStart(); },{passive:true}));
+function musToggle(){ MUS.on=!MUS.on; try{ localStorage.setItem('vainMusic', MUS.on?'on':'off'); }catch(e){} if (MUS.on) musStart(); else musStop(); const b=$('advMusic'); if (b) b.innerHTML=UI_IC(MUS.on?'musicOn':'musicOff',22); }
+document.addEventListener('visibilitychange',()=>{ if (document.hidden) musStop(); else if (MUS.on && MUS.ctx) musStart(); });
+['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{ if (MUS.on && !MUS.timer && !(document.getElementById('setup')&&!document.getElementById('setup').classList.contains('hide'))) musStart(); },{passive:true}));

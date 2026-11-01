@@ -20,7 +20,7 @@ function avBriscola(opp, level){ return new Promise(res=>{
     if (val>=10 || (level>1 && val>=3)){ const trs=ai.filter(c=>c.s===tr).sort((x,y)=>brStr(x)-brStr(y)); if (a.s!==tr && trs.length) return trs[0]; }
     return lowest(ai); };
   const draw=()=>{
-    sheet(`<div class="brw"><div class="brtop"><span>${esc(opp)}: ${'🂠'.repeat(ai.length)}</span><span>${it?'Mazzo':'Deck'}: ${deck.length}</span></div>
+    sheet(`<div class="brw"><div class="brtop"><span>${esc(opp)}: ${UI_IC('cardback',20).repeat(ai.length)}</span><span>${it?'Mazzo':'Deck'}: ${deck.length}</span></div>
       <div class="brmid"><div class="brbr">${it?'Briscola':'Trump'}<br>${deck.length?brCard(brisc):`<div class="brc" style="--sc:${BR_SUITS[tr][3]}"><i>${AV_SUITS[tr]}</i></div>`}</div><div class="brtab">${table.map(c=>brCard(c)).join('')}</div></div>
       <p class="brmsg">${msg||'&nbsp;'}</p><div class="brhand">${me.map((c,i)=>brCard(c,true,i)).join('')}</div>
       <div class="brtop"><span>${it?'Tu':'You'}: ${myP}</span><span>${esc(opp)}: ${aiP}</span></div><button type="button" class="ghost" id="brQuit" style="width:100%;margin-top:8px">${it?'Abbandona':'Quit'}</button></div>`);

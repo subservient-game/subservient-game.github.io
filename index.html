@@ -49,7 +49,7 @@
   .mini { position:absolute; right:8px; top:8px; width:24%; min-width:92px; background:rgba(12,14,18,.62); border-radius:8px; padding:4px; pointer-events:auto; cursor:pointer; }
   .mini svg { display:block; width:100%; }
   .caption { position:absolute; left:0; right:0; bottom:9px; text-align:center; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:clamp(9px, 2.3vw, 13px); color:#fff; text-shadow:0 1px 4px #000, 0 0 2px #000; pointer-events:none; padding:0 12px; }
-  .bubble { position:absolute; left:50%; top:20%; max-width:min(78%, 340px); width:max-content; transform:translate(-50%,-100%) scale(.6); transform-origin:50% 100%; background:#fff; color:#15171a; font-weight:600; padding:6px 12px; border-radius:14px; font-size:clamp(11px, 3vw, 16px); line-height:1.25; overflow-wrap:anywhere; text-align:center; opacity:0; transition:opacity .18s, transform .22s cubic-bezier(.3,1.6,.5,1); pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.3); z-index:3; }
+  .bubble { position:absolute; left:50%; top:20%; max-width:min(86%, 420px); width:max-content; transform:translate(-50%,-100%) scale(.6); transform-origin:50% 100%; background:#fff; color:#15171a; font-weight:700; padding:8px 14px; border-radius:16px; font-size:clamp(14px, 4.2vw, 20px); line-height:1.25; overflow-wrap:anywhere; text-align:center; opacity:0; transition:opacity .18s, transform .22s cubic-bezier(.3,1.6,.5,1); pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.3); z-index:3; }
   .bubble::after { content:""; position:absolute; left:50%; bottom:-6px; margin-left:-6px; border:6px solid transparent; border-bottom:0; border-top-color:#fff; }
   .bubble.show { opacity:1; transform:translate(-50%,-100%) scale(1); }
   .bubble.phone { background:#dff7e6; }
@@ -113,7 +113,7 @@
   .callbox.show .log div { padding:2px 8px; }
   .callbox.show form input { padding:7px 10px; font-size:16px; } .callbox.show form button { padding:7px 12px; font-size:14px; }
   .cam { align-self:center; container-type:size; }
-  .lookbtn { left:46px !important; }
+  .lookbtn { left:46px !important; } .optbtn { left:92px !important; } body.adv .optbtn { left:46px !important; } .newbtn svg { display:block; } .newbtn { padding:3px 8px !important; }
   .objmenu { position:absolute; display:none; flex-direction:column; gap:4px; z-index:9; background:rgba(20,24,30,.94); border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:6px; min-width:130px; max-width:62%; box-shadow:0 8px 24px rgba(0,0,0,.45); }
   .objmenu.show { display:flex; } .objmenu .omt { color:var(--accent); font-weight:700; font-size:13px; padding:2px 6px 4px; }
   .objmenu button { background:#2a2f37; color:#eef0f3; font-size:13px; font-weight:500; padding:7px 10px; text-align:left; border-radius:8px; }
@@ -159,7 +159,7 @@
   .casres { font-size:20px; text-align:center; margin:12px 0; min-height:28px; font-weight:700; }
   .mtiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
   .mtile { display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 4px; background:#262a31; color:var(--fg); border:2px solid transparent; font-size:14px; font-weight:600; }
-  .mtile .me { font-size:26px; line-height:1.1; } .mtile small { color:var(--accent); font-size:11px; font-weight:500; } .mtile.on { border-color:var(--accent); }
+  .mtile .me { font-size:26px; line-height:1.1; } .mtile .me svg { width:42px; height:42px; } .mtile small { color:var(--accent); font-size:11px; font-weight:500; } .mtile.on { border-color:var(--accent); }
   .m-park,.m-garden,.m-woods { background:#25402a; } .m-beach { background:#1f3d5c; } .m-piazza,.m-pizzeria { background:#4a3324; } .m-disco { background:#36204f; }
   .tabs { display:flex; gap:6px; margin-bottom:10px; } .tabs button { flex:1; background:#262a31; color:var(--fg); padding:9px; } .tabs button.on { background:var(--accent); color:#1a1a1a; }
   .sheetBody .lbl { margin:10px 0 6px; color:var(--fg); font-weight:600; font-size:.9rem; text-align:left; }
@@ -186,6 +186,8 @@
   .brc { width:58px; height:86px; border-radius:8px; background:#fffdf5; border:3px solid var(--sc); color:var(--sc); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; font-family:Fredoka, sans-serif; box-shadow:0 2px 4px rgba(0,0,0,.4); }
   .brc b { font-size:20px; line-height:1; } .brc i { font-style:normal; font-size:24px; } .brc small { font-size:10px; color:#666; min-height:12px; }
   .brhand { display:flex; gap:10px; justify-content:center; margin:8px 0; } .brhand .brc { width:72px; height:104px; } .brmsg { text-align:center; min-height:20px; margin:4px 0; color:#ffd166; }
+  .modecard { width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:12px; margin-bottom:8px; background:#20242b; border:2px solid #333a44; border-radius:14px; color:var(--fg); position:relative; }
+  .modecard.on { border-color:#ffd166; background:#2a2617; } .modecard b { display:block; font-size:17px; } .modecard small { display:block; opacity:.75; font-size:13px; font-weight:500; } .modecard em { position:absolute; right:10px; top:8px; font-style:normal; font-size:11px; color:#ffd166; }
   .advbar { display:none; }
   .advgo { width:100%; margin:8px 0 4px; padding:12px; background:#2a2240; color:#ffd166; border:1px solid #4b3d78; border-radius:10px; font-weight:700; font-size:15px; }
   #btnAdv { display:none; } body.adv #btnAdv { display:inline-flex; }
@@ -205,7 +207,7 @@
   .advdlg { flex:1; display:flex; flex-direction:column; gap:5px; overflow-y:auto; }
   .advdlg button { text-align:left; padding:10px 12px; border-radius:8px; background:#15121f; color:#c9b8ff; border:1px solid #3a3054; font-size:14px; font-weight:600; }
   .advdlg button:active { color:#ffd166; }
-  .advtext { position:absolute; left:4%; right:4%; top:8%; text-align:center; font-family:Fredoka, sans-serif; font-size:clamp(13px, 3.6cqw, 22px); font-weight:600; text-shadow:0 2px 0 #000, 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000; opacity:0; transition:opacity .15s; pointer-events:none; z-index:6; line-height:1.25; }
+  .advtext { position:absolute; left:3%; right:3%; top:6%; text-align:center; font-family:Fredoka, sans-serif; font-size:clamp(16px, 4.8cqw, 28px); background:rgba(10,8,16,.55); border-radius:14px; padding:6px 10px; font-weight:600; text-shadow:0 2px 0 #000, 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000; opacity:0; transition:opacity .15s; pointer-events:none; z-index:6; line-height:1.25; }
   .advtext.show { opacity:1; pointer-events:auto; } .advtext b { display:block; font-size:.7em; opacity:.85; }
   .advtoast { position:absolute; left:50%; bottom:12%; transform:translateX(-50%); background:#ffd166; color:#222; font-weight:700; font-size:13px; padding:6px 12px; border-radius:20px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:7; white-space:nowrap; }
   .advtoast.show { opacity:1; }
@@ -268,7 +270,7 @@
     </div>
   </div>
 
-  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><button type="button" id="btnAdv" class="newbtn" aria-label="Adventure">🗺️</button><h1 id="title">vAIn</h1><div class="lang notranslate" translate="no"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
+  <header class="top"><button type="button" id="btnNew" class="newbtn" aria-label="Change tenant">⟳</button><button type="button" id="btnLook" class="newbtn lookbtn" aria-label="Customise">🎨</button><button type="button" id="btnAdv" class="newbtn" aria-label="Adventure">🗺️</button><button type="button" id="btnOpt" class="newbtn optbtn" aria-label="Options">⚙</button><h1 id="title">vAIn</h1><div class="lang notranslate" translate="no"><button type="button" data-l="en">EN</button><button type="button" data-l="it">IT</button></div></header>
   <div class="cam" id="cam">
     <svg class="scene" id="scene" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -395,21 +397,22 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/music.js?v=55"></script>
-<script src="adv/icons.js?v=55"></script>
-<script src="adv/engine.js?v=55"></script>
-<script src="adv/minigames.js?v=55"></script>
-<script src="adv/c1-data.js?v=55"></script>
-<script src="adv/c1-story-a.js?v=55"></script>
-<script src="adv/c1-story-b.js?v=55"></script>
-<script src="adv/c1-story-c.js?v=55"></script>
-<script src="adv/c1-story-d.js?v=55"></script>
-<script src="adv/c1-story-e.js?v=55"></script>
-<script src="adv/c1-story-f.js?v=55"></script>
-<script src="adv/c2.js?v=55"></script>
-<script src="adv/c3.js?v=55"></script>
-<script src="adv/c4.js?v=55"></script>
-<script src="adv/c5.js?v=55"></script>
+<script src="adv/ui-icons.js?v=57"></script>
+<script src="adv/music.js?v=57"></script>
+<script src="adv/icons.js?v=57"></script>
+<script src="adv/engine.js?v=57"></script>
+<script src="adv/minigames.js?v=57"></script>
+<script src="adv/c1-data.js?v=57"></script>
+<script src="adv/c1-story-a.js?v=57"></script>
+<script src="adv/c1-story-b.js?v=57"></script>
+<script src="adv/c1-story-c.js?v=57"></script>
+<script src="adv/c1-story-d.js?v=57"></script>
+<script src="adv/c1-story-e.js?v=57"></script>
+<script src="adv/c1-story-f.js?v=57"></script>
+<script src="adv/c2.js?v=57"></script>
+<script src="adv/c3.js?v=57"></script>
+<script src="adv/c4.js?v=57"></script>
+<script src="adv/c5.js?v=57"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -1396,7 +1399,7 @@ function apply(){
 
 /* ================= BUBBLE / FX ================= */
 let bubbleUntil=0;
-function say(text, ms, phone){ if(!text) return; bubble.textContent=text; bubble.classList.toggle('phone',!!phone); bubble.classList.add('show'); bubbleUntil=performance.now()+(ms||Math.min(6000,1500+String(text).length*55)); }
+function say(text, ms, phone){ if(!text) return; bubble.textContent=text; bubble.classList.toggle('phone',!!phone); bubble.classList.add('show'); bubbleUntil=performance.now()+(ms||Math.min(6000,1500+String(text).length*55))+2500; }
 function positionBubble(){
   if (!bubble.classList.contains('show')) return;
   if (performance.now()>bubbleUntil){ bubble.classList.remove('show'); return; }
@@ -1529,7 +1532,7 @@ async function walkTo(x, id, fast, sy){
   if (alive(id)) setPose('idle');
 }
 let miniT=0; function drawMiniThrottled(){ const n=performance.now(); if(n-miniT>120){ miniT=n; drawMini(); } }
-function setRoom(r){ const wasRoom=H.room; H.room=r; setTimeout(()=>{ try{ drawWeather(); applyTint(); }catch(e){} },0); if (wasRoom!==r && !window.ADV){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
+function setRoom(r){ const wasRoom=H.room; H.room=r; try{ musRoom(r); }catch(e){} setTimeout(()=>{ try{ drawWeather(); applyTint(); }catch(e){} },0); if (wasRoom!==r && !window.ADV){ if (PLACES[r]) enterPlace(r); else if (PLACES[wasRoom]) leavePlace(); } camX=H.X; const R=ROOMS[r]; $('camName').textContent=`REC · CAM ${R.cam} · ${R.name}${H.visit?(LANG==='it'?` · CASA DI ${H.visit.name.toUpperCase()}`:` · ${H.visit.name.toUpperCase()}'S HOUSE`):''}`; fxL.innerHTML=''; clearSpawns(true); drawRoom(r); drawMini(); presenceUpdate(); }
 async function standUp(id){
   if (H.inShower){ H.inShower=false; drawRoom(H.room); }
   if (H.lying){ const o=OBJ[H.lying]; H.lying=null; if(o.room===H.room) drawRoom(H.room); setPose('idle'); await tween({Y:STAND, X:o.x}, 380, id); }
@@ -1932,7 +1935,7 @@ const keyOf = n => String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]
 const topicOf = (name, code) => `subservient-game-v2-${keyOf(name)}-${code}`;
 function presenceUpdate(){}
 function showNumberSafe(){ if (typeof showNumber==='function') showNumber(); }
-function showNumber(){ $('mynum').innerHTML = `📞 ${tr('yournum')}: <b>${esc(H.name)} ${esc(H.code)}</b> · <span class="muted">${esc(tr('howcall',H.name+' '+H.code))}</span>${aiOK===false?`<br><span class="muted">🧠 ${esc(tr('aioff'))}</span>`:aiOK?`<br><span class="muted">🧠 ${esc(tr('aion'))}</span>`:''}`; }
+function showNumber(){ $('mynum').innerHTML = `${UI_IC('phone',16)} ${tr('yournum')}: <b>${esc(H.name)} ${esc(H.code)}</b> · <span class="muted">${esc(tr('howcall',H.name+' '+H.code))}</span>${aiOK===false?`<br><span class="muted">${UI_IC('brain',16)} ${esc(tr('aioff'))}</span>`:aiOK?`<br><span class="muted">${UI_IC('brain',16)} ${esc(tr('aion'))}</span>`:''}`; }
 function initPeer(){
   try { if (es) es.close(); } catch(e){}
   peerReady=false;
@@ -2159,7 +2162,7 @@ function hairChips(cur, act){ const it=LANG==='it'; const mine=Object.entries(LO
 function sw(color, act, on){ return `<button type="button" class="sw${on?' on':''}" style="background:${color}" data-act="${act}" aria-label="${color}"></button>`; }
 function openCustom(tab){
   tab=tab||'look'; const it=LANG==='it'; const L=H.look||defaultLook(H.kind);
-  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div><button type="button" id="goAdv" class="advgo">🗺️ ${it?'Avventura offline — gioca la storia':'Offline adventure — play the story'}</button>`;
+  let h=`<div class="tabs"><button type="button" data-tab="look" class="${tab==='look'?'on':''}">👤 ${it?'Aspetto':'Look'}</button><button type="button" data-tab="home" class="${tab==='home'?'on':''}">🛋️ ${it?'Arreda':'Decorate'}</button><button type="button" data-tab="shop" class="${tab==='shop'?'on':''}">🛍️ ${it?'Negozio':'Shop'}</button></div>`;
   if (tab==='shop'){ h+=shopHTML(); }
   else if (tab==='look'){
     h+=`<p class="lbl">${it?'Capelli':'Hair'}</p><div class="chips">${hairChips(L.hair, 'hair')}</div>`;
@@ -2449,10 +2452,10 @@ function openMap(){
     ['living','🛋️',it?'Soggiorno':'Living'],['kitchen','🍳',it?'Cucina':'Kitchen'],['bathroom','🛁',it?'Bagno':'Bathroom'],['bedroom','🛏️',it?'Camera':'Bedroom'],['garden','🌳',it?'Giardino':'Garden'],
     ['attic','🏓',it?'Mansarda':'Attic'],['garage','🚗','Garage'],['cellar','🍷',it?'Cantina':'Cellar'],
     ['park','⛲',it?'Parco':'Park'],['piazza','☕',it?'Piazza':'Piazza'],['beach','🏖️',it?'Spiaggia':'Beach'],['woods','🌲',it?'Bosco':'Woods'],['disco','🪩',it?'Discoteca':'Disco'],['pizzeria','🍕',it?'Pizzeria':'Pizzeria'],['hospital','🏥',it?'Ospedale':'Hospital'],['gym','🏋️',it?'Palestra':'Gym'],['karaoke','🎤','Karaoke'],['barber','💈',it?'Barbiere':'Barber']].concat([['porto','⚓',it?'Porto':'Harbour'],['faro','🗼',it?'Faro':'Lighthouse'],['municipio','🏛️',it?'Municipio':'Town Hall'],['cimitero','⚰️',it?'Cimitero':'Cemetery']].filter(x=>unlockedPlaces().includes(x[0])));
-  const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
-  sheet(`<h3>🗺️ ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
-    <p class="lbl">🏠 ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,8).filter(t=>hasRoom(t[0])).map(tile).join('')}${LIFE.bunker?tile(['bunker','☢️','Bunker']):''}</div>
-    <p class="lbl">🏙️ ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(8).map(tile).join('')}${LIFE.bisca?tile(['bisca','🎲',it?'Bisca':'Den']):''}${LIFE.prive?tile(['prive','🍾','Privé']):''}</div>
+  const tile=([r,e,n])=>`<button type="button" class="mtile${r===H.room?' on':''} m-${r}" data-go="${r}"><span class="me">${UI_IC(r,34)||e}</span><span>${n}</span>${r===H.room?`<small>${it?'sei qui':'you are here'}</small>`:''}</button>`;
+  sheet(`<h3>${UI_IC('map',26)} ${it?'Mappa':'Map'}</h3>${H.visit?`<p>${it?'Ora sei a casa di':'You are at'} ${esc(H.visit.name)}${it?'.':'\'s.'}</p>`:''}
+    <p class="lbl">${UI_IC('living',18)} ${it?'Casa':'Home'}</p><div class="mtiles">${tiles.slice(0,8).filter(t=>hasRoom(t[0])).map(tile).join('')}${LIFE.bunker?tile(['bunker','☢️','Bunker']):''}</div>
+    <p class="lbl">${UI_IC('piazza',18)} ${it?'Fuori':'Town'}</p><div class="mtiles">${tiles.slice(8).map(tile).join('')}${LIFE.bisca?tile(['bisca','🎲',it?'Bisca':'Den']):''}${LIFE.prive?tile(['prive','🍾','Privé']):''}</div>
     <button class="ghost close" id="shClose">${tr('c_close')}</button>`);
   $('shClose').onclick=closeSheet;
   $('sheetBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const r=b.dataset.go; closeSheet(); if (r===H.room) return; if (r==='bunker'){ if (H.visit){ say(LANG==='it'?'Non da qui.':'Not from here.',2000); return; } openBunker(); return; } if (r==='bisca') enterHidden('bisca'); else if (r==='prive'){ if (isNight()){ goPlace('disco').then(()=>{ const id=++runId; setRoom('prive'); H.X=-40; walkTo(180,id); }); } else say(LANG==='it'?'Il privé apre alle 22.':'The privé opens at 10pm.',2500); } else goPlace(r); });
@@ -2746,7 +2749,7 @@ function addPippi(n){ LIFE.pippi=Math.max(0,Math.round(LIFE.pippi+n)); saveLife(
 function feed(n){ LIFE.food=clamp(LIFE.food+n,0,100); if (n>0) LIFE.mood=clamp((LIFE.mood||70)+2,0,100); saveLife(); try{ applyExtras(); }catch(e){} }
 function wash(n){ LIFE.clean=clamp(LIFE.clean+n,0,100); saveLife(); if (LIFE.clean>=30) clearFlies(); }
 function renderStats(){ const e=$('stats'); if(!e) return; const f=Math.round(LIFE.food), c=Math.round(LIFE.clean);
-  e.innerHTML=`🪙 ${LIFE.pippi} · <span style="color:${f<25?'#ff6b6b':''}">🍔 ${f}%</span> · <span style="color:${c<30?'#ff6b6b':''}">🧼 ${c}%</span> · ${typeof moodIcon==='function'?moodIcon():''} · ${WX_ICON[weatherNow()]}${isNight()?' 🌙':''}${LIFE.sick?' · 🤢':''}${H.visit?' · 🏠 '+esc(H.visit.name):''}`; }
+  e.innerHTML=`${UI_IC('coin',14)} ${LIFE.pippi} · <span style="color:${f<25?'#ff6b6b':''}">${UI_IC('food',14)} ${f}%</span> · <span style="color:${c<30?'#ff6b6b':''}">${UI_IC('clean',14)} ${c}%</span> · ${typeof moodIcon==='function'?moodIcon():''} · ${WX_ICON[weatherNow()]}${isNight()?' '+UI_IC('moon',14):''}${LIFE.sick?' · 🤢':''}${H.visit?' · 🏠 '+esc(H.visit.name):''}`; }
 const FOOD_PROPS={sandwich:20, apple:10, banana:10, icecream:15, pizza:35, cake:25};
 function lifeFromSteps(steps){
   let ate=0, washed=0;
@@ -2773,7 +2776,7 @@ setInterval(()=>{ if (!H.code || window.ADV || caption.textContent.startsWith('>
 
 /* ================= TIME + WEATHER (same for every friend) ================= */
 const isNight=()=>{ const h=new Date().getHours(); return h>=22 || h<6; };
-const WX_ICON={sun:'☀️', cloud:'⛅', rain:'🌧️', snow:'❄️', storm:'⛈️'};
+const WX_ICON={get sun(){return UI_IC('sun',14)}, get cloud(){return UI_IC('cloud',14)}, get rain(){return UI_IC('rain',14)}, get snow(){return UI_IC('snow',14)}, get storm(){return UI_IC('storm',14)}};
 function weatherNow(){ const slot=Math.floor(Date.now()/(20*60000)); let x=Math.sin(slot*12.9898)*43758.5453; x=x-Math.floor(x);
   return x<.5?'sun':x<.7?'cloud':x<.87?'rain':x<.93?'snow':'storm'; }
 const OUTDOOR=r=>['garden','park','beach','piazza','woods','porto','faro','cimitero','isola','giungla','laguna','villaggio','vulcano'].includes(r);
@@ -3517,10 +3520,10 @@ function updateNPCs(dt, now){
 }
 function npcSay(n, text, ms){
   n.sayEl&&n.sayEl.remove(); text=String(text).slice(0,60);
-  const w=Math.min(190, 14+text.length*5.6);
+  const w=Math.min(250, 18+text.length*7.2);
   const g=document.createElementNS(NS,'g');
-  g.innerHTML=`<rect x="${-w/2}" y="-20" width="${w}" height="18" rx="9" fill="#fff" opacity=".96"/><path class="tail" d="M-4 -2.5 L0 3 L4 -2.5 Z" fill="#fff"/><text x="0" y="-7.5" font-size="9.5" text-anchor="middle" font-family="Fredoka" font-weight="600" fill="#15171a">${esc(text)}</text>`;
-  fxL.appendChild(g); n.sayEl=g; n.sayW=w; n.say=text; n.sayUntil=performance.now()+(ms||Math.min(5000,1500+text.length*60));
+  g.innerHTML=`<rect x="${-w/2}" y="-26" width="${w}" height="24" rx="12" fill="#fff" opacity=".97"/><path class="tail" d="M-4 -2.5 L0 3 L4 -2.5 Z" fill="#fff"/><text x="0" y="-9.5" font-size="12.5" text-anchor="middle" font-family="Fredoka" font-weight="600" fill="#15171a">${esc(text)}</text>`;
+  fxL.appendChild(g); n.sayEl=g; n.sayW=w; n.say=text; n.sayUntil=performance.now()+(ms||Math.min(5000,1500+text.length*60))+2500;
 }
 async function npcWalk(n, x, id, again){
   x=freeSpot(x,n); n.destX=x;
@@ -3699,12 +3702,12 @@ function renderSocial(msg){
   const {st, partner, wedding} = deriveStatus();
   const pending = C.inbox.filter(r=>r.status==='pending').length + C.guestOf.filter(w=>w.status==='accepted' && (w.when||0)>Date.now()-7200000 && !C.seenWeddings[w.id]).length;
   const label = {single:tr('c_single'), dating:tr('c_dating',partner&&partner.name), engaged:tr('c_engaged',partner&&partner.name), married:tr('c_married',partner&&partner.name)}[st];
-  bar.innerHTML = `<button type="button" id="btnInbox">📬 ${pending?`<b class="badge">${pending}</b>`:''}</button><button type="button" id="btnRel">${st==='married'?'💍':st==='engaged'?'💎':st==='dating'?'❤️':'🤍'} ${esc(label)}${wedding && st==='engaged'?' · '+tr('c_weddingon', fmtWhen(wedding.when)):''}</button>`;
+  bar.innerHTML = `<button type="button" id="btnInbox">${UI_IC('mailbox',20)} ${pending?`<b class="badge">${pending}</b>`:''}</button><button type="button" id="btnRel">${st==='married'||st==='engaged'?UI_IC('ring',18):st==='dating'?UI_IC('heart',18):UI_IC('heartEmpty',18)} ${esc(label)}${wedding && st==='engaged'?' · '+tr('c_weddingon', fmtWhen(wedding.when)):''}</button>`;
   $('btnInbox').onclick=openInbox; $('btnRel').onclick=openRel;
 }
 function fmtWhen(t){ try { return new Date(t).toLocaleString(LANG==='it'?'it-IT':'en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } }
-function sheet(html){ $('sheetBody').innerHTML=html; $('sheet').classList.add('show'); }
-document.addEventListener('DOMContentLoaded',()=>{}); setTimeout(()=>{ const sh=$('sheet'); if (sh) sh.addEventListener('click', e=>{ if (e.target===sh) closeSheet(); }); },0);
+function sheet(html){ $('sheetBody').innerHTML=html; $('sheet').classList.add('show'); window.__sheetT=performance.now(); }
+document.addEventListener('DOMContentLoaded',()=>{}); setTimeout(()=>{ const sh=$('sheet'); if (sh){ sh.addEventListener('pointerdown', e=>{ sh.__down = e.target===sh && performance.now()-(window.__sheetT||0)>350; }); sh.addEventListener('click', e=>{ if (e.target===sh && sh.__down) closeSheet(); sh.__down=false; }); } },0);
 function closeSheet(){ $('sheet').classList.remove('show'); if (window.focusCmd) focusCmd(); }
 function openRel(){
   const {st, partner} = deriveStatus();
@@ -3853,6 +3856,39 @@ function setupTexts(){ const it=LANG==='it', edit=!!H.name && !$('setup').classL
   if (edit){ if (w) w.textContent=it?'Il tuo profilo':'Your profile'; if (t) t.textContent=it?'Cambia personaggio, nome o codice e premi Aggiorna. Annulla per tornare al gioco.':'Change character, name or code and tap Update. Cancel to go back to the game.'; $('btnStart').textContent=it?'Aggiorna':'Update'; }
   else { if (w) w.textContent=tr('who'); if (t) t.textContent=tr('pickTxt'); $('btnStart').textContent=window.ADV?(it?'Inizia l\'avventura':'Start the adventure'):tr('movein'); } }
 document.addEventListener('click',e=>{ if (e.target.closest('#goAdv')){ location.hash='avventura'; location.reload(); } });
+
+/* ================= OPZIONI ================= */
+function openOptions(){ const it=LANG==='it', adv=!!window.ADV;
+  const card=(mode,ic,t,d,on)=>`<button type="button" class="modecard${on?' on':''}" data-mode="${mode}">${UI_IC(ic,44)}<span><b>${t}</b><small>${d}</small></span>${on?`<em>${it?'in uso':'current'}</em>`:''}</button>`;
+  sheet(`<h3 style="margin:0 0 10px">${UI_IC('options',26)} ${it?'Opzioni':'Options'}</h3>
+   <p class="lbl">${it?'Modalità di gioco':'Game mode'}</p>
+   ${card('online','piazza',it?'Online':'Online',it?'La tua casa e il paese, con gli amici e l\'IA':'Your house and the town, with friends and AI',!adv)}
+   ${card('adv','advmenu',it?'Avventura':'Adventure',it?'La storia a capitoli, da solo e senza internet':'The story in chapters, solo and offline',adv)}
+   <p class="lbl">${it?'Musica':'Music'}</p><button type="button" id="opMus" class="ghost" style="width:100%">${UI_IC(MUS.on?'musicOn':'musicOff',22)} ${MUS.on?(it?'Musica accesa — tocca per spegnere':'Music on — tap to turn off'):(it?'Musica spenta — tocca per accendere':'Music off — tap to turn on')}</button>
+   <p class="lbl">${it?'Profilo':'Profile'}</p><button type="button" id="opProf" class="ghost" style="width:100%">${UI_IC('profile',22)} ${it?'Cambia nome, codice o personaggio':'Change name, code or character'}</button>
+   <p class="lbl">${it?'Salvataggi':'Saves'}</p>
+   <button type="button" id="opExp" class="ghost" style="width:100%;margin-bottom:6px">${it?'Copia il codice di salvataggio':'Copy save code'}</button>
+   <button type="button" id="opImp" class="ghost" style="width:100%">${it?'Carica un codice di salvataggio':'Load a save code'}</button>
+   <p class="lbl">Reset</p>
+   <button type="button" id="opResAdv" class="ghost" style="width:100%;margin-bottom:6px;color:#ff8a80">${it?'Ricomincia l\'avventura da capo':'Restart the adventure'}</button>
+   <button type="button" id="opResAll" class="ghost" style="width:100%;color:#ff8a80">${it?'Cancella tutto (profilo, casa, Pippi, avventura)':'Erase everything (profile, house, Pippi, adventure)'}</button>
+   <button type="button" class="ghost close" id="opClose" style="width:100%;margin-top:12px">✕ ${it?'Chiudi':'Close'}</button>`);
+  $('opClose').onclick=closeSheet;
+  $('sheetBody').querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{ const m=b.dataset.mode; if ((m==='adv')===adv){ closeSheet(); return; } location.hash = m==='adv' ? 'avventura' : ''; location.reload(); });
+  $('opMus').onclick=()=>{ musToggle(); openOptions(); };
+  $('opProf').onclick=()=>{ closeSheet(); openSetup(); };
+  const KEYS=['subservient','subservientLook','subservientLife','subservientDeco','subservientLang','subservientKb','vainAdv1','vainUnlock','vainMusic'];
+  $('opExp').onclick=async()=>{ const o={}; KEYS.forEach(k=>{ try{ const v=localStorage.getItem(k); if (v!=null) o[k]=v; }catch(e){} }); const code=btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+    try{ await navigator.clipboard.writeText(code); say(it?'Codice copiato! Incollalo sull\'altro telefono, in Opzioni → Carica.':'Code copied! Paste it on the other phone, in Options → Load.'); }catch(e){ sheet(`<p>${it?'Copia questo codice:':'Copy this code:'}</p><textarea style="width:100%;height:140px">${code}</textarea><button type="button" class="ghost" id="opClose" style="width:100%">OK</button>`); $('opClose').onclick=closeSheet; return; } closeSheet(); };
+  $('opImp').onclick=()=>{ sheet(`<p>${it?'Incolla qui il codice di salvataggio:':'Paste the save code here:'}</p><textarea id="opCode" inputmode="text" style="width:100%;height:140px"></textarea><button type="button" id="opLoad" style="width:100%;margin:8px 0">${it?'Carica':'Load'}</button><button type="button" class="ghost" id="opClose" style="width:100%">${it?'Annulla':'Cancel'}</button>`);
+    $('opClose').onclick=closeSheet; $('opLoad').onclick=()=>{ try{ const o=JSON.parse(decodeURIComponent(escape(atob($('opCode').value.trim())))); Object.entries(o).forEach(([k,v])=>localStorage.setItem(k,v)); location.reload(); }catch(e){ say(it?'Codice non valido.':'Invalid code.'); } }; };
+  const confirmDo=(msg,fn)=>{ sheet(`<p>${msg}</p><button type="button" id="cYes" style="width:100%;margin-bottom:8px;background:#c0392b">${it?'Sì, procedi':'Yes, go ahead'}</button><button type="button" class="ghost" id="cNo" style="width:100%">${it?'No':'No'}</button>`); $('cYes').onclick=fn; $('cNo').onclick=closeSheet; };
+  $('opResAdv').onclick=()=>confirmDo(it?'Ricominciare l\'avventura dal Capitolo 1? Perdi i progressi della storia (i Pippi e i luoghi sbloccati restano).':'Restart the adventure from Chapter 1? You lose story progress (Pippi and unlocked places stay).',()=>{ try{ localStorage.removeItem('vainAdv1'); }catch(e){} location.reload(); });
+  $('opResAll').onclick=()=>confirmDo(it?'Cancellare TUTTO? Profilo, casa, arredi, Pippi, avventura. Non si torna indietro.':'Erase EVERYTHING? Profile, house, furniture, Pippi, adventure. No going back.',()=>{ try{ KEYS.concat(['subservientSeen','subservientCache2']).forEach(k=>localStorage.removeItem(k)); }catch(e){} location.hash=''; location.reload(); });
+}
+$('btnOpt').onclick=openOptions;
+try { $('btnNew').innerHTML=UI_IC('profile',22); $('btnLook').innerHTML=UI_IC('look',22); $('btnOpt').innerHTML=UI_IC('options',22); $('btnAdv').innerHTML=UI_IC('advmenu',22); } catch(e){}
+
 $('btnNew').onclick=openSetup; $('btnLook').onclick=()=>openCustom('look');
 $('btnCancelSetup').onclick=()=>{ $('setup').classList.add('hide'); if (window.focusCmd) focusCmd(); };
 $('btnReset').onclick=async()=>{
@@ -4052,7 +4088,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='55';
+const BUILD='57';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
