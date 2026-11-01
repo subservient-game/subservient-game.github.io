@@ -403,37 +403,38 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=75"></script>
-<script src="adv/music.js?v=75"></script>
-<script src="adv/icons.js?v=75"></script>
-<script src="adv/engine.js?v=75"></script>
-<script src="adv/minigames.js?v=75"></script>
-<script src="adv/c1-data.js?v=75"></script>
-<script src="adv/c1-story-a.js?v=75"></script>
-<script src="adv/c1-story-b.js?v=75"></script>
-<script src="adv/c1-story-c.js?v=75"></script>
-<script src="adv/c1-story-d.js?v=75"></script>
-<script src="adv/c1-story-e.js?v=75"></script>
-<script src="adv/c1-story-f.js?v=75"></script>
-<script src="adv/c1-ballo.js?v=75"></script>
-<script src="adv/c1-mozzarella.js?v=75"></script>
-<script src="adv/c2.js?v=75"></script>
-<script src="adv/c2-extra.js?v=75"></script>
-<script src="adv/c2-tessere.js?v=75"></script>
-<script src="adv/c2-pacco.js?v=75"></script>
-<script src="adv/c2-torcia.js?v=75"></script>
-<script src="adv/c3.js?v=75"></script>
-<script src="adv/c3-extra.js?v=75"></script>
-<script src="adv/c3-totem.js?v=75"></script>
-<script src="adv/c3-bussola.js?v=75"></script>
-<script src="adv/c4.js?v=75"></script>
-<script src="adv/c4-extra.js?v=75"></script>
-<script src="adv/c4-sandali.js?v=75"></script>
-<script src="adv/c4-lanterna.js?v=75"></script>
-<script src="adv/c5.js?v=75"></script>
-<script src="adv/c5-extra.js?v=75"></script>
-<script src="adv/c5-processo.js?v=75"></script>
-<script src="adv/c5-acquasanta.js?v=75"></script>
+<script src="adv/ui-icons.js?v=76"></script>
+<script src="adv/music.js?v=76"></script>
+<script src="adv/icons.js?v=76"></script>
+<script src="adv/engine.js?v=76"></script>
+<script src="adv/minigames.js?v=76"></script>
+<script src="adv/c1-data.js?v=76"></script>
+<script src="adv/c1-story-a.js?v=76"></script>
+<script src="adv/c1-story-b.js?v=76"></script>
+<script src="adv/c1-story-c.js?v=76"></script>
+<script src="adv/c1-story-d.js?v=76"></script>
+<script src="adv/c1-story-e.js?v=76"></script>
+<script src="adv/c1-story-f.js?v=76"></script>
+<script src="adv/c1-ballo.js?v=76"></script>
+<script src="adv/c1-mozzarella.js?v=76"></script>
+<script src="adv/c1-puntina.js?v=76"></script>
+<script src="adv/c2.js?v=76"></script>
+<script src="adv/c2-extra.js?v=76"></script>
+<script src="adv/c2-tessere.js?v=76"></script>
+<script src="adv/c2-pacco.js?v=76"></script>
+<script src="adv/c2-torcia.js?v=76"></script>
+<script src="adv/c3.js?v=76"></script>
+<script src="adv/c3-extra.js?v=76"></script>
+<script src="adv/c3-totem.js?v=76"></script>
+<script src="adv/c3-bussola.js?v=76"></script>
+<script src="adv/c4.js?v=76"></script>
+<script src="adv/c4-extra.js?v=76"></script>
+<script src="adv/c4-sandali.js?v=76"></script>
+<script src="adv/c4-lanterna.js?v=76"></script>
+<script src="adv/c5.js?v=76"></script>
+<script src="adv/c5-extra.js?v=76"></script>
+<script src="adv/c5-processo.js?v=76"></script>
+<script src="adv/c5-acquasanta.js?v=76"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4111,7 +4112,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='75';
+const BUILD='76';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
