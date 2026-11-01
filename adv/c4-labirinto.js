@@ -1,0 +1,15 @@
+/* ================= CAPITOLO 4 — IL LABIRINTO DI LAVA SOTTO LA GROTTA: la filastrocca incisa nella capanna ================= */
+AV_TROPHIES.push(['labirinto','Hai attraversato il labirinto del vulcano seguendo una filastrocca di briscola.','Got through the volcano maze following a briscola rhyme.']);
+const MAZE=[1,1,0,2,1]; // 0 destra, 1 sinistra, 2 dritto
+const MAZE_OPT=[['A destra','Right'],['A sinistra','Left'],['Dritto','Straight on']];
+(()=>{ const E=AV_CHS[4].ENTER.grotta; const prev=E.before; E.before=async()=>{ const f=F(); if (prev){ const r=await prev(); if (r===false) return false; } if (f.mazeDone || f.inCave) return true;
+  await avSay('voice', T('Dopo la lava, la galleria si divide in cunicoli bui. L\'aria sa di zolfo e di formaggio vecchio. Bisogna scegliere la strada, bivio dopo bivio.','After the lava, the tunnel splits into dark burrows. The air smells of sulphur and old cheese. You must choose the way, fork after fork.'));
+  for (let i=0;i<MAZE.length;i++){ await avSay('voice', T(`Bivio ${i+1}.`,`Fork ${i+1}.`)); const o=await avChoose(MAZE_OPT); if (o!==MAZE[i]){ f.mazeFail=(f.mazeFail||0)+1; avSave(); await avSay('voice', T('Vicolo cieco. Un pipistrello ti fa la pipì in testa. Torni all\'ingresso, vicino alla lava.','Dead end. A bat pees on your head. You\'re back at the entrance, by the lava.')); return false; } }
+  f.mazeDone=1; avSave(); avTrophy('labirinto','Hai attraversato il labirinto del vulcano seguendo una filastrocca di briscola.','Got through the volcano maze following a briscola rhyme.'); await me('Ce l\'ho fatta. Davanti a me, una luce dorata. E un rumore di masticazione.','Made it. Ahead of me, a golden glow. And a sound of chewing.'); return true; }; })();
+(()=>{ const old=AV_S['c4|look:capanna']; avOnN(4,'look:capanna open:capanna',async(...a)=>{ const f=F();
+  if (f.mazeFail && !f.rhymeSeen){ f.rhymeSeen=1; avSave(); return me('Sulla parete della capanna, incisa col coltello: "Due volte l\'asso a sinistra va, il tre a destra lo segue già, dritto il re, e la donna di là". Sotto, una freccia verso la grotta. È la mappa dei cunicoli, in versione briscola.','On the hut wall, carved with a knife: "Twice the ace goes left, then the three goes right, the king goes straight, the queen to the left". Below, an arrow toward the cave. It\'s the burrow map, briscola edition.'); }
+  if (f.rhymeSeen) return me('La filastrocca: sinistra, sinistra, destra, dritto, sinistra.','The rhyme: left, left, right, straight, left.');
+  return old?old(...a):me('La capanna del nonno.','Grandpa\'s hut.'); }); })();
+(()=>{ const H=AV_CHS[4].HINTS; const i=H.findIndex(h=>h[1].startsWith('Affronta il Corvo')); H.splice(i<0?H.length:i,0,
+  [()=>F().lavaCrossed && !F().mazeDone && !F().rhymeSeen && F().mazeFail,'I cunicoli sono un labirinto: il nonno ha inciso la strada sulla parete della sua capanna.','The burrows are a maze: grandpa carved the way on the wall of his hut.'],
+  [()=>F().rhymeSeen && !F().mazeDone,'Sinistra, sinistra, destra, dritto, sinistra.','Left, left, right, straight, left.']); })();
