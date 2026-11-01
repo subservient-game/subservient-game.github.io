@@ -1,6 +1,6 @@
 /* Gli oggetti esauriti spariscono dall'inventario dopo il loro ultimo uso utile */
 (()=>{ if (!window.ADV) return;
- const USED={1:{guanti:['use:toilet'],retino:['use:fountain'],brillantina:['use:me'],baffi:['use:me'],ascia:['use:log','use:warehouse']},
+ const USED=window.AV_USED={1:{guanti:['use:toilet'],retino:['use:fountain'],brillantina:['use:me'],baffi:['use:me'],ascia:['use:log','use:warehouse']},
   2:{vero:['use:bdoor','use:maptable'],ciabatta:['use:bell0']},
   3:{collana:['use:me'],bussola:['use:mare']}};
  const od=window.avDo;
