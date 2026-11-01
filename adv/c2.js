@@ -1,7 +1,7 @@
 /* ================= CAPITOLO 2 · LA SOCIETÀ DEL PIPPI ================= */
 AV_TITLE2=['Capitolo 2: La Società del Pippi','Chapter 2: The Pippi Society'];
 Object.assign(AV_PLACES,{ campanile:['🔔','Campanile','Bell tower'], stazione:['🚉','Stazione','Station'], archivio:['🗄️','Archivio del nonno','Grandpa\'s archive'] });
-AV_START2={ room:'bedroom', open:['living','kitchen','bathroom','bedroom','garden','garage','attic','cellar','bunker','piazza'], keep:['taccuino','lente','torcia','chiavi','distintivo','baffi','retino','ascia','cioccolato','brillantina','tessera','cartolina'] };
+AV_START2={ room:'bedroom', open:['living','kitchen','bathroom','bedroom','garden','garage','attic','cellar','bunker','piazza'], keep:['taccuino','lente','torcia','cioccolato','tessera','cartolina'] };
 Object.assign(AV_ITEMS,{ biglietto_rosy:['💌','Bigliettino di Rosy','Rosy\'s love note'], chiavetta:['🔑','Chiavetta della teca','Display case key'], diario:['📔','Diario del nonno','Grandpa\'s diary'], foto:['🖼️','Foto della Società','Society photo'], ricevuta87:['🎫','Scontrino deposito n.87','Left-luggage ticket no.87'],
   lumino:['🕯️','Lumino','Grave candle'], fischietto:['📯','Fischietto','Whistle'], letterapina:['💗','Lettera d\'amore di Pina','Pina\'s love letter'], pezzo2:['🧩','Pezzo di mappa 2','Map piece 2'], pezzo3:['🧩','Pezzo di mappa 3','Map piece 3'], pezzo4:['🧩','Pezzo di mappa 4','Map piece 4'], mappa:['🗺️','Mappa dell\'Isola','Island map'] });
 (()=>{ const K='stroke="#2b2b2b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"';
