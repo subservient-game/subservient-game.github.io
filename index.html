@@ -188,11 +188,17 @@
   .brhand { display:flex; gap:10px; justify-content:center; margin:8px 0; } .brhand .brc { width:72px; height:104px; } .brmsg { text-align:center; min-height:20px; margin:4px 0; color:#ffd166; }
   .modecard { width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:12px; margin-bottom:8px; background:#20242b; border:2px solid #333a44; border-radius:14px; color:var(--fg); position:relative; }
   .modecard.on { border-color:#ffd166; background:#2a2617; } .modecard b { display:block; font-size:17px; } .modecard small { display:block; opacity:.75; font-size:13px; font-weight:500; } .modecard em { position:absolute; right:10px; top:8px; font-style:normal; font-size:11px; color:#ffd166; }
+  .info .mini, .advbar .mini { position:static; width:132px; min-width:0; flex:none; background:rgba(12,14,18,.75); border:1px solid var(--line); }
+  body:not(.adv) .info { flex-direction:row; align-items:flex-end; gap:8px; } .infoL { flex:1; min-width:0; align-self:flex-start; }
+  .advbar .mini { align-self:flex-end; margin-top:6px; width:150px; }
+  body.adv.land .advbar .mini { position:absolute; right:0; bottom:0; width:112px; margin:0; } body.adv.land .advrow { margin-right:118px; }
+  body.land:not(.adv) .info { position:absolute; right:6px; top:46px; width:140px; z-index:5; display:none; } body.land:not(.adv) .info .infoL { display:none; } body.land:not(.adv) .info .mini { width:140px; }
+  body.land.miniok:not(.adv) .info { display:flex !important; }
   .advbar { display:none; }
   .advgo { width:100%; margin:8px 0 4px; padding:12px; background:#2a2240; color:#ffd166; border:1px solid #4b3d78; border-radius:10px; font-weight:700; font-size:15px; }
   #btnAdv { display:none; } body.adv #btnAdv { display:inline-flex; }
   body.adv .advbar { display:flex; flex-direction:column; margin-top:6px; flex:none; min-height:0; }
-  body.adv .advrow { flex:1; min-height:0; } body.adv .advverbs button { font-size:16px; padding:12px 2px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
+  body.adv .advrow { flex:1 1 auto; min-height:0; overflow:hidden; } body.adv .advverbs button { font-size:16px; padding:12px 2px; } body.adv .advinv button { font-size:12px; } body.adv .advinv button b { font-size:26px; } body.adv .advinv { max-height:none; } body.adv .advline { font-size:15px; }
   body.adv form#f, body.adv #kbd, body.adv .kbbar, body.adv #callbox, body.adv .social, body.adv .mynum, body.adv #btnLook, body.adv #btnNew, body.adv .jobbar { display:none !important; }
   .advbar { position:relative; } .advmus { position:absolute; right:0; top:-2px; background:none; border:none; font-size:18px; padding:0 4px; }
   .advline { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; color:#ffd166; text-align:center; min-height:18px; margin-bottom:4px; }
@@ -397,22 +403,22 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=57"></script>
-<script src="adv/music.js?v=57"></script>
-<script src="adv/icons.js?v=57"></script>
-<script src="adv/engine.js?v=57"></script>
-<script src="adv/minigames.js?v=57"></script>
-<script src="adv/c1-data.js?v=57"></script>
-<script src="adv/c1-story-a.js?v=57"></script>
-<script src="adv/c1-story-b.js?v=57"></script>
-<script src="adv/c1-story-c.js?v=57"></script>
-<script src="adv/c1-story-d.js?v=57"></script>
-<script src="adv/c1-story-e.js?v=57"></script>
-<script src="adv/c1-story-f.js?v=57"></script>
-<script src="adv/c2.js?v=57"></script>
-<script src="adv/c3.js?v=57"></script>
-<script src="adv/c4.js?v=57"></script>
-<script src="adv/c5.js?v=57"></script>
+<script src="adv/ui-icons.js?v=59"></script>
+<script src="adv/music.js?v=59"></script>
+<script src="adv/icons.js?v=59"></script>
+<script src="adv/engine.js?v=59"></script>
+<script src="adv/minigames.js?v=59"></script>
+<script src="adv/c1-data.js?v=59"></script>
+<script src="adv/c1-story-a.js?v=59"></script>
+<script src="adv/c1-story-b.js?v=59"></script>
+<script src="adv/c1-story-c.js?v=59"></script>
+<script src="adv/c1-story-d.js?v=59"></script>
+<script src="adv/c1-story-e.js?v=59"></script>
+<script src="adv/c1-story-f.js?v=59"></script>
+<script src="adv/c2.js?v=59"></script>
+<script src="adv/c3.js?v=59"></script>
+<script src="adv/c4.js?v=59"></script>
+<script src="adv/c5.js?v=59"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -3994,7 +4000,8 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
 /* everything except header + camera lives in a side column: in portrait it behaves as before, in landscape it sits to the right of the camera */
 (function(){ const wrap=document.querySelector('.wrap'); const side=document.createElement('div'); side.className='side'; side.id='side';
   wrap.insertBefore(side, $('callbox')); const info=document.createElement('div'); info.className='info'; info.id='info';
-  side.appendChild($('callbox')); side.appendChild(info); ['mynum','social','ver'].forEach(id=>{ if ($(id)) info.appendChild($(id)); });
+  side.appendChild($('callbox')); side.appendChild(info); const infoL=document.createElement('div'); infoL.className='infoL'; info.appendChild(infoL); ['mynum','social','ver'].forEach(id=>{ if ($(id)) infoL.appendChild($(id)); });
+  const mini=document.querySelector('.mini'); if (mini){ if (window.ADV) $('advbar').appendChild(mini); else info.appendChild(mini); mini.addEventListener('click',e=>{ e.stopPropagation(); if (window.ADV){ if (typeof avMap==='function' && !AV.busy) avMap(); } else openMap(); }); }
   ['f','kbd'].forEach(id=>side.appendChild($(id))); side.appendChild(document.querySelector('.kbbar')); })();
 
 /* the camera always shows the WHOLE room: it gets smaller (same shape) when the keyboard or the chat need space */
@@ -4010,6 +4017,7 @@ $('f').parentNode.insertBefore($('callbox'), $('f'));
     const others = hgt(document.querySelector('header.top')) + hgt($('callbox')) + hgt($('f')) + (document.body.classList.contains('adv')?(land?Math.max(120, vh*0.3):Math.min(300, Math.max(210, vh*0.36))):0) + hgt($('kbd')) + hgt(document.querySelector('.kbbar')) + (land?4:10);
     const fullW=wrap.clientWidth; let h=Math.max(100, Math.min(fullW/1.6, vh-pad-others)); let w=Math.min(fullW, h*1.6); h=w/1.6;
     const W=w.toFixed(1)+'px', Hh=h.toFixed(1)+'px'; if (camEl.style.width!==W) camEl.style.width=W; if (camEl.style.height!==Hh) camEl.style.height=Hh;
+    document.body.classList.toggle('miniok', land && (fullW-w)/2 > 150);
     if (document.body.classList.contains('adv')){ const ab=$('advbar'); const free=vh-pad-hgt(document.querySelector('header.top'))-h-(land?16:44); const v=Math.max(land?120:190, free)+'px'; if (ab.style.height!==v) ab.style.height=v; }
   }
   window.fitCam=fit;
@@ -4088,7 +4096,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='57';
+const BUILD='59';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
