@@ -1,3 +1,4 @@
+function c1HealStamps(){ const f=F(); if (!f.stampUgo && f.gaveFlowers) f.stampUgo=1; if (!f.stampDoc && f.pickles && !avHas('barattolo') && !avHas('vasetto') && !avHas('campione')) f.stampDoc=1; avSave(); }
 /* ================= CAPITOLO 1 — PROLOGO, CASA, PIAZZA, BUROCRAZIA, EXTRA ================= */
 const AV_INTRO=async()=>{
   setPose('lie');
@@ -137,7 +138,7 @@ avOn('talk:sindaco',async()=>{ const f=F();
       f.modulo=1; avSave(); avAdd('modulo'); avOpen('hospital'); avOpen('cimitero'); avOpen('karaoke');
       return me('Un certificato per dimostrare che sono vivo. Questo paese è un capolavoro.','A certificate to prove I\'m alive. This town is a masterpiece.'); }},
     {id:'stamps', q:['Ho il Modulo B-52 con i tre timbri.','I have Form B-52 with all three stamps.'], when:()=>f.modulo && !f.distintivo, run:async()=>{
-      const n=(f.stampDoc?1:0)+(f.stampUgo?1:0)+(f.stampPina?1:0);
+      c1HealStamps(); const n=(f.stampDoc?1:0)+(f.stampUgo?1:0)+(f.stampPina?1:0);
       if (n<3) return np('sindaco',`Ne vedo ${n} su tre. Io i numeri li so contare. Più o meno. Torna quando li hai tutti.`,`I see ${n} out of three. I can count. Roughly. Come back with all of them.`);
       if (!avHas('marca')){ f.needBollo=1; avSave(); await np('sindaco','Tre timbri, bene. Ma... e la marca da bollo? Il Modulo B-52 senza marca da bollo da 16 Pippi è carta igienica. Costosa, ma carta igienica.','Three stamps, good. But... where\'s the revenue stamp? Form B-52 without a 16-Pippi revenue stamp is toilet paper. Expensive, but toilet paper.');
         return np('sindaco','Le marche da bollo le vende Nico al bar, fa anche da tabaccheria. E da banco dei pegni. E da agenzia matrimoniale.','Nico sells revenue stamps at the bar, it\'s also the tobacconist. And pawnshop. And dating agency.'); }
@@ -187,10 +188,10 @@ avOn('talk:bisturi',async()=>{ const f=F(); await avTalk('bisturi',[
   {id:'death', q:['Qual è la cosa più strana che hai visto?','Weirdest thing you\'ve seen?'], once:true, run:()=>np('bisturi','Un uomo morto due volte. La prima l\'abbiamo dichiarato noi, la seconda sua moglie quando ha visto il conto del funerale.','A man who died twice. First we declared it, second his wife did when she saw the funeral bill.')},
   {id:'crow', q:['Hai mai sentito parlare del Corvo?','Ever heard of the Crow?'], when:()=>f.toninoConf, run:()=>np('bisturi','Il Corvo... trent\'anni fa curai un uomo con una ferita da becco. Disse "Il Corvo non perdona", poi morì. Di ridere, perché l\'infermiera era inciampata.','The Crow... thirty years ago I treated a man with a beak wound. He said "The Crow never forgives", then died. Laughing, because the nurse tripped.')}
   ]); });
-avOn('give:bisturi:campione',async()=>{ const f=F(); avDel('campione'); await npcAct('bisturi','look',1800);
+avOn('give:bisturi:campione',async()=>{ const f=F(); f.stampDoc=1; avDel('campione'); await npcAct('bisturi','look',1800);
   await np('bisturi','Mmm. Colore paglierino, profumo di grappa e disperazione. Colesterolo da record, fegato da alpino, pressione da pentola.','Hmm. Straw-coloured, notes of grappa and despair. Record cholesterol, alpine liver, pressure-cooker blood pressure.');
   await np('bisturi','Insomma: un rottame. Ma vivo. Timbro! Sana e robusta costituzione. Sana no, robusta sì.','In short: a wreck. But alive. Stamp! Sound and robust health. Not sound, but robust.');
-  f.stampDoc=1; avSave(); return me('Un timbro. Uno su tre. Il primo pagato in pipì.','One stamp. One of three. The first paid in pee.'); });
+  avSave(); return me('Un timbro. Uno su tre. Il primo pagato in pipì.','One stamp. One of three. The first paid in pee.'); });
 avOn('give:bisturi:barattolo give:bisturi:vasetto',()=>np('bisturi','Il barattolo va riempito, genio. Con qualcosa di tuo. Liquido. Giallo. Ci arrivi?','The jar needs filling, genius. With something of yours. Liquid. Yellow. Getting there?'));
 avOn('use:me:barattolo',async()=>{ await meAct('eat',2200); avSwap('barattolo','vasetto'); return me('Mi mangio tutti i sottaceti. Cetrioli, cipolline, carote. Ora ho un barattolo vuoto e un\'acidità di stomaco che potrebbe sciogliere il municipio.','I eat all the pickles. Gherkins, onions, carrots. Now I have an empty jar and heartburn that could melt the town hall.'); });
 avOn('use:me:vasetto',()=>{ if (H.room!=='bathroom') return me('Qui? Davanti a tutti? Neanche io sono così. Lo faccio in bagno, a casa, da persona civile. Più o meno.','Here? In front of everyone? Even I\'m not like that. At home, in the bathroom, like a civilised person. Sort of.'); return AV_S['use:toilet:vasetto'](); });
@@ -222,10 +223,10 @@ avOn('talk:ugo',async()=>{ const f=F();
 avOn('use:ugo:grappa give:ugo:grappa',async()=>{ const f=F(); if (f.ugoAwake) return np('ugo','Ne ho già bevuta mezza. Il resto tienilo, ti servirà per qualcuno più disperato di me. Se esiste.','I already drank half. Keep the rest, you\'ll need it for someone more desperate than me. If they exist.');
   await me('Gli metto la bottiglia sotto il naso.','I hold the bottle under his nose.'); const n=npcOf('ugo'); if (n){ n.keep=0; npcPose(n,'jump','scared'); await avWait(800); npcPose(n,'drink','happy'); await avWait(1600); npcPose(n,'idle'); }
   f.ugoAwake=1; f.grappaHalf=1; avSave(); await np('ugo','AAAH! Ernesto?! Ah no, è la sua grappa. Resuscita i morti, questa. Ne bevo mezza, per ringraziarti.','AAAH! Ernesto?! Oh no, it\'s his grappa. This stuff raises the dead. I\'ll drink half, as thanks.'); return me('Mezza bottiglia in un sorso. E sta in piedi. Rispetto.','Half a bottle in one gulp. And still standing. Respect.'); });
-avOn('give:ugo:fiori',async()=>{ const f=F(); if (!f.ugoAsked) return np('ugo','Fiori? Per me? Non sono ancora morto. Aspetta qualche anno.','Flowers? For me? I\'m not dead yet. Give it a few years.'); avDel('fiori'); f.gaveFlowers=1;
+avOn('give:ugo:fiori',async()=>{ const f=F(); if (!f.ugoAsked) return np('ugo','Fiori? Per me? Non sono ancora morto. Aspetta qualche anno.','Flowers? For me? I\'m not dead yet. Give it a few years.'); f.gaveFlowers=1; f.stampUgo=1; avDel('fiori');
   await np('ugo','Gerani e una rosa malata. Ad Assunta piaceranno: era malata anche lei, di carattere.','Geraniums and a sick rose. Assunta will love them: she was sick too, in the head.');
   await np('ugo','Ecco il timbro: "Si certifica che il soggetto respira, puzza e si lamenta. Quindi è vivo."','Here\'s the stamp: "It is certified that the subject breathes, stinks and complains. Therefore alive."');
-  f.stampUgo=1; avSave(); return me('Secondo timbro. Sono ufficialmente vivo. Mia suocera ne sarà delusa.','Second stamp. I\'m officially alive. My mother-in-law will be disappointed.'); });
+  avSave(); return me('Secondo timbro. Sono ufficialmente vivo. Mia suocera ne sarà delusa.','Second stamp. I\'m officially alive. My mother-in-law will be disappointed.'); });
 avOn('use:tomb1:fiori',()=>AV_S['give:ugo:fiori']());
 avOn('look:tomb1',()=>me('"Qui giace Assunta, moglie di Ugo. Finalmente in pace." Il vaso è vuoto e pieno di ragnatele.','"Here lies Assunta, wife of Ugo. Finally at peace." The vase is empty and full of cobwebs.'));
 avOn('look:tomb2',()=>me('"Qui giace Ernesto. Partito per la Svizzera. Mai arrivato. O forse sì." È la tomba del nonno! C\'è una piuma nera appoggiata sopra.','"Here lies Ernesto. Left for Switzerland. Never arrived. Or maybe did." It\'s grandpa\'s grave! There\'s a black feather on it.'));
@@ -321,7 +322,7 @@ avOn('look:taccuino use:me:taccuino',()=>{ const f=F(); const notes=[];
   if (f.ateShrooms) notes.push(T('Fungo: "il Corvo ha il becco unto di risotto". (??)','Mushroom: "the Crow\'s beak is greasy with risotto". (??)'));
   return me(notes.length? T('Dal taccuino: ','From the notebook: ')+notes.join(' · ') : T('Il taccuino è vuoto. Come la mia testa prima del caffè.','The notebook is empty. Like my head before coffee.'), ''); });
 avOn('look:lente',()=>me('La lente del nonno. Serve a vedere le cose piccole. Tipo i dettagli. O il mio stipendio.','Grandpa\'s magnifier. For seeing small things. Like details. Or my salary.'));
-avOn('look:modulo',()=>{ const f=F(); const n=(f.stampDoc?1:0)+(f.stampUgo?1:0)+(f.stampPina?1:0); return me(`Modulo B-52. Timbri: ${n}/3. Medico: ${f.stampDoc?'✔':'✘'}. Cimitero: ${f.stampUgo?'✔':'✘'}. Pro Loco: ${f.stampPina?'✔':'✘'}.`,`Form B-52. Stamps: ${n}/3. Doctor: ${f.stampDoc?'✔':'✘'}. Cemetery: ${f.stampUgo?'✔':'✘'}. Tourist Board: ${f.stampPina?'✔':'✘'}.`); });
+avOn('look:modulo',()=>{ const f=F(); c1HealStamps(); const n=(f.stampDoc?1:0)+(f.stampUgo?1:0)+(f.stampPina?1:0); return me(`Modulo B-52. Timbri: ${n}/3. Medico: ${f.stampDoc?'✔':'✘'}. Cimitero: ${f.stampUgo?'✔':'✘'}. Pro Loco: ${f.stampPina?'✔':'✘'}.`,`Form B-52. Stamps: ${n}/3. Doctor: ${f.stampDoc?'✔':'✘'}. Cemetery: ${f.stampUgo?'✔':'✘'}. Tourist Board: ${f.stampPina?'✔':'✘'}.`); });
 avOn('look:distintivo',()=>me('Il distintivo di Investigatore Comunale. È di latta e ha un errore: c\'è scritto "Investigatore Comunaie".','The Town Investigator badge. Tin, with a typo: it says "Town Investigatr".'));
 avOn('look:chiavi',()=>me('Le chiavi di casa. Ancora umide. Non annusarle. Le ho annusate.','House keys. Still damp. Don\'t smell them. I smelled them.'));
 avOn('look:guanti',()=>me('Guanti di gomma. Dopo il cesso, li considero radioattivi.','Rubber gloves. After the toilet, I consider them radioactive.'));
