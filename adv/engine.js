@@ -52,7 +52,8 @@ async function avSay(who, text){
   el.innerHTML=`${nm?`<b style="color:${c}">${esc(nm)}</b> `:''}<span style="color:${who==='voice'?'#ffd166':c}">${esc(text)}</span>`; el.classList.add('show');
   const n=(who==='me'||who==='voice')?null:AV.npcs.find(x=>x.avId===who);
   if (n){ n.dir=H.X>n.X?1:-1; if (!n.keep) npcPose(n, Math.random()<.5?'point':'present','happy'); } else if (who==='me' && !H.seat && !H.lying){ if (['idle','point','present'].includes(H.pose)) setPose(Math.random()<.5?'point':'present'); }
-  await avWait(Math.min(9500, 4000+text.length*50));
+  let rows=1; try{ const sp=el.lastElementChild, cs=getComputedStyle(sp), lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.3; const r=sp.getClientRects(); rows=Math.max(1, r.length>1?r.length:Math.round(sp.getBoundingClientRect().height/lh)); }catch(e){ rows=Math.max(1,Math.ceil(text.length/45)); }
+  await avWait(rows*2000);
   if (n && !n.keep) npcPose(n,'idle'); else if (who==='me' && ['point','present'].includes(H.pose)) setPose('idle');
   el.classList.remove('show');
 }
