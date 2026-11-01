@@ -1,5 +1,5 @@
 /* ================= vAIn · AVVENTURA — motore punta e clicca ================= */
-const AV = { verb:null, item:null, busy:false, npcs:[], st:null, dlg:null, skip:null };
+const AV = { verb:null, item:null, sel:null, isel:null, busy:false, npcs:[], st:null, dlg:null, skip:null };
 const T=(it,en)=>LANG==='it'?it:(en||it);
 const AVT=T;
 const AV_VERBS=[['walk','Vai','Walk'],['look','Guarda','Look'],['take','Prendi','Pick up'],['use','Usa','Use'],['give','Dai','Give'],['talk','Parla','Talk'],['open','Apri','Open'],['map','Mappa','Map']];
@@ -41,7 +41,7 @@ function avRender(){
   if (AV.dlg){ $('advVerbs').style.display='none'; $('advInv').style.display='none'; $('advDlg').style.display=''; return; }
   $('advVerbs').style.display=''; $('advInv').style.display=''; $('advDlg').style.display='none';
   $('advVerbs').innerHTML=AV_VERBS.map(v=>`<button type="button" class="av${AV.verb===v[0]?' on':''}" data-v="${v[0]}">${v[0]==='map'?UI_IC('map',18)+' ':''}${v[LANG==='it'?1:2]}</button>`).join('');
-  $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${AV.item===i?' on':''}" data-i="${i}"><b>${avIcon(i)}</b><span>${avItemName(i)}</span></button>`).join('') : `<div class="aiempty">${T('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
+  $('advInv').innerHTML=AV.st.inv.length ? AV.st.inv.map(i=>`<button type="button" class="ai${(AV.item===i||AV.isel===i)?' on':''}" data-i="${i}"><b>${avIcon(i)}</b><span>${avItemName(i)}</span></button>`).join('') : `<div class="aiempty">${T('Tasche vuote. Come il frigo.','Empty pockets. Like the fridge.')}</div>`;
   avSentence();
 }
 /* ---------- speech ---------- */
@@ -85,6 +85,7 @@ function avSpawn(r){
 }
 function avApplyLook(){ const f=F();
   try { if (f.trench){ holG.style.setProperty('--outfit','#b08a5a'); holG.style.setProperty('--outfitD','#8a6a40'); applyStyle(holG, J, {...(H.look||{}), top:'jacket', bottom:(H.look||{}).bottom||'pants'}, H.kind); } } catch(e){}
+  try { const old=J.cTorso.querySelector('.avrose'); if (old) old.remove(); if (f.roseOn){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avrose'); g.innerHTML=`<path d="M-9 -30 L-12 -20" stroke="#3f7a3a" stroke-width="1.6"/><path d="M-11 -25 q-4 -1 -5 2 q3 1 5 -2Z" fill="#4f9a4a" stroke="#2b2b2b" stroke-width=".8"/><circle cx="-8" cy="-32" r="4.2" fill="#d64545" stroke="#2b2b2b" stroke-width="1"/><path d="M-10 -33 q2 2 4 0 M-9 -31 q1 1 2 0" stroke="#8a1a1a" stroke-width=".9" fill="none"/>`; J.cTorso.appendChild(g); } } catch(e){}
   try { if (f.disguise) J.beard.innerHTML=beardSVG({...(H.look||{}), beard:'mustache', hairColor:'#2b2b2b'}); } catch(e){}
   try { if (f.slick){ const L={...(H.look||{}), hair:'slick'}; J.hairBack.innerHTML=hairSVG(L,'back'); J.hairFront.innerHTML=hairSVG(L,'front'); } } catch(e){} }
 async function avGo(r, first){
@@ -139,7 +140,7 @@ async function avDo(verb, t, item){
 function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${x}" y="${Math.max(14,y-h/2-4)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
 function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>e.remove()); }
 function avHsList(){ const ct=CHT(); const base=(ct && !ct.townHs)?[]:(AV_HS[H.room]||[]), extra=ct?(ct.HS[H.room]||[]):(CH2()?(AV_HS2[H.room]||[]):[]); const ids=new Set(extra.map(h=>h.id)); return extra.concat(base.filter(h=>!ids.has(h.id))).filter(h=>!h.when||h.when()); }
-function avHighlight(t){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t)); } else { avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,1800); }
+function avHighlight(t, keep){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t)); } else { avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); if (!keep) avHighlight.t=setTimeout(avClearMarks,1800); }
 function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,castOf(n.avId).name[LANG==='it'?0:1])); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
 function avHsAt(x,y){ return avHsList().find(h=>Math.abs(x-h.x)<=h.w/2+6 && Math.abs(y-h.y)<=h.h/2+6); }
 async function avRun(v, t, item){
@@ -148,7 +149,7 @@ async function avRun(v, t, item){
     if (t.type==='hs' || t.type==='npc'){ const tx=clamp(t.x+(H.X<t.x?-48:48),30,450); const id=++runId; if (Math.abs(H.X-tx)>8) await walkTo(tx, id); setPose('idle'); H.dir=t.x>=H.X?1:-1; }
     await avDo(v, t, item);
   } catch(err){ console.log(err); }
-  finally { AV.busy=false; AV.item=null; AV.verb=null; avRender(); }
+  finally { AV.busy=false; AV.item=null; AV.verb=null; AV.sel=null; AV.isel=null; AV.pendT=null; avRender(); }
 }
 async function avTap(e){
   if (AV.dlg) return;
@@ -162,7 +163,7 @@ async function avTap(e){
   else if (holG.contains(e.target)) t={type:'self', id:'me', x:H.X};
   else { const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
   const verb=AV.verb;
-  if (!verb){ if (t){ avHighlight(t); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase()); } else { avRevealAll(); $('advLine').textContent=T('Scegli un\'azione','Pick an action'); } return; }
+  if (!verb){ if (t){ AV.sel=t; AV.isel=null; avRender(); avHighlight(t, true); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase())+' — '+T('scegli un\'azione','pick an action'); } else { AV.sel=null; avRevealAll(); $('advLine').textContent=T('Scegli un\'azione','Pick an action'); } return; }
   if (verb==='walk'){ AV.item=null; AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t?t.x:sp.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
   if (!t){ avRevealAll(); return; }
   if (verb==='give' && !AV.item){ avSentence(avName(t)); return me('Dare cosa? Scegli prima un oggetto.','Give what? Pick an item first.'); }
@@ -171,8 +172,17 @@ async function avTap(e){
 function avBar(){
   $('advVerbs').addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b) return; const v=b.dataset.v; if (AV.busy) { if (AV.skip) AV.skip(); return; }
     if (v==='map') return avMap();
+    if (AV.sel){ const t=AV.sel; AV.sel=null; avClearMarks();
+      if (v==='walk'){ AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
+      if (v==='give'){ AV.verb='give'; AV.item=null; AV.pendT=t; avRender(); $('advLine').textContent=T('Dai... cosa? Tocca un oggetto dell\'inventario','Give... what? Tap an inventory item'); return; }
+      AV.verb=v; avSentence(avName(t)); avRun(v, t, null); return; }
+    if (AV.isel){ const i=AV.isel; AV.isel=null;
+      if (v==='use'||v==='give'){ AV.verb=v; AV.item=i; avRender(); return; }
+      AV.verb=v; avSentence(avItemName(i).toLowerCase()); avRun(v, {type:'item', id:i}, null); return; }
     AV.verb = AV.verb===v ? null : v; if (v!=='use' && v!=='give') AV.item=null; avRender(); });
   $('advInv').addEventListener('click', e=>{ const b=e.target.closest('[data-i]'); if(!b||AV.busy) return; const i=b.dataset.i;
+    if (AV.verb==='give' && AV.pendT && !AV.item){ const t=AV.pendT; AV.pendT=null; avSentence(avName(t)); avRun('give', t, i); return; }
+    if (!AV.verb){ AV.isel = AV.isel===i ? null : i; AV.sel=null; avClearMarks(); avRender(); if (AV.isel) $('advLine').textContent=avItemName(i)+' — '+T('scegli un\'azione','pick an action'); return; }
     if ((AV.verb==='use'||AV.verb==='give') && !AV.item){ AV.item=i; avRender(); return; }
     if (AV.verb==='use' && AV.item && AV.item!==i){ const it=AV.item; avSentence(avName({type:'item',id:i})); avRun('use', {type:'item', id:i}, it); return; }
     if (AV.item===i){ AV.item=null; avRender(); return; }
