@@ -225,7 +225,7 @@
   .outfit { fill:var(--outfit); }
   .sleeveU { fill:var(--sleeveU, var(--outfit)); } .sleeveF { fill:var(--sleeveF, var(--outfit)); } .cuff { display:var(--cuff, inline); } .legs { fill:var(--legs, var(--pants)); } .shin { fill:var(--shin, var(--pants)); } .skirtc { fill:var(--skirt, var(--pants)); } .iris { fill:var(--iris, #3b2a20); }
   #hol :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]), #npcs :is(path,rect,circle,ellipse):not([stroke]):not([opacity]):not([fill^="url"]) { stroke:rgba(35,20,10,.62); stroke-width:1.15; paint-order:stroke; stroke-linejoin:round; }
-  #hol #eyes *, #npcs [data-j="eyes"] *, #hol #propR *, #npcs [data-j="propR"] * { stroke:none; }
+  #hol #eyes *:not(.ln), #npcs [data-j="eyes"] *:not(.ln), #hol #propR *, #npcs [data-j="propR"] * { stroke:none; }
   #back :is(path,rect,circle,ellipse,polygon):not([stroke]):not([opacity]):not([fill^="url"]):not([width="480"]) { stroke:rgba(35,20,10,.42); stroke-width:1; paint-order:stroke; stroke-linejoin:round; }
   .outfitD { fill:var(--outfitD); }
   .pants { fill:var(--pants); }
@@ -405,96 +405,96 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=105"></script>
-<script src="adv/music.js?v=105"></script>
-<script src="adv/icons.js?v=105"></script>
-<script src="adv/engine.js?v=105"></script>
-<script src="adv/minigames.js?v=105"></script>
-<script src="adv/c1-data.js?v=105"></script>
-<script src="adv/c1-story-a.js?v=105"></script>
-<script src="adv/c1-story-b.js?v=105"></script>
-<script src="adv/c1-story-c.js?v=105"></script>
-<script src="adv/c1-story-d.js?v=105"></script>
-<script src="adv/c1-story-e.js?v=105"></script>
-<script src="adv/c1-story-f.js?v=105"></script>
-<script src="adv/c1-ballo.js?v=105"></script>
-<script src="adv/c1-mozzarella.js?v=105"></script>
-<script src="adv/c1-puntina.js?v=105"></script>
-<script src="adv/c1-sigaro.js?v=105"></script>
-<script src="adv/c1-sardine.js?v=105"></script>
-<script src="adv/c1-morra.js?v=105"></script>
-<script src="adv/c1-cravatta.js?v=105"></script>
-<script src="adv/c1-lumino.js?v=105"></script>
-<script src="adv/c1-rasatura.js?v=105"></script>
-<script src="adv/c1-dadi.js?v=105"></script>
-<script src="adv/c1-cane.js?v=105"></script>
-<script src="adv/c1-impronta.js?v=105"></script>
-<script src="adv/c1-radio.js?v=105"></script>
-<script src="adv/c1-armadio.js?v=105"></script>
-<script src="adv/c1-monete.js?v=105"></script>
-<script src="adv/c1-avvocato.js?v=105"></script>
-<script src="adv/c2.js?v=105"></script>
-<script src="adv/c2-extra.js?v=105"></script>
-<script src="adv/c2-tessere.js?v=105"></script>
-<script src="adv/c2-pacco.js?v=105"></script>
-<script src="adv/c2-torcia.js?v=105"></script>
-<script src="adv/c2-barca.js?v=105"></script>
-<script src="adv/c2-tombola.js?v=105"></script>
-<script src="adv/c2-carrello.js?v=105"></script>
-<script src="adv/c2-allarme.js?v=105"></script>
-<script src="adv/c2-fiammiferi.js?v=105"></script>
-<script src="adv/c2-piccioni.js?v=105"></script>
-<script src="adv/c2-sveglia.js?v=105"></script>
-<script src="adv/c2-strappo.js?v=105"></script>
-<script src="adv/c2-urna.js?v=105"></script>
-<script src="adv/c2-topi.js?v=105"></script>
-<script src="adv/c2-pisello.js?v=105"></script>
-<script src="adv/c2-dialetto.js?v=105"></script>
-<script src="adv/c2-ruggine.js?v=105"></script>
-<script src="adv/c3.js?v=105"></script>
-<script src="adv/c3-extra.js?v=105"></script>
-<script src="adv/c3-totem.js?v=105"></script>
-<script src="adv/c3-bussola.js?v=105"></script>
-<script src="adv/c3-sabbie.js?v=105"></script>
-<script src="adv/c3-pescedoro.js?v=105"></script>
-<script src="adv/c3-cocco.js?v=105"></script>
-<script src="adv/c3-sale.js?v=105"></script>
-<script src="adv/c3-tribu.js?v=105"></script>
-<script src="adv/c3-prove.js?v=105"></script>
-<script src="adv/c3-barzelletta.js?v=105"></script>
-<script src="adv/c3-cassa.js?v=105"></script>
-<script src="adv/c3-banana.js?v=105"></script>
-<script src="adv/c3-stelle.js?v=105"></script>
-<script src="adv/c4.js?v=105"></script>
-<script src="adv/c4-extra.js?v=105"></script>
-<script src="adv/c4-sandali.js?v=105"></script>
-<script src="adv/c4-lanterna.js?v=105"></script>
-<script src="adv/c4-labirinto.js?v=105"></script>
-<script src="adv/c4-ragu.js?v=105"></script>
-<script src="adv/c4-percentuali.js?v=105"></script>
-<script src="adv/c4-occhiali.js?v=105"></script>
-<script src="adv/c4-porte.js?v=105"></script>
-<script src="adv/c4-grotta.js?v=105"></script>
-<script src="adv/c4-ricordi.js?v=105"></script>
-<script src="adv/c4-baffi.js?v=105"></script>
-<script src="adv/c4-semi.js?v=105"></script>
-<script src="adv/c4-memory.js?v=105"></script>
-<script src="adv/c4-pipistrelli.js?v=105"></script>
-<script src="adv/c5.js?v=105"></script>
-<script src="adv/c5-extra.js?v=105"></script>
-<script src="adv/c5-processo.js?v=105"></script>
-<script src="adv/c5-acquasanta.js?v=105"></script>
-<script src="adv/c5-mescola.js?v=105"></script>
-<script src="adv/c5-ultima.js?v=105"></script>
-<script src="adv/c5-giornale.js?v=105"></script>
-<script src="adv/c5-baffo.js?v=105"></script>
-<script src="adv/c5-ingredienti.js?v=105"></script>
-<script src="adv/c5-forno.js?v=105"></script>
-<script src="adv/c5-ricettario.js?v=105"></script>
-<script src="adv/c5-processo2.js?v=105"></script>
-<script src="adv/c5-trappola.js?v=105"></script>
-<script src="adv/c6.js?v=105"></script>
-<script src="adv/hints-ui.js?v=105"></script>
+<script src="adv/ui-icons.js?v=106"></script>
+<script src="adv/music.js?v=106"></script>
+<script src="adv/icons.js?v=106"></script>
+<script src="adv/engine.js?v=106"></script>
+<script src="adv/minigames.js?v=106"></script>
+<script src="adv/c1-data.js?v=106"></script>
+<script src="adv/c1-story-a.js?v=106"></script>
+<script src="adv/c1-story-b.js?v=106"></script>
+<script src="adv/c1-story-c.js?v=106"></script>
+<script src="adv/c1-story-d.js?v=106"></script>
+<script src="adv/c1-story-e.js?v=106"></script>
+<script src="adv/c1-story-f.js?v=106"></script>
+<script src="adv/c1-ballo.js?v=106"></script>
+<script src="adv/c1-mozzarella.js?v=106"></script>
+<script src="adv/c1-puntina.js?v=106"></script>
+<script src="adv/c1-sigaro.js?v=106"></script>
+<script src="adv/c1-sardine.js?v=106"></script>
+<script src="adv/c1-morra.js?v=106"></script>
+<script src="adv/c1-cravatta.js?v=106"></script>
+<script src="adv/c1-lumino.js?v=106"></script>
+<script src="adv/c1-rasatura.js?v=106"></script>
+<script src="adv/c1-dadi.js?v=106"></script>
+<script src="adv/c1-cane.js?v=106"></script>
+<script src="adv/c1-impronta.js?v=106"></script>
+<script src="adv/c1-radio.js?v=106"></script>
+<script src="adv/c1-armadio.js?v=106"></script>
+<script src="adv/c1-monete.js?v=106"></script>
+<script src="adv/c1-avvocato.js?v=106"></script>
+<script src="adv/c2.js?v=106"></script>
+<script src="adv/c2-extra.js?v=106"></script>
+<script src="adv/c2-tessere.js?v=106"></script>
+<script src="adv/c2-pacco.js?v=106"></script>
+<script src="adv/c2-torcia.js?v=106"></script>
+<script src="adv/c2-barca.js?v=106"></script>
+<script src="adv/c2-tombola.js?v=106"></script>
+<script src="adv/c2-carrello.js?v=106"></script>
+<script src="adv/c2-allarme.js?v=106"></script>
+<script src="adv/c2-fiammiferi.js?v=106"></script>
+<script src="adv/c2-piccioni.js?v=106"></script>
+<script src="adv/c2-sveglia.js?v=106"></script>
+<script src="adv/c2-strappo.js?v=106"></script>
+<script src="adv/c2-urna.js?v=106"></script>
+<script src="adv/c2-topi.js?v=106"></script>
+<script src="adv/c2-pisello.js?v=106"></script>
+<script src="adv/c2-dialetto.js?v=106"></script>
+<script src="adv/c2-ruggine.js?v=106"></script>
+<script src="adv/c3.js?v=106"></script>
+<script src="adv/c3-extra.js?v=106"></script>
+<script src="adv/c3-totem.js?v=106"></script>
+<script src="adv/c3-bussola.js?v=106"></script>
+<script src="adv/c3-sabbie.js?v=106"></script>
+<script src="adv/c3-pescedoro.js?v=106"></script>
+<script src="adv/c3-cocco.js?v=106"></script>
+<script src="adv/c3-sale.js?v=106"></script>
+<script src="adv/c3-tribu.js?v=106"></script>
+<script src="adv/c3-prove.js?v=106"></script>
+<script src="adv/c3-barzelletta.js?v=106"></script>
+<script src="adv/c3-cassa.js?v=106"></script>
+<script src="adv/c3-banana.js?v=106"></script>
+<script src="adv/c3-stelle.js?v=106"></script>
+<script src="adv/c4.js?v=106"></script>
+<script src="adv/c4-extra.js?v=106"></script>
+<script src="adv/c4-sandali.js?v=106"></script>
+<script src="adv/c4-lanterna.js?v=106"></script>
+<script src="adv/c4-labirinto.js?v=106"></script>
+<script src="adv/c4-ragu.js?v=106"></script>
+<script src="adv/c4-percentuali.js?v=106"></script>
+<script src="adv/c4-occhiali.js?v=106"></script>
+<script src="adv/c4-porte.js?v=106"></script>
+<script src="adv/c4-grotta.js?v=106"></script>
+<script src="adv/c4-ricordi.js?v=106"></script>
+<script src="adv/c4-baffi.js?v=106"></script>
+<script src="adv/c4-semi.js?v=106"></script>
+<script src="adv/c4-memory.js?v=106"></script>
+<script src="adv/c4-pipistrelli.js?v=106"></script>
+<script src="adv/c5.js?v=106"></script>
+<script src="adv/c5-extra.js?v=106"></script>
+<script src="adv/c5-processo.js?v=106"></script>
+<script src="adv/c5-acquasanta.js?v=106"></script>
+<script src="adv/c5-mescola.js?v=106"></script>
+<script src="adv/c5-ultima.js?v=106"></script>
+<script src="adv/c5-giornale.js?v=106"></script>
+<script src="adv/c5-baffo.js?v=106"></script>
+<script src="adv/c5-ingredienti.js?v=106"></script>
+<script src="adv/c5-forno.js?v=106"></script>
+<script src="adv/c5-ricettario.js?v=106"></script>
+<script src="adv/c5-processo2.js?v=106"></script>
+<script src="adv/c5-trappola.js?v=106"></script>
+<script src="adv/c6.js?v=106"></script>
+<script src="adv/hints-ui.js?v=106"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -1429,6 +1429,7 @@ function samplePose(p, t){
 const ease=f=>(1-Math.cos(Math.PI*f))/2;
 function mix(a,b,f){ const o={}; for(const k in a) o[k]=a[k]+(b[k]-a[k])*f; return o; }
 let blinkT=0;
+const BLINK_SVG=`<path class="skin" d="M-10 -17.2 Q-6.6 -21 -3.2 -17.2 Q-6.6 -14.6 -10 -17.2Z" stroke="none"/><path class="skin" d="M3.2 -17.2 Q6.6 -21 10 -17.2 Q6.6 -14.6 3.2 -17.2Z" stroke="none"/><path d="M-10 -17.4 Q-6.6 -14.6 -3.2 -17.4 M3.2 -17.4 Q6.6 -14.6 10 -17.4" style="stroke:#2b2b2b;stroke-width:1.5;fill:none;stroke-linecap:round"/><path d="M-9.6 -16.6 l-1 .9 M9.6 -16.6 l1 .9" style="stroke:#2b2b2b;stroke-width:1;stroke-linecap:round;fill:none"/>`;
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000); last=now;
   tgt={...samplePose(pose, now-poseStart)};
@@ -1439,7 +1440,7 @@ function frame(now){
   for (const key in tgt){ cur[key]+= (tgt[key]-cur[key])*k; }
   if (pose.once && Math.abs(Math.abs(tgt.rot)-360)<.01 && Math.abs(cur.rot-tgt.rot)<2){ cur.rot=0; pose.frames[pose.frames.length-1].rot=0; }
   apply();
-  if (curFace==='normal' && now>blinkT){ J.eyes.setAttribute('transform','translate(0 -17) scale(1 .12) translate(0 17)'); setTimeout(()=>J.eyes.removeAttribute('transform'),120); blinkT=now+rnd(2500,5000); }
+  if (curFace==='normal' && now>blinkT){ const keep=J.eyes.innerHTML; J.eyes.innerHTML=BLINK_SVG; const bm=J.eyes.firstChild; setTimeout(()=>{ if(J.eyes.firstChild===bm) J.eyes.innerHTML=keep; },130); blinkT=now+rnd(2500,5000); }
   updateNPCs(dt, now);
   try{ drawVehicle(); }catch(e){}
   updateCamera(dt);
@@ -4176,7 +4177,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='105';
+const BUILD='106';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
