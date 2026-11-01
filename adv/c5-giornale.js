@@ -1,0 +1,14 @@
+/* ================= CAPITOLO 5 — L'INTERVISTA PER LA GAZZETTA DEL PAESE (facoltativo) ================= */
+AV_TROPHIES.push(['gazzetta','La Gazzetta del Paese ti ha messo in prima pagina. Sotto il necrologio del lievito di Totò.','The Town Gazette put you on the front page. Below the obituary of Totò\'s sourdough.']);
+const INTERVIEW=[[['Il segugio che ha salvato il paese.','The bloodhound who saved the town.'],['Un uomo normale. Bellissimo, ma normale.','An ordinary man. Gorgeous, but ordinary.'],['Scrivi quello che vuoi, tanto non sai scrivere.','Write what you like, you can\'t write anyway.']],
+ [['Al sindaco auguro una lunga dieta.','I wish the mayor a long diet.'],['Il sindaco? Chi?','The mayor? Who?'],['Lo perdono. Scherzo.','I forgive him. Kidding.']],
+ [['Dedico tutto a mia nonna Gisella. E al suo risotto.','I dedicate it all to my grandma Gisella. And her risotto.'],['Ringrazio solo me stesso.','I only thank myself.'],['Ringrazio il pappagallo.','I thank the parrot.']]];
+(()=>{ const old=AV_S['c5|talk:gennaro']||AV_S['talk:gennaro']; AV_S['c5|talk:gennaro']=async(...a)=>{ const f=F();
+  if (f.mayorFled && !f.interviewDone){ const o=await avChoose([['Gennaro, perché hai un taccuino e una penna?','Gennaro, why the notebook and pen?'],['Altro...','Something else...']]);
+    if (o===0){ await np('gennaro','Faccio anche il giornalista per la Gazzetta del Paese! Tiratura: undici copie, sette le compra mia madre. Ti faccio tre domande per la prima pagina.','I\'m also a journalist for the Town Gazette! Circulation: eleven copies, my mother buys seven. Three questions for the front page.');
+      const q=[['Come ti definiresti?','How would you describe yourself?'],['Un messaggio per l\'ex sindaco?','A message for the ex-mayor?'],['A chi dedichi la vittoria?','Who do you dedicate the victory to?']]; const ans=[];
+      for (let i=0;i<3;i++){ await np('gennaro', T(q[i][0],q[i][1])); ans.push(await avChoose(INTERVIEW[i])); }
+      f.interviewDone=1; avSave(); avTrophy('gazzetta','La Gazzetta del Paese ti ha messo in prima pagina. Sotto il necrologio del lievito di Totò.','The Town Gazette put you on the front page. Below the obituary of Totò\'s sourdough.');
+      const head=[['"IL SEGUGIO CHE HA SALVATO IL PAESE"','"THE BLOODHOUND WHO SAVED THE TOWN"'],['"UN UOMO NORMALE, MA BELLISSIMO"','"AN ORDINARY MAN, BUT GORGEOUS"'],['"IL CRONISTA NON SA SCRIVERE", DICE L\'EROE','"THE REPORTER CAN\'T WRITE", SAYS THE HERO']][ans[0]];
+      return avSay('voice', T(`Il giorno dopo, in prima pagina: ${head[0]}. Sotto, in piccolo: "${INTERVIEW[2][ans[2]][0]}". E ancora più in piccolo: "Totò piange il suo lievito".`,`Next day, front page: ${head[1]}. Below, small: "${INTERVIEW[2][ans[2]][1]}". And smaller still: "Totò mourns his sourdough".`)); } }
+  return old?old(...a):np('gennaro','Ho fame. Ho mangiato il timbro. E il tampone.','I\'m hungry. I ate the stamp. And the ink pad.'); }; })();
