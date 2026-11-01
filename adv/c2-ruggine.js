@@ -1,0 +1,15 @@
+/* ================= CAPITOLO 2 — LA CASELLA 87 ARRUGGINITA: olio della nonna e un po' di forza ================= */
+Object.assign(AV_ITEMS,{ olio2:['🫒','Olio d\'oliva','Olive oil'] });
+AV_ICONS.olio2=`<path d="M19 4 L29 4 L29 12 Q36 18 36 28 L36 42 L12 42 L12 28 Q12 18 19 12Z" fill="#b5c94a" stroke="#2b2b2b" stroke-width="2.3" stroke-linejoin="round"/><rect x="18" y="1" width="12" height="5" fill="#3f8a3a" stroke="#2b2b2b" stroke-width="1.6"/>`;
+AV_TROPHIES.push(['ruggine','Hai aperto una serratura del 1987 con l\'olio della nonna e una spallata. La Littorina ringrazia.','Opened a 1987 lock with grandma\'s oil and a shoulder charge. The railcar thanks you.']);
+(()=>{ const old=AV_S['c2|open:locker']; const h=async(...a)=>{ const f=F();
+  if (f.lockerKey && !f.lockerOpen && !f.rustOk){ f.rustAsk=1; avSave(); await meAct('strain',1400);
+    return me('Infilo la chiave nella casella 87. Non gira. Trentanove anni di salsedine l\'hanno saldata. Se forzo, spezzo la chiave e resto qui a piangere. Ci vuole qualcosa di grasso. Tipo l\'olio della nonna, in cucina.','I put the key in locker 87. It won\'t turn. Thirty-nine years of sea salt have welded it. If I force it, the key snaps and I stay here crying. I need something greasy. Like grandma\'s oil, in the kitchen.'); }
+  return old(...a); }; AV_S['c2|open:locker']=h; AV_S['c2|use:locker']=h; })();
+(()=>{ const old=AV_S['c2|take:stove']||AV_S['take:stove']; avOn2('take:stove',async(...a)=>{ const f=F(); if (f.rustAsk && !f.rustOk && !avHas('olio2')){ avAdd('olio2'); return me('L\'olio della nonna, accanto ai fornelli. Spremuto dal cugino in galera. È così buono che mi dispiace darlo a una serratura.','Grandma\'s oil, next to the stove. Pressed by the cousin in jail. So good it pains me to give it to a lock.'); } return old?old(...a):me('I fornelli.','The stove.'); }); })();
+avOn2('use:locker:olio2 use:olio2:locker',async()=>{ const f=F(); avDel('olio2'); await me('Verso l\'olio nella serratura. Aspetto. Do una spallata alla casella. Tocca veloce per forzare!','I pour oil into the lock. I wait. I shoulder-charge the locker. Tap fast to force it!');
+  setPose('strain'); const ok=await (window.avPushups||avPushups)(20,9); setPose('idle'); if (!ok){ avAdd('olio2'); return me('La casella resiste. La mia spalla no. Riprovo tra un attimo.','The locker holds. My shoulder doesn\'t. I\'ll try again in a moment.'); }
+  f.rustOk=1; avSave(); avTrophy('ruggine','Hai aperto una serratura del 1987 con l\'olio della nonna e una spallata. La Littorina ringrazia.','Opened a 1987 lock with grandma\'s oil and a shoulder charge. The railcar thanks you.'); await me('CRAC! La chiave gira. La serratura è libera. Profuma di bruschetta.','CRACK! The key turns. The lock is free. Smells of bruschetta.'); return AV_S['c2|open:locker'](); });
+(()=>{ AV_HINTS2.unshift(
+  [()=>F().rustAsk && !F().rustOk && !avHas('olio2'),'La casella è arrugginita: prendi l\'olio accanto ai fornelli di casa.','The locker is rusty: take the oil next to the stove at home.'],
+  [()=>avHas('olio2'),'Usa l\'olio sulla casella 87 della stazione.','Use the oil on locker 87 at the station.']); })();
