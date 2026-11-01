@@ -1,0 +1,23 @@
+/* ================= CAPITOLO 1 — IL GATTO TOBIA E LE SARDINE: Marisa non molla la chiave finché il gatto non mangia ================= */
+Object.assign(AV_ITEMS,{ sardine:['🐟','Sardine fresche','Fresh sardines'] });
+AV_ICONS.sardine=`${[14,24,34].map((y,i)=>`<path d="M8 ${y} Q20 ${y-6} 34 ${y} Q20 ${y+6} 8 ${y}Z" fill="#a7bfd0" stroke="#2b2b2b" stroke-width="1.8"/><path d="M34 ${y} L42 ${y-5} L42 ${y+5}Z" fill="#a7bfd0" stroke="#2b2b2b" stroke-width="1.6"/><circle cx="13" cy="${y-1}" r="1.3" fill="#2b2b2b"/>`).join('')}`;
+AV_TROPHIES.push(['barzelletta','Hai fatto ridere Ciccio con una barzelletta sul sindaco. Era vera.','Made Ciccio laugh with a joke about the mayor. It was true.'],['tobia1','Hai sfamato Tobia, il gatto di Marisa. Ti ha graffiato lo stesso.','Fed Tobia, Marisa\'s cat. He scratched you anyway.']);
+const c1y=()=>!(AV.st.ch>1);
+(()=>{ const old=AV_S['give:marisa:caffe']; AV_S['give:marisa:caffe']=async(...a)=>{ const f=F();
+  if (c1y() && !f.tobiaFed){ f.tobiaAsk=1; avSave(); await npcAct('marisa','look',1200);
+    return np('marisa','Il caffè! ...No, aspetta. Prima Tobia. Il mio gatto non mangia da due giorni e io non bevo se lui non mangia. Siamo una famiglia. Vuole solo sardine fresche, appena pescate. Quelle in scatola le sputa in faccia.','Coffee! ...No, wait. Tobia first. My cat hasn\'t eaten in two days and I don\'t drink if he doesn\'t eat. We\'re a family. He only wants fresh sardines, just caught. Tinned ones he spits in your face.'); }
+  return old(...a); }; })();
+avOn('give:marisa:sardine',async()=>{ const f=F(); avDel('sardine'); f.tobiaFed=1; avSave(); avTrophy('tobia1','Hai sfamato Tobia, il gatto di Marisa. Ti ha graffiato lo stesso.','Fed Tobia, Marisa\'s cat. He scratched you anyway.');
+  await avSay('voice', T('Marisa mette le sardine in una ciotola. Tobia, un gatto grosso come un cuscino, le annusa, le mangia, e ti graffia la mano per ringraziare.','Marisa puts the sardines in a bowl. Tobia, a cat the size of a cushion, sniffs them, eats them, and scratches your hand by way of thanks.'));
+  return np('marisa','Ha mangiato! Il mio bambino! Ora sì che posso bere il caffè. Se ce l\'hai, dammelo bollente.','He ate! My baby! Now I can have that coffee. If you\'ve got it, give it here scalding.'); });
+const JOKES=[['Sai perché il sindaco porta il riporto? Perché la testa l\'ha data in appalto.','Know why the mayor has a comb-over? He outsourced his head.'],['Un carabiniere entra in un bar. Ahia.','A cop walks into a bar. Ouch.'],['Toc toc. Chi è? Il mare. Il mare chi? Il mare... boh.','Knock knock. Who\'s there? The sea. The sea who? The sea... dunno.']];
+(()=>{ const old=AV_S['talk:ciccio']; AV_S['talk:ciccio']=async(...a)=>{ const f=F();
+  if (c1y() && f.fishDone && f.tobiaAsk && !f.tobiaFed && !avHas('sardine')){ const o=await avChoose([['Ciccio, mi servono sardine fresche.','Ciccio, I need fresh sardines.'],['Altro...','Something else...']]);
+    if (o===0){ await np('ciccio','Sardine fresche per quel mostro di Tobia? Quel gatto mi ha rubato un tonno intero nel 2019. Te le do se mi fai ridere. È da stanotte che non rido. Da quando ho visto la faccia del sindaco.','Fresh sardines for that monster Tobia? That cat stole a whole tuna from me in 2019. You get them if you make me laugh. Haven\'t laughed since last night. Since I saw the mayor\'s face.');
+      const j=await avChoose(JOKES); if (j!==0) return np('ciccio','...Questa la raccontava mio nonno. Ed era già vecchia. Riprova, segugio.','...My grandpa used to tell that one. And it was already old. Try again, bloodhound.');
+      avAdd('sardine'); avTrophy('barzelletta','Hai fatto ridere Ciccio con una barzelletta sul sindaco. Era vera.','Made Ciccio laugh with a joke about the mayor. It was true.');
+      return np('ciccio','AHAHAH! "In appalto"! È vero, l\'ha dato a suo cognato! Tieni le sardine, appena pescate. Se Tobia ti graffia, è un buon segno: vuol dire che ti stima.','HAHAHA! "Outsourced"! It\'s true, he gave the contract to his brother-in-law! Take the sardines, just caught. If Tobia scratches you, that\'s a good sign: he respects you.'); } }
+  return old(...a); }; })();
+(()=>{ const i=AV_HINTS.findIndex(h=>h[1].startsWith('Dai il caffè bollente a Marisa')); AV_HINTS.splice(i<0?AV_HINTS.length:i,0,
+  [()=>F().tobiaAsk && !F().tobiaFed && !avHas('sardine'),'Marisa vuole prima sfamare il gatto: chiedi sardine fresche a Ciccio al porto. Fallo ridere col sindaco.','Marisa wants to feed her cat first: ask Ciccio at the harbour for fresh sardines. Make him laugh about the mayor.'],
+  [()=>avHas('sardine'),'Dai le sardine a Marisa.','Give the sardines to Marisa.']); })();
