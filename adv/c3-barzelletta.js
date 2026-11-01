@@ -1,0 +1,18 @@
+/* ================= CAPITOLO 3 — LA BARZELLETTA: Tonino la insegna in cambio del cocco graffiato ================= */
+Object.assign(AV_ITEMS,{ coccorotto:['🥥','Cocco graffiato','Scratched coconut'] });
+AV_ICONS.coccorotto=`<circle cx="24" cy="26" r="15" fill="#7a4a2c" stroke="#2b2b2b" stroke-width="2.4"/><path d="M14 18 L22 26 M26 14 L30 22" stroke="#d9b38c" stroke-width="2.4"/><circle cx="20" cy="30" r="2" fill="#2b2b2b"/><circle cx="28" cy="30" r="2" fill="#2b2b2b"/>`;
+AV_TROPHIES.push(['barzellettiere','Hai imparato da Tonino una barzelletta così sporca che il vulcano ha arrossito.','Learned from Tonino a joke so dirty the volcano blushed.']);
+(()=>{ const old=AV_S['c3|talk:scimmia']; AV_S['c3|talk:scimmia']=async(...a)=>{ const f=F(); const before=f.cocoIntact; const r=await old(...a); if (!before && f.cocoIntact && !avHas('coccorotto') && !f.jokeLearned){ avAdd('coccorotto'); await me('Il cocco graffiato lo tengo lo stesso. Qualcuno avrà sete.','I keep the scratched coconut anyway. Someone will be thirsty.'); } return r; }; })();
+(()=>{ const old=AV_S['c3|talk:fefe']; AV_S['c3|talk:fefe']=async(...a)=>{ const f=F();
+  if (f.riteAsked && !f.giftJoke && !f.jokeLearned){ const o=await avChoose([['Ti faccio ridere io, Fefè.','I\'ll make you laugh, Fefè.'],['Altro...','Something else...']]);
+    if (o===0){ f.jokeAsk=1; avSave(); return me('Apro la bocca... e non mi viene niente. Le mie barzellette fanno ridere solo me, e dopo tre birre. Mi serve un professionista. Uno che racconta porcate tutto il giorno. Tonino.','I open my mouth... and nothing comes. My jokes only make me laugh, and after three beers. I need a professional. Someone who tells filth all day. Tonino.'); } }
+  return old(...a); }; })();
+(()=>{ const old=AV_S['c3|talk:tonino']; AV_S['c3|talk:tonino']=async(...a)=>{ const f=F();
+  if (f.jokeAsk && !f.jokeLearned){ const o=await avChoose([['Tonino, insegnami una barzelletta che faccia ridere un capo tribù.','Tonino, teach me a joke that\'d make a chief laugh.'],['Altro...','Something else...']]);
+    if (o===0){ if (!avHas('coccorotto')) return np('tonino','Una barzelletta? Le mie costano. Ho sete da due giorni: portami una noce di cocco da bere, anche brutta, e ti insegno quella del diavolo e della suora. Funziona sempre.','A joke? Mine cost. I\'ve been thirsty for two days: bring me a coconut to drink, even an ugly one, and I\'ll teach you the one about the devil and the nun. Works every time.');
+      avDel('coccorotto'); f.jokeLearned=1; avSave(); await npcAct('tonino','drink',1400); avTrophy('barzellettiere','Hai imparato da Tonino una barzelletta così sporca che il vulcano ha arrossito.','Learned from Tonino a joke so dirty the volcano blushed.');
+      return np('tonino','Aaah. Allora: il diavolo entra in un convento... no, te la dico all\'orecchio. ...Hai capito? Il finale è la parte col risotto. Vai, e fai ridere quel vecchio.','Aaah. So: the devil walks into a convent... no, I\'ll whisper it. ...Got it? The ending is the risotto bit. Go, make that old man laugh.'); } }
+  return old(...a); }; })();
+(()=>{ const H=AV_CHS[3].HINTS; H.unshift(
+  [()=>F().jokeAsk && !F().jokeLearned && !avHas('coccorotto') && !F().cocoIntact,'Per la barzelletta chiedi a Tonino: vuole un cocco da bere. La scimmia, arrabbiata, te ne tirerà due.','For the joke ask Tonino: he wants a coconut to drink. The monkey, angry, will throw you two.'],
+  [()=>F().jokeAsk && !F().jokeLearned && (avHas('coccorotto')||F().cocoIntact),'Dai il cocco graffiato a Tonino (parlagli) per imparare la barzelletta.','Give the scratched coconut to Tonino (talk to him) to learn the joke.']); })();
