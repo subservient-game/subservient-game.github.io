@@ -1,0 +1,11 @@
+/* ================= CAPITOLO 3 — LE STELLE SULLA LAGUNA: dove tuffarsi per la corona ================= */
+AV_TROPHIES.push(['stelle','Hai trovato la corona seguendo la costellazione del Mestolo. Il nonno ti aveva insegnato le stelle. Tu ti ricordavi solo le bestemmie.','Found the crown following the Ladle constellation. Grandpa taught you the stars. You only remembered the swearing.']);
+(()=>{ const old=AV_S['c3|use:acqua']; const h=async(...a)=>{ const f=F();
+  if (f.crownAsked && !f.crownGiven && !avHas('corona') && !f.starOk){
+    await me('La laguna è enorme. Tuffarmi a caso? Fefè ha detto: "La corona è dove si specchia la stella del manico". Di notte, le stelle si riflettono nell\'acqua. Quale costellazione?','The lagoon is huge. Dive at random? Fefè said: "The crown is where the handle star is reflected". At night the stars reflect in the water. Which constellation?');
+    const r=await avChoose([['Il Carro, quello col timone storto','The Plough, with the crooked shaft'],['Il Mestolo, quello che il nonno chiamava "la Sagra"','The Ladle, the one grandpa called "the Festival"'],['La Croce, quella dei preti','The Cross, the priests\' one']]);
+    if (r!==1) return me('Mi tuffo dove si specchia quella stella. Trovo una ciabatta, un granchio incazzato e nessuna corona. Il nonno chiamava quella giusta in un altro modo...','I dive where that star reflects. I find a flip-flop, an angry crab and no crown. Grandpa called the right one something else...');
+    f.starOk=1; avSave(); avTrophy('stelle','Hai trovato la corona seguendo la costellazione del Mestolo. Il nonno ti aveva insegnato le stelle. Tu ti ricordavi solo le bestemmie.','Found the crown following the Ladle constellation. Grandpa taught you the stars. You only remembered the swearing.');
+    await me('Il manico del Mestolo si specchia proprio sotto la cascata. Lì.','The Ladle\'s handle is reflected right under the waterfall. There.'); }
+  return old(...a); }; AV_S['c3|use:acqua']=h; AV_S['c3|use:cascata']=h; })();
+(()=>{ const H=AV_CHS[3].HINTS; H.unshift([()=>F().crownAsked && !F().starOk && !F().crownGiven,'Per trovare la corona segui la costellazione che il nonno chiamava "la Sagra": il Mestolo.','To find the crown follow the constellation grandpa called "the Festival": the Ladle.']); })();
