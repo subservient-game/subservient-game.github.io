@@ -128,12 +128,7 @@ async function avDo(verb, t, item){
   const keys = item ? [verb+':'+id+':'+item, (t.type==='item'?verb+':'+item+':'+id:null), verb+':'+id+':*', '*:'+id+':'+item] : [verb+':'+id, '*:'+id];
   if (CHN()>1){ const pre='c'+CHN()+'|'; for (const k of keys){ if (k && AV_S[pre+k]) return AV_S[pre+k](t, item, verb); } }
   for (const k of keys){ if (k && AV_S[k]) return AV_S[k](t, item, verb); }
-  if (verb==='look'){ const L=[['Niente di speciale. Come la mia vita sentimentale.','Nothing special. Like my love life.'],['Lo guardo. Mi guarda. Nessuno dei due ne esce bene.','I look at it. It looks back. Neither of us comes out well.'],['Interessante quanto una riunione di condominio.','As interesting as a residents\' meeting.']]; const x=L[Math.floor(Math.random()*L.length)]; return me(x[0],x[1]); }
-  if (verb==='talk' && t.type==='npc') return np(id,'Non ho tempo per le cazzate. Torna quando hai qualcosa di utile.','No time for bullshit. Come back with something useful.');
-  if (verb==='talk') return me('Parlare con gli oggetti... non sono ancora a quel punto. Quasi.','Talking to objects... I\'m not there yet. Almost.');
-  if (verb==='take' && t.type==='npc') return me('Prendere una persona? Almeno offrimi una cena prima.','Pick up a person? Buy me dinner first.');
-  if (verb==='give' && t.type==='npc') return np(id,'E che cazzo me ne faccio?','And what the hell do I do with that?');
-  if (verb==='open' && t.type==='npc') return me('Aprire una persona è roba da chirurghi. O da serial killer.','Opening a person is for surgeons. Or serial killers.');
+  if (window.avDefault) return avDefault(verb, t, item);
   return avNope();
 }
 /* ---------- taps ---------- */

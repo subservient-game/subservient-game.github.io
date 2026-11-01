@@ -161,7 +161,7 @@ avOnN(3,'look:vulcano',()=>me('Il vulcano a forma di mestolo. Fuma piano, come u
 avOnN(3,'look:baffo2',()=>me('Baffo, arrivato al villaggio zoppicando. Mamma Ines gli ha messo un impacco di rum sulla gamba. E un po\' in bocca.','Baffo, limped into the village. Mama Ines put a rum compress on his leg. And some in his mouth.'));
 avOnN(3,'talk:baffo2',()=>np('baffo2','Questa gente è matta, ma cucina bene. Se trovi il tesoro, la mia percentuale è il quaranta. Più la barca nuova. Più i danni morali.','These people are mad, but they cook well. If you find the treasure, my cut\'s forty percent. Plus a new boat. Plus damages.'));
 avOnN(3,'give:baffo2:cappello',()=>{ avDel('cappello'); return np('baffo2','IL MIO CAPPELLO! Te lo aveva preso la scimmia? Quella scimmia è più ladra di me. La rispetto.','MY HAT! The monkey had it? That monkey\'s a bigger thief than me. I respect her.'); });
-AV_CAST.baffo2={...AV_CAST.baffo};
+AV_CAST.baffo2={...AV_CAST.baffo, room:'__none'};
 C.CAST.baffo2.name=AV_CAST.baffo.name;
 async function avFinale3(){ const f=F(); if (f.end3) return; f.end3=1; avSave(); avTrophy('end3','Capitolo 3 completato.','Chapter 3 complete.');
   await avSay('voice', T('Il ponte regge. Dall\'altra parte, sul sentiero di lava raffreddata, una figura scende piano. Capelli bianchi, sandali, un salame sotto il braccio.','The bridge holds. On the other side, down a path of cooled lava, a figure walks slowly. White hair, sandals, a salami under one arm.'));
