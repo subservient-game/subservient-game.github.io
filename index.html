@@ -217,7 +217,7 @@
   .advtext.show { opacity:1; pointer-events:auto; } .advtext b { display:block; font-size:.7em; opacity:.85; }
   .advtoast { position:absolute; left:50%; bottom:12%; transform:translateX(-50%); background:#ffd166; color:#222; font-weight:700; font-size:13px; padding:6px 12px; border-radius:20px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:7; white-space:nowrap; }
   .advtoast.show { opacity:1; }
-  body.adv .cam .caption { display:none; } body.island .mini { display:none !important; } body.adv #stats, body.adv #clock { display:none !important; }
+  body.adv .cam .caption { display:none; } #advMusic { display:none !important; } body.island .mini { display:none !important; } body.adv #stats, body.adv #clock { display:none !important; }
   body.adv .info { flex:none !important; }
   body.adv.land .advverbs { grid-template-columns:repeat(8,1fr); } body.adv.land .advinv { grid-template-columns:repeat(8,1fr); } body.adv.land .advverbs button { padding:5px 2px; font-size:13px; } body.adv.land .advline { font-size:12px; min-height:14px; margin-bottom:2px; }
   .outfit { fill:var(--outfit); }
@@ -4096,7 +4096,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='59';
+const BUILD='60';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
