@@ -1,0 +1,15 @@
+/* ================= CAPITOLO 2 — IL FISCHIETTO MUTO: manca la pallina, ci vuole un pisello surgelato ================= */
+Object.assign(AV_ITEMS,{ piselli:['🫛','Piselli surgelati','Frozen peas'] });
+AV_ICONS.piselli=`<rect x="10" y="8" width="28" height="34" rx="3" fill="#5aa3d8" stroke="#2b2b2b" stroke-width="2.2"/><path d="M10 14 L38 14" stroke="#fff" stroke-width="2"/>${[[18,24],[24,22],[30,25],[21,31],[28,32],[24,37]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.2" fill="#7ad37a" stroke="#2b2b2b" stroke-width="1.2"/>`).join('')}`;
+AV_TROPHIES.push(['pisello','Hai riparato un fischietto da capostazione con un pisello surgelato. Remo ha pianto di gioia e di freddo.','Fixed a stationmaster\'s whistle with a frozen pea. Remo cried with joy and cold.']);
+(()=>{ const old=AV_S['c2|talk:remo']; AV_S['c2|talk:remo']=async(...a)=>{ const f=F();
+  if (avHas('fischietto') && !f.peaIn){ f.peaAsk=1; avSave(); await npcAct('remo','look',1000);
+    return np('remo','Il mio fischietto! Fammi provare... FFFFF. Niente. Muto. La pallina dentro è sparita! Senza pallina un fischietto è solo un tubo con delle pretese. Me ne serve una piccola, tonda, leggera. Tipo un pisello. Surgelato, che regge di più.','My whistle! Let me try... FFFFF. Nothing. Mute. The little ball inside is gone! Without the ball a whistle is just a tube with ambitions. I need something small, round, light. Like a pea. Frozen, it lasts longer.'); }
+  return old(...a); }; })();
+(()=>{ const old=AV_S['c2|open:fridge']||AV_S['open:fridge']; avOn2('open:fridge',async(...a)=>{ const f=F(); if (f.peaAsk && !f.peaIn && !avHas('piselli')){ avAdd('piselli'); return me('Nel freezer, dietro un ghiacciolo del 1998 e una vaschetta con scritto "NON APRIRE — NONNA": un sacchetto di piselli surgelati. Perfetti.','In the freezer, behind a 1998 ice lolly and a tub labelled "DON\'T OPEN — GRANDMA": a bag of frozen peas. Perfect.'); } return old?old(...a):me('Il frigo.','The fridge.'); }); })();
+avOn2('use:fischietto:piselli use:piselli:fischietto',async()=>{ const f=F(); avDel('piselli'); f.peaIn=1; avSave(); await meAct('point',1000); avTrophy('pisello','Hai riparato un fischietto da capostazione con un pisello surgelato. Remo ha pianto di gioia e di freddo.','Fixed a stationmaster\'s whistle with a frozen pea. Remo cried with joy and cold.');
+  return me('Infilo un pisello nel fischietto. Soffio: FIIIIIIII! Funziona. Un cane in lontananza si mette a ululare. Il resto dei piselli lo tengo per un livido futuro.','I slip a pea into the whistle. I blow: WHEEEEEE! It works. A dog in the distance starts howling. I keep the rest of the peas for a future bruise.'); });
+(()=>{ AV_HINTS2.unshift(
+  [()=>F().peaAsk && !F().peaIn && !avHas('piselli'),'Il fischietto è muto: serve un pisello surgelato. Guarda nel frigo di casa.','The whistle is mute: you need a frozen pea. Check the fridge at home.'],
+  [()=>avHas('piselli'),'Metti un pisello nel fischietto.','Put a pea in the whistle.'],
+  [()=>F().peaIn && avHas('fischietto'),'Ridai il fischietto a Remo.','Give the whistle back to Remo.']); })();
