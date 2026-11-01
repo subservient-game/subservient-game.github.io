@@ -106,7 +106,7 @@ function avMap(){
 function avMenu(){
   const it=LANG==='it', st=AV.st, mins=Math.round((st.play||0)/60000);
   const nx=CHN()+1, ended=(CHN()===1?AV.st.f.endDone:(CHN()===2?AV.st.f.end2:(AV_CHS[CHN()]&&AV_CHS[CHN()].ended()))), hasNext=nx===2?!!AV_INTRO2:!!(AV_CHS[nx]&&AV_CHS[nx].intro);
-  sheet(`<h3 style="margin:0 0 6px">🗺️ ${(CHT()?CHT().title:(CH2()?AV_TITLE2:AV_TITLE))[it?0:1]}</h3>${(ended && hasNext)?`<button type="button" id="avCh2" style="width:100%;margin-bottom:10px;background:#c9a227">▶️ ${it?'Inizia il Capitolo '+nx:'Start Chapter '+nx}</button>`:''}
+  sheet(`<h3 style="margin:0 0 6px">🗺️ ${(CHT()?CHT().title:(CH2()?AV_TITLE2:AV_TITLE))[it?0:1]}</h3>${(ended && hasNext)?`<button type="button" id="avCh2" style="width:100%;margin-bottom:10px;background:#c9a227">▶️ ${it?(nx===6?'Inizia l\'Epilogo':'Inizia il Capitolo '+nx):(nx===6?'Start the Epilogue':'Start Chapter '+nx)}</button>`:''}
    <p style="opacity:.8;font-size:14px;margin:0 0 8px">${it?'Tocca un\'azione, poi una cosa o una persona. Senza azione, toccando la scena vedi cosa si può usare. Per "Usa" e "Dai" scegli prima un oggetto; "Usa" + oggetto + altro oggetto li combina.':'Tap an action, then a thing or person. With no action, tapping the scene shows what you can use. For "Use" and "Give" pick an item first; "Use" + item + another item combines them.'}</p>
    <p style="font-size:13px;margin:0 0 10px">⏱️ ${mins} min · ${UI_IC('coin',16)} ${st.coins.length}/${Object.keys(AV_COINS).length} · ${UI_IC('trophy',16)} ${st.tro.length}</p>
    <button type="button" id="avHint" style="width:100%;margin-bottom:8px">${UI_IC('hint',20)} ${it?'Suggerimento':'Hint'}</button>
