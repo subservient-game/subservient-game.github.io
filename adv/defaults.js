@@ -208,7 +208,7 @@ function fillIt(s, key, w){ if (!w) return s.split('{'+key+'}').join('').split('
   return s.split('{'+key+'}').join(a+sp+w).split('{'+key.toUpperCase()+'}').join(cap(a)+sp+w); }
 function fillEn(s, key, w){ return s.split('{'+key+'}').join(w?'the '+w:'').split('{'+key.toUpperCase()+'}').join(w?'The '+w:''); }
 function names(t,item){ const n=low(avName(t)||''); const i=item?low(avItemName(item)):''; return [n,i]; }
-function say(line, t, item, npcId){ const [n,i]=names(t,item); const a=fillIt(fillIt(line[0],'n',n),'i',i).replace(/\[([^|\]]*)\|([^\]]*)\]/g,'$1'), b=fillEn(fillEn(line[1],'n',n),'i',i); return npcId? np(npcId,a,b) : me(a,b); }
+function say(line, t, item, npcId){ const [n,i]=names(t,item); const a=fillIt(fillIt(line[0],'n',n),'i',i).replace(/\[([^|\]]*)\|([^\]]*)\]/g,'$1'), b=fillEn(fillEn(line[1],'n',n),'i',i); AV.autoNext=true; return npcId? np(npcId,a,b) : me(a,b); }
 window.AV_DEF={G,C,NPC,SELF};
 window.avDefault=function(verb, t, item){
   const v=(item && (verb==='use'||verb==='give'))?'combo':verb;
