@@ -403,41 +403,42 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=79"></script>
-<script src="adv/music.js?v=79"></script>
-<script src="adv/icons.js?v=79"></script>
-<script src="adv/engine.js?v=79"></script>
-<script src="adv/minigames.js?v=79"></script>
-<script src="adv/c1-data.js?v=79"></script>
-<script src="adv/c1-story-a.js?v=79"></script>
-<script src="adv/c1-story-b.js?v=79"></script>
-<script src="adv/c1-story-c.js?v=79"></script>
-<script src="adv/c1-story-d.js?v=79"></script>
-<script src="adv/c1-story-e.js?v=79"></script>
-<script src="adv/c1-story-f.js?v=79"></script>
-<script src="adv/c1-ballo.js?v=79"></script>
-<script src="adv/c1-mozzarella.js?v=79"></script>
-<script src="adv/c1-puntina.js?v=79"></script>
-<script src="adv/c1-sigaro.js?v=79"></script>
-<script src="adv/c1-sardine.js?v=79"></script>
-<script src="adv/c1-morra.js?v=79"></script>
-<script src="adv/c2.js?v=79"></script>
-<script src="adv/c2-extra.js?v=79"></script>
-<script src="adv/c2-tessere.js?v=79"></script>
-<script src="adv/c2-pacco.js?v=79"></script>
-<script src="adv/c2-torcia.js?v=79"></script>
-<script src="adv/c3.js?v=79"></script>
-<script src="adv/c3-extra.js?v=79"></script>
-<script src="adv/c3-totem.js?v=79"></script>
-<script src="adv/c3-bussola.js?v=79"></script>
-<script src="adv/c4.js?v=79"></script>
-<script src="adv/c4-extra.js?v=79"></script>
-<script src="adv/c4-sandali.js?v=79"></script>
-<script src="adv/c4-lanterna.js?v=79"></script>
-<script src="adv/c5.js?v=79"></script>
-<script src="adv/c5-extra.js?v=79"></script>
-<script src="adv/c5-processo.js?v=79"></script>
-<script src="adv/c5-acquasanta.js?v=79"></script>
+<script src="adv/ui-icons.js?v=80"></script>
+<script src="adv/music.js?v=80"></script>
+<script src="adv/icons.js?v=80"></script>
+<script src="adv/engine.js?v=80"></script>
+<script src="adv/minigames.js?v=80"></script>
+<script src="adv/c1-data.js?v=80"></script>
+<script src="adv/c1-story-a.js?v=80"></script>
+<script src="adv/c1-story-b.js?v=80"></script>
+<script src="adv/c1-story-c.js?v=80"></script>
+<script src="adv/c1-story-d.js?v=80"></script>
+<script src="adv/c1-story-e.js?v=80"></script>
+<script src="adv/c1-story-f.js?v=80"></script>
+<script src="adv/c1-ballo.js?v=80"></script>
+<script src="adv/c1-mozzarella.js?v=80"></script>
+<script src="adv/c1-puntina.js?v=80"></script>
+<script src="adv/c1-sigaro.js?v=80"></script>
+<script src="adv/c1-sardine.js?v=80"></script>
+<script src="adv/c1-morra.js?v=80"></script>
+<script src="adv/c1-cravatta.js?v=80"></script>
+<script src="adv/c2.js?v=80"></script>
+<script src="adv/c2-extra.js?v=80"></script>
+<script src="adv/c2-tessere.js?v=80"></script>
+<script src="adv/c2-pacco.js?v=80"></script>
+<script src="adv/c2-torcia.js?v=80"></script>
+<script src="adv/c3.js?v=80"></script>
+<script src="adv/c3-extra.js?v=80"></script>
+<script src="adv/c3-totem.js?v=80"></script>
+<script src="adv/c3-bussola.js?v=80"></script>
+<script src="adv/c4.js?v=80"></script>
+<script src="adv/c4-extra.js?v=80"></script>
+<script src="adv/c4-sandali.js?v=80"></script>
+<script src="adv/c4-lanterna.js?v=80"></script>
+<script src="adv/c5.js?v=80"></script>
+<script src="adv/c5-extra.js?v=80"></script>
+<script src="adv/c5-processo.js?v=80"></script>
+<script src="adv/c5-acquasanta.js?v=80"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4115,7 +4116,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='79';
+const BUILD='80';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
