@@ -3713,7 +3713,7 @@ function renderSocial(msg){
 }
 function fmtWhen(t){ try { return new Date(t).toLocaleString(LANG==='it'?'it-IT':'en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } }
 function sheet(html){ $('sheetBody').innerHTML=html; $('sheet').classList.add('show'); window.__sheetT=performance.now(); }
-document.addEventListener('DOMContentLoaded',()=>{}); setTimeout(()=>{ const sh=$('sheet'); if (sh){ sh.addEventListener('pointerdown', e=>{ sh.__down = e.target===sh && performance.now()-(window.__sheetT||0)>350; }); sh.addEventListener('click', e=>{ if (e.target===sh && sh.__down) closeSheet(); sh.__down=false; }); } },0);
+document.addEventListener('DOMContentLoaded',()=>{}); setTimeout(()=>{ const sh=$('sheet'); if (sh){ sh.addEventListener('click', e=>{ if (performance.now()-(window.__sheetT||0)<500){ e.stopPropagation(); e.preventDefault(); } }, true); sh.addEventListener('pointerdown', e=>{ sh.__down = e.target===sh && performance.now()-(window.__sheetT||0)>350; }); sh.addEventListener('click', e=>{ if (e.target===sh && sh.__down) closeSheet(); sh.__down=false; }); } },0);
 function closeSheet(){ $('sheet').classList.remove('show'); if (window.focusCmd) focusCmd(); }
 function openRel(){
   const {st, partner} = deriveStatus();
@@ -4096,7 +4096,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='60';
+const BUILD='61';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
