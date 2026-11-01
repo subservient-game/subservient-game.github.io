@@ -403,26 +403,30 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="adv/ui-icons.js?v=68"></script>
-<script src="adv/music.js?v=68"></script>
-<script src="adv/icons.js?v=68"></script>
-<script src="adv/engine.js?v=68"></script>
-<script src="adv/minigames.js?v=68"></script>
-<script src="adv/c1-data.js?v=68"></script>
-<script src="adv/c1-story-a.js?v=68"></script>
-<script src="adv/c1-story-b.js?v=68"></script>
-<script src="adv/c1-story-c.js?v=68"></script>
-<script src="adv/c1-story-d.js?v=68"></script>
-<script src="adv/c1-story-e.js?v=68"></script>
-<script src="adv/c1-story-f.js?v=68"></script>
-<script src="adv/c2.js?v=68"></script>
-<script src="adv/c2-extra.js?v=68"></script>
-<script src="adv/c3.js?v=68"></script>
-<script src="adv/c3-extra.js?v=68"></script>
-<script src="adv/c4.js?v=68"></script>
-<script src="adv/c4-extra.js?v=68"></script>
-<script src="adv/c5.js?v=68"></script>
-<script src="adv/c5-extra.js?v=68"></script>
+<script src="adv/ui-icons.js?v=69"></script>
+<script src="adv/music.js?v=69"></script>
+<script src="adv/icons.js?v=69"></script>
+<script src="adv/engine.js?v=69"></script>
+<script src="adv/minigames.js?v=69"></script>
+<script src="adv/c1-data.js?v=69"></script>
+<script src="adv/c1-story-a.js?v=69"></script>
+<script src="adv/c1-story-b.js?v=69"></script>
+<script src="adv/c1-story-c.js?v=69"></script>
+<script src="adv/c1-story-d.js?v=69"></script>
+<script src="adv/c1-story-e.js?v=69"></script>
+<script src="adv/c1-story-f.js?v=69"></script>
+<script src="adv/c2.js?v=69"></script>
+<script src="adv/c2-extra.js?v=69"></script>
+<script src="adv/c2-tessere.js?v=69"></script>
+<script src="adv/c3.js?v=69"></script>
+<script src="adv/c3-extra.js?v=69"></script>
+<script src="adv/c3-totem.js?v=69"></script>
+<script src="adv/c4.js?v=69"></script>
+<script src="adv/c4-extra.js?v=69"></script>
+<script src="adv/c4-sandali.js?v=69"></script>
+<script src="adv/c5.js?v=69"></script>
+<script src="adv/c5-extra.js?v=69"></script>
+<script src="adv/c5-processo.js?v=69"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
@@ -4100,7 +4104,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='68';
+const BUILD='69';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
