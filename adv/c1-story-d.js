@@ -45,7 +45,7 @@ const nicoOld=AV_S['talk:nico'];
 avOn('talk:nico',async()=>{ const f=F(); if (!f.nicoCupAsk){ f.nicoCupAsk=1; avSave(); await np('nico','Prima che mi chiedi qualsiasi cosa: hai visto la mia tazzina portafortuna? Sbeccata, con scritto "BARISTA DELL\'ANNO 1998". Ieri sera l\'ha presa Rocky per farci le proteine. Rocky non restituisce mai niente, neanche i saluti.','Before you ask anything: seen my lucky cup? Chipped, says "BARISTA OF THE YEAR 1998". Last night Rocky took it for his protein shake. Rocky never returns anything, not even greetings.'); avOpen('gym'); }
   return nicoOld(); });
 const rockyOld=AV_S['talk:rocky'];
-avOn('talk:rocky',async()=>{ const f=F(); if (f.nicoCupAsk && !f.cup && !avHas('tazzina')){ const o=await avChoose([['Hai la tazzina di Nico?','Do you have Nico\'s cup?'],['Altro...','Something else...']]);
+avOn('talk:rocky',async()=>{ const f=F(); const skip=window.__cupSkip; window.__cupSkip=0; if (!skip && (f.nicoCupAsk||f.needBollo) && !f.cup && !avHas('tazzina') && !f.nicoCupBack){ const o=window.__cupDirect?0:await avChoose([['Hai la tazzina di Nico?','Do you have Nico\'s cup?'],['Altro...','Something else...']]); window.__cupDirect=0;
     if (o===0){ if (!f.pushups) return np('rocky','La tazzina? Te la do se fai la mia sfida. Venticinque flessioni in dieci secondi. Niente sfida, niente tazzina. Muscoli e pazienza.','The cup? It\'s yours if you do my challenge. Twenty-five push-ups in ten seconds. No challenge, no cup. Muscles and patience.');
       f.cup=1; avSave(); avAdd('tazzina'); return np('rocky','Tieni. Puzza di proteine al gusto vaniglia e sudore. Il gusto sudore è gratis.','Here. Smells of vanilla protein and sweat. The sweat flavour\'s free.'); } }
   return rockyOld(); });
