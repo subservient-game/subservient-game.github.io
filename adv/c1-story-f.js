@@ -5,7 +5,10 @@ const nicoTalkOld=AV_S['talk:nico'];
 avOn('talk:nico',async()=>{ const f=F();
   if (f.needBollo && !avHas('marca') && !f.distintivo){ const o=await avChoose([['Mi serve una marca da bollo.','I need a revenue stamp.'],['Altro...','Something else...']]);
     if (o===0){ await np('nico','Marca da bollo da 16 Pippi? Ce l\'ho. Ma i soldi non li hai, si vede da come sei vestito. Facciamo uno scambio: ritrovami la mia tazzina portafortuna e la marca è tua.','A 16-Pippi revenue stamp? Got one. But you have no money, I can tell by your clothes. Let\'s trade: find my lucky cup and the stamp is yours.');
-      if (!f.nicoCupAsk){ f.nicoCupAsk=1; avSave(); await np('nico','Sbeccata, con scritto "BARISTA DELL\'ANNO 1998". Ieri sera l\'ha presa Rocky per farci le proteine. Rocky non restituisce mai niente, neanche i saluti.','Chipped, says "BARISTA OF THE YEAR 1998". Last night Rocky took it for his protein shake. Rocky never returns anything, not even greetings.'); avOpen('gym'); }
+      if (!f.nicoCupAsk){ f.nicoCupAsk=1; avSave(); await np('nico','Sbeccata, con scritto "BARISTA DELL\'ANNO 1998". Ieri sera l\'ha presa Rocky per farci le proteine. Rocky non restituisce mai niente, neanche i saluti.','Chipped, says "BARISTA OF THE YEAR 1998". Last night Rocky took it for his protein shake. Rocky never returns anything, not even greetings.'); }
+      else if (!avHas('tazzina')) await np('nico','Te l\'ho già detto: la tazzina ce l\'ha Rocky, in palestra. Vai, fatti valere. O almeno fatti vedere.','I told you: Rocky has the cup, at the gym. Go on, stand up for yourself. Or at least show up.');
+      else await np('nico','Aspetta... quella che hai in tasca è la mia tazzina? Dammela, e la marca è tua.','Wait... is that my cup in your pocket? Give it here and the stamp is yours.');
+      avOpen('gym');
       return; } }
   return nicoTalkOld(); });
 const nicoCupOld=AV_S['give:nico:tazzina'];
