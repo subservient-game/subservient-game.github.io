@@ -1,5 +1,5 @@
 /* Capitolo 1 — promemoria su chi ha la tazzina di Nico */
-(()=>{ const pend=()=>{ const f=F(); return !(AV.st.ch>1) && !(f.needBollo && !avHas('marca') && !f.distintivo) && f.nicoCupAsk && !avHas('tazzina') && !AV.st.tro.includes('nico'); };
+(()=>{ const pend=()=>{ const f=F(); return !(f.needBollo && !avHas('marca') && !f.distintivo) && f.nicoCupAsk && !avHas('tazzina') && !AV.st.tro.includes('nico'); };
  const R=[['La mia tazzina ce l\'ha ancora Rocky, in palestra. Ci beve le proteine. Che schifo.','Rocky still has my cup, at the gym. Drinks his protein from it. Gross.'],
   ['Novità sulla tazzina? È in palestra da Rocky. Fattela ridare, io con quello non ci parlo: suda anche dalla voce.','Any news on the cup? It\'s at the gym with Rocky. Get it back, I don\'t talk to him: even his voice sweats.'],
   ['Ricordati: tazzina, Rocky, palestra. Tre parole, ce la puoi fare.','Remember: cup, Rocky, gym. Three words, you can do it.']];
