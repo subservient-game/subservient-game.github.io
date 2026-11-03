@@ -15,7 +15,7 @@ const piazzaEnterOld=AV_ENTER.piazza.after;
 AV_ENTER.piazza.after=async()=>{ await piazzaEnterOld(); const f=F();
   if (avHas('vero') && !f.crowStole){ f.crowStole=1; avSave();
     await me('Eccomi in piazza col Mestolo vero. Mille Pippi, arrivo! Sindaco, guardi c...','Here I am in the piazza with the real Ladle. A thousand Pippi, here I come! Mayor, look wh...');
-    setPose('scared'); await avSay('voice', T('CRAAA! Un corvo nero enorme piomba dal campanile, ti strappa il Mestolo dalle mani e vola via. Al suo posto, cade un foglietto arrotolato.','CRAAAW! A huge black crow dives from the bell tower, rips the Ladle from your hands and flies off. A rolled-up note falls in its place.'));
+    if (window.avCrowSteal) await avCrowSteal(); else setPose('scared'); await avSay('voice', T('CRAAA! Un corvo nero enorme piomba dal campanile, ti strappa il Mestolo dalle mani e vola via. Al suo posto, cade un foglietto arrotolato.','CRAAAW! A huge black crow dives from the bell tower, rips the Ladle from your hands and flies off. A rolled-up note falls in its place.'));
     setPose('idle'); avDel('vero'); avAdd('enigma1');
     await np('sindaco','Il... il Mestolo... in bocca a un uccello! Fate qualcosa! Sparate! No, non sparate, potreste colpire il Mestolo! Sparate al resto!','The... the Ladle... in a bird\'s beak! Do something! Shoot! No, don\'t shoot, you could hit the Ladle! Shoot the rest!');
     await np('peppe','In novant\'anni ne ho viste tante, ma un corvo che ruba un mestolo d\'oro... Questo ha più talento del sindaco.','In ninety years I\'ve seen a lot, but a crow stealing a golden ladle... It has more talent than the mayor.');

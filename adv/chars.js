@@ -3,7 +3,7 @@
 (()=>{ if (!window.ADV) return;
 const css=document.createElement('style');
 const SEL=(c)=>`body.adv #hol .${c}, body.adv #npcs .${c}`;
-css.textContent=`${['skin','outfit','pants','legs','shin','shoe','sleeveU','sleeveF','skinD','outfitD:not(.cuff)'].map(SEL).join(',')}{stroke:#1e1410;stroke-width:1.15px;stroke-linejoin:round;paint-order:stroke}
+css.textContent=`${['skin','outfit','shoe'].map(SEL).join(',')}{stroke:#1e1410;stroke-width:1.15px;stroke-linejoin:round;paint-order:stroke}
  body.adv #hol #hairFront path, body.adv #hol #hairBack path, body.adv #npcs [data-j="hairFront"] path, body.adv #npcs [data-j="hairBack"] path{stroke:#1e1410;stroke-width:1.1px;stroke-linejoin:round}
  body.adv #hol #beard path, body.adv #npcs [data-j="beard"] path{stroke:#1e1410;stroke-width:.8px}
  body.adv #hol #glasses circle, body.adv #npcs [data-j="glasses"] circle{stroke-width:1.2px}`;
