@@ -4,6 +4,7 @@ const NEED={"1":["agofilo","ascia","baffi","barattolo","basilico","berretto","br
 const L=(it,en)=>[it,en];
 function dead(item){ const c=CHN(); const u=(window.AV_USED||{})[c]; const f=F(); const dn=(window.AV_DONE||{})[c]; if (dn && dn[item] && dn[item](f)) return true;
   if (u && u[item] && u[item].every(k=>f.__iu&&f.__iu[item+'|'+k])) return true;
+  try{ const nx=c+1, ended=(c===1?f.endDone:(c===2?f.end2:(AV_CHS[c]&&AV_CHS[c].ended&&AV_CHS[c].ended()))); if (ended){ const keep=nx===2?AV_START2.keep:((AV_CHS[nx]&&AV_CHS[nx].start&&AV_CHS[nx].start.keep)||[]); return !keep.includes(item); } }catch(e){}
   for (let k=c;k<=6;k++) if ((NEED[k]||[]).includes(item)) return false;
   return true; }
 window.avItemDead=dead;
