@@ -26,7 +26,7 @@ ART.living=()=>{ const R=S(101); let o=defs()+wall('#d8c9a3',R,{wains:'#6e4a2c'}
   o+=shadowE(330,234,46,4)+`<path d="${box(290,196,82,36,R,1)}" fill="url(#a_wood)" ${ln(1.8)}/><path d="M296 210 h70 M331 198 v32" stroke="${OL}" stroke-width="1.2"/><path d="${box(298,140,64,46,R,1)}" fill="#3a3f4a" ${ln(2)}/><path d="${box(303,145,46,36,R,.6)}" fill="#3a5a8a" ${ln(1)}/><path d="M306 148 l16 0 l-16 14z" fill="#fff" opacity=".15"/><circle cx="356" cy="152" r="2.2" fill="#c9a227"/><circle cx="356" cy="160" r="2.2" fill="#c9a227"/><path d="M318 140 l-8 -14 M342 140 l8 -14" stroke="${OL}" stroke-width="1.4"/>${glow(326,163,60,.35)}`;
   // radio (hotspot 418,196)
   o+=`<path d="${box(404,212,30,20,R,1)}" fill="url(#a_wood)" ${ln(1.6)}/><path d="M406 232 v4 M432 232 v4" stroke="${OL}" stroke-width="2"/><path d="${box(398,182,40,30,R,1)}" fill="#8a3a1c" ${ln(1.8)}/><circle cx="410" cy="197" r="8" fill="#c9a77a" ${ln(1.2)}/><path d="M405 192 h10 M404 197 h12 M405 202 h10" stroke="#5a3720" stroke-width="1"/><path d="${box(422,188,12,8,R,.4)}" fill="#ffd166" ${ln(.8)}/><circle cx="428" cy="204" r="2.4" fill="#2a2e36"/><path d="M432 182 L446 160" stroke="${OL}" stroke-width="1.6"/>
-   <g class="flick"><path d="M440 176 q6 -4 10 0 M444 170 q6 -4 10 0" stroke="#ffd166" stroke-width="1.2" fill="none" opacity=".7"/></g>`;
+   <g class="aflk"><path d="M440 176 q6 -4 10 0 M444 170 q6 -4 10 0" stroke="#ffd166" stroke-width="1.2" fill="none" opacity=".7"/></g>`;
   // lampada da terra
   o+=`<path d="M462 120 V230" stroke="${OL}" stroke-width="3"/><path d="M452 232 h20" stroke="${OL}" stroke-width="4"/><path d="M448 122 L476 122 L470 100 L454 100Z" fill="#f1e1a6" ${ln(1.6)}/>${glow(462,118,70,.8)}`;
   o+=vign; return o; };
@@ -41,7 +41,7 @@ ART.kitchen=()=>{ const R=S(103); let o=defs()+wall('#e8d9b5',R,{paper:false});
   // bancone con fornelli, lavandino
   o+=`<path d="${box(100,180,200,52,R,1)}" fill="#7a9a6a" ${ln(1.8)}/><path d="${box(96,172,208,10,R,.8)}" fill="#c9bfa8" ${ln(1.6)}/>`+[100,150,200,250].map(x=>`<path d="${box(x+5,186,40,40,R,.6)}" fill="none" stroke="${OL}" stroke-width="1"/><path d="M${x+20} 192 h10" stroke="#c9a227" stroke-width="2"/>`).join('');
   // fornelli (hotspot 160,165)
-  o+=`<ellipse cx="146" cy="170" rx="11" ry="3" fill="#2a2e36" ${ln(1)}/><ellipse cx="176" cy="170" rx="11" ry="3" fill="#2a2e36" ${ln(1)}/><g class="flick"><path d="M140 168 q6 -5 12 0" stroke="#4cc9f0" stroke-width="1.4" fill="none"/></g><path d="M166 166 h20 v-14 h-20z" fill="#9aa1ab" ${ln(1.2)}/><path d="M164 152 h24" stroke="${OL}" stroke-width="2"/>`;
+  o+=`<ellipse cx="146" cy="170" rx="11" ry="3" fill="#2a2e36" ${ln(1)}/><ellipse cx="176" cy="170" rx="11" ry="3" fill="#2a2e36" ${ln(1)}/><g class="aflk"><path d="M140 168 q6 -5 12 0" stroke="#4cc9f0" stroke-width="1.4" fill="none"/></g><path d="M166 166 h20 v-14 h-20z" fill="#9aa1ab" ${ln(1.2)}/><path d="M164 152 h24" stroke="${OL}" stroke-width="2"/>`;
   // lavandino (hotspot 236,172)
   o+=`<path d="M214 172 h44 l-4 10 h-36z" fill="#cfd6e0" ${ln(1.2)}/><path d="M236 172 V154 q0 -6 8 -6 h4" stroke="#9aa1ab" stroke-width="3" fill="none"/><path d="M236 172 V154 q0 -6 8 -6 h4" stroke="${OL}" stroke-width="1" fill="none" opacity=".5"/><path d="M226 168 l4 -10 h8 l-2 10z" fill="#f1faee" ${ln(.8)}/>`;
   // moka (hotspot 280,150)
@@ -121,7 +121,7 @@ ART.hospital=()=>{ const R=S(131); let o=defs()+wall('#cfe0d8',R,{paper:false,wa
   // croce rossa (hotspot 75,75)
   o+=`<circle cx="75" cy="75" r="34" fill="#f1faee" ${ln(1.8)}/><path d="M66 50 h18 v16 h16 v18 h-16 v16 h-18 v-16 h-16 v-18 h16z" fill="#e63946" ${ln(1.4)}/>`;
   // monitor (hotspot 190,95)
-  o+=`<path d="${box(150,70,80,50,R,1)}" fill="#2a2e36" ${ln(2)}/><path d="${box(155,75,70,40,R,.6)}" fill="#0b1a12" ${ln(1)}/><path d="M158 96 h14 l4 -10 l5 20 l5 -14 l3 4 h40" stroke="#52ff8a" stroke-width="1.6" fill="none" class="flick"/><text x="218" y="84" font-size="6" fill="#52ff8a" font-family="monospace">72</text><path d="M190 120 v14" stroke="${OL}" stroke-width="3"/>${glow(190,95,50,.3)}`;
+  o+=`<path d="${box(150,70,80,50,R,1)}" fill="#2a2e36" ${ln(2)}/><path d="${box(155,75,70,40,R,.6)}" fill="#0b1a12" ${ln(1)}/><path d="M158 96 h14 l4 -10 l5 20 l5 -14 l3 4 h40" stroke="#52ff8a" stroke-width="1.6" fill="none" class="aflk"/><text x="218" y="84" font-size="6" fill="#52ff8a" font-family="monospace">72</text><path d="M190 120 v14" stroke="${OL}" stroke-width="3"/>${glow(190,95,50,.3)}`;
   o+=`<path d="${box(260,40,60,44,R,1)}" fill="#f1faee" ${ln(1.4)}/><text x="290" y="56" text-anchor="middle" font-size="6" font-weight="700" fill="#1d3557" font-family="Fredoka, sans-serif">${it()?'SILENZIO':'SILENCE'}</text><text x="290" y="70" text-anchor="middle" font-size="12">🤫</text>`;
   o+=floorTiles(R,'#e9eef0','#a8c4c8');
   // armadietto (hotspot 54,188)
@@ -145,13 +145,13 @@ ART.pizzeria=()=>{ const R=S(137); let o=defs()+wall('#e9d5a8',R,{wains:'#7a2e22
   // tavolo (hotspot 155,200)
   o+=shadowE(155,238,52,5,.45)+`<path d="M108 196 Q155 186 202 196 L196 214 Q155 222 114 214Z" fill="#f1faee" ${ln(1.6)}/>`+Array.from({length:7},(_,i)=>`<path d="M${114+i*13} 194 l6 22" stroke="#e63946" stroke-width="3" opacity=".8"/>`).join('')+`<path d="M122 214 V234 M188 214 V234" stroke="${OL}" stroke-width="4"/><ellipse cx="150" cy="192" rx="16" ry="4" fill="#f4d03f" ${ln(1)}/><circle cx="146" cy="191" r="2" fill="#e63946"/><circle cx="154" cy="192" r="2" fill="#e63946"/><path d="M178 192 v-14 q0 -4 4 -4 q4 0 4 4 v14z" fill="#2d6a4f" ${ln(1)}/><path d="M181 168 v6" stroke="#c9a227" stroke-width="2"/>${glow(182,170,30,.6)}`;
   // forno (hotspot 390,200)
-  o+=shadowE(390,240,66,5,.5)+`<path d="${wob([[330,234],[330,180],[352,146],[390,134],[428,146],[450,180],[450,234]],R,1.6)}" fill="#b5653a" ${ln(2.2)}/>`+Array.from({length:16},()=>`<path d="${box(334+R()*104,140+R()*90,14,7,R,.8)}" fill="none" stroke="#7a3a1e" stroke-width="1"/>`).join('')+`<path d="M358 234 V200 Q390 166 422 200 V234Z" fill="#1e0e06" ${ln(2)}/><path d="M364 234 Q390 210 416 234" fill="#ff7b29" class="flick"/><path d="M372 234 Q390 218 408 234" fill="#ffd166" class="flick"/>${glow(390,222,80,1)}<path d="M382 134 V96 h16 v38" fill="#7a3a1e" ${ln(1.6)}/>
+  o+=shadowE(390,240,66,5,.5)+`<path d="${wob([[330,234],[330,180],[352,146],[390,134],[428,146],[450,180],[450,234]],R,1.6)}" fill="#b5653a" ${ln(2.2)}/>`+Array.from({length:16},()=>`<path d="${box(334+R()*104,140+R()*90,14,7,R,.8)}" fill="none" stroke="#7a3a1e" stroke-width="1"/>`).join('')+`<path d="M358 234 V200 Q390 166 422 200 V234Z" fill="#1e0e06" ${ln(2)}/><path d="M364 234 Q390 210 416 234" fill="#ff7b29" class="aflk"/><path d="M372 234 Q390 218 408 234" fill="#ffd166" class="aflk"/>${glow(390,222,80,1)}<path d="M382 134 V96 h16 v38" fill="#7a3a1e" ${ln(1.6)}/>
    <path d="M330 210 l-60 30" stroke="${OL}" stroke-width="3"/><path d="M330 210 l-60 30" stroke="#a87a4a" stroke-width="1.6"/><ellipse cx="266" cy="242" rx="14" ry="5" fill="#a87a4a" ${ln(1.2)}/>`;
   o+=vign; return o; };
 
 /* ---------------- KARAOKE ---------------- */
 ART.karaoke=()=>{ const R=S(139); let o=defs()+`<rect width="480" height="232" fill="#1e1030"/>`+Array.from({length:16},(_,i)=>`<path d="M${i*30} 0 V232" stroke="#2c1846" stroke-width="14"/>`).join('')+`<rect width="480" height="232" fill="url(#a_shadeDown)" opacity=".5"/>`;
-  o+=[[60,'#ff4d9d'],[420,'#4cc9f0']].map(([x,c])=>`<path d="M${x} 0 L${x-60} 232 L${x+60} 232Z" fill="${c}" opacity=".12" class="flick"/>`).join('');
+  o+=[[60,'#ff4d9d'],[420,'#4cc9f0']].map(([x,c])=>`<path d="M${x} 0 L${x-60} 232 L${x+60} 232Z" fill="${c}" opacity=".12" class="aflk"/>`).join('');
   // schermo (hotspot 240,80)
   o+=`<path d="${box(168,34,144,90,R,1)}" fill="#2a2e36" ${ln(2)}/><path d="${box(174,40,132,76,R,.6)}" fill="#1d3557" ${ln(1)}/><text x="240" y="72" text-anchor="middle" font-size="9" font-weight="700" fill="#ffd166" font-family="Fredoka, sans-serif">♪ ${it()?'Volare oh oh':'Volare oh oh'} ♪</text><path d="M188 84 H292" stroke="#ff4d9d" stroke-width="3"/><path d="M188 84 H240" stroke="#ffd166" stroke-width="3"/>${glow(240,78,90,.4)}`;
   // palla stroboscopica (hotspot 240,120)
@@ -212,7 +212,7 @@ ART.park=()=>{ const R=S(163); let o=defs()+`<rect width="480" height="300" fill
   o+=`<rect y="196" width="480" height="104" fill="#1f3a24"/>`+Array.from({length:80},()=>{ const x=R()*480, y=200+R()*98; return `<path d="M${x.toFixed(1)} ${y.toFixed(1)} l2 -6 l2 6" stroke="#2f5a34" stroke-width="1" fill="none"/>`; }).join('')+`<path d="M180 300 Q230 240 300 212 L340 212 Q300 250 290 300Z" fill="#6d6152" ${ln(1.2)}/>`;
   // fontana (hotspot 330,200)
   o+=shadowE(330,242,56,6,.45)+`<ellipse cx="330" cy="226" rx="52" ry="14" fill="#8a8e92" ${ln(2)}/><ellipse cx="330" cy="222" rx="44" ry="10" fill="#2f5d74" ${ln(1)}/><path d="M318 222 V184 h24 V222" fill="#9aa1ab" ${ln(1.6)}/><ellipse cx="330" cy="184" rx="22" ry="6" fill="#8a8e92" ${ln(1.6)}/><path d="M330 184 V162" stroke="#9aa1ab" stroke-width="5"/><circle cx="330" cy="160" r="5" fill="#9aa1ab" ${ln(1.2)}/>
-   <path d="M330 158 q-14 -6 -20 24 M330 158 q14 -6 20 24" stroke="#9fd3e0" stroke-width="2" fill="none" opacity=".8" class="flick"/><path d="M300 220 q10 -4 20 0 M340 222 q10 -4 20 0" stroke="#fff" stroke-opacity=".4" fill="none"/><circle cx="352" cy="220" r="2" fill="#c9a227"/>`;
+   <path d="M330 158 q-14 -6 -20 24 M330 158 q14 -6 20 24" stroke="#9fd3e0" stroke-width="2" fill="none" opacity=".8" class="aflk"/><path d="M300 220 q10 -4 20 0 M340 222 q10 -4 20 0" stroke="#fff" stroke-opacity=".4" fill="none"/><circle cx="352" cy="220" r="2" fill="#c9a227"/>`;
   // panchina (hotspot 140,207)
   o+=shadowE(140,240,62,5,.45)+`<path d="${box(82,186,116,8,R,.8)}" fill="#7a4a26" ${ln(1.4)}/><path d="${box(82,196,116,8,R,.8)}" fill="#7a4a26" ${ln(1.4)}/><path d="${box(82,212,116,8,R,.8)}" fill="#8a5a33" ${ln(1.4)}/><path d="M90 220 V238 M190 220 V238 M90 186 V220 M190 186 V220" stroke="${OL}" stroke-width="4"/><path d="M90 220 V238 M190 220 V238" stroke="#2a2e36" stroke-width="2.4"/>`;
   o+=lamp(232,90,142)+fog(220,R,'#b8c4e8',.12)+vign; return o; };

@@ -60,7 +60,7 @@ function cat(x,y){ return `<g transform="translate(${x} ${y})"><path d="M0 0 q-2
 function fog(y,rnd,col='#9fb3d9',op=.18){ let o=''; for(let i=0;i<6;i++){ o+=`<ellipse class="drift" cx="${rnd()*480}" cy="${y+rnd()*20}" rx="${80+rnd()*80}" ry="${8+rnd()*8}" fill="${col}" opacity="${op}"/>`; } return o; }
 const css=document.createElement('style'); css.textContent=`.twk{animation:aTwk 3s ease-in-out infinite}.twk:nth-child(3n){animation-delay:1.2s}@keyframes aTwk{50%{opacity:.15}}
  .drift{animation:aDrift 40s linear infinite alternate}@keyframes aDrift{to{transform:translateX(30px)}}
- .flick{animation:aFl 2.6s steps(6) infinite}@keyframes aFl{20%{opacity:.75}40%{opacity:1}60%{opacity:.85}}
+ .aflk{animation:aFl 2.6s steps(6) infinite}@keyframes aFl{20%{filter:brightness(.75)}40%{filter:brightness(1.25)}60%{filter:brightness(.9)}}
  .beam{transform-origin:338px 26px;animation:aBeam 6s linear infinite}@keyframes aBeam{0%{transform:scaleX(1)}50%{transform:scaleX(-1)}100%{transform:scaleX(1)}}
  .smoke{animation:aSm 7s ease-in-out infinite}@keyframes aSm{50%{transform:translate(6px,-8px);opacity:.25}}
  .tail{transform-origin:0 0;animation:aTail 3s ease-in-out infinite}@keyframes aTail{50%{transform:rotate(14deg)}}`; document.head.appendChild(css);
@@ -104,7 +104,7 @@ ART.piazza=()=>{ const R=S(11); let o=defs()+`<rect width="480" height="300" fil
 ART.porto=()=>{ const R=S(23), f=F_(); let o=defs()+`<rect width="480" height="160" fill="url(#a_night)"/>`+stars(R,50,110)+moon(330,34,12)+clouds(R,3,20,80);
   // colline lontane con luci del paese
   o+=`<path d="M0 128 Q50 96 110 112 T230 100 T360 108 T480 96 V150 H0Z" fill="#1d2448" ${ln(1)}/>`+Array.from({length:14},()=>`<circle cx="${(R()*480).toFixed(1)}" cy="${(112+R()*26).toFixed(1)}" r="1" fill="#ffd27a" opacity=".85"/>`).join('');
-  o+=`<path d="M440 96 v-26 l4 -4 l4 4 v26z" fill="#2a2f55" ${ln(1)}/><path d="M444 66 L520 50 L520 82Z" fill="#fff6c9" opacity=".08" class="flick"/>`;
+  o+=`<path d="M440 96 v-26 l4 -4 l4 4 v26z" fill="#2a2f55" ${ln(1)}/><path d="M444 66 L520 50 L520 82Z" fill="#fff6c9" opacity=".08" class="aflk"/>`;
   // mare con riflesso della luna
   o+=`<rect y="140" width="480" height="90" fill="url(#a_sea)"/>`+Array.from({length:22},()=>{ const x=R()*480, y=146+R()*80; return `<path d="M${x.toFixed(1)} ${y.toFixed(1)} q6 -3 12 0" stroke="#7fa6d9" stroke-opacity="${(.25+R()*.35).toFixed(2)}" fill="none"/>`; }).join('')+
    Array.from({length:9},(_,i)=>`<path d="M${322-i*2+R()*6} ${150+i*9} h${10+R()*14}" stroke="#fff4cf" stroke-opacity="${(.7-i*.06).toFixed(2)}" stroke-width="2" stroke-linecap="round"/>`).join('');
@@ -208,7 +208,7 @@ ART.cimitero=()=>{ const R=S(53), f=F_(); let o=defs()+`<rect width="480" height
   // tomba con vaso (hotspot 200,205)
   o+=tomb(200,172,44,60,0,'ASSUNTA')+`<path d="M190 232 h20 l-3 -14 h-14z" fill="#8a6a3a" ${ln(1.2)}/>`;
   if (f.gaveFlowers) o+=[[194,214,'#e63946'],[200,210,'#ff8fab'],[206,214,'#e63946'],[200,216,'#ffd166']].map(([x,y,c])=>`<path d="M200 218 L${x} ${y}" stroke="#2d6a4f" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="3.2" fill="${c}" ${ln(.7)}/>`).join('');
-  if (f.luminoGiven) o+=`<path d="M214 232 h10 l-1 -9 h-8z" fill="#c0392b" ${ln(.8)}/><path d="M219 222 q-3 -5 0 -9 q3 4 0 9z" fill="#ffd166" class="flick"/>${glow(219,220,30,.9)}`;
+  if (f.luminoGiven) o+=`<path d="M214 232 h10 l-1 -9 h-8z" fill="#c0392b" ${ln(.8)}/><path d="M219 222 q-3 -5 0 -9 q3 4 0 9z" fill="#ffd166" class="aflk"/>${glow(219,220,30,.9)}`;
   // cappella (hotspot 410,175)
   o+=shadowE(410,236,62,5,.5)+`<path d="${wob([[356,232],[356,140],[464,140],[464,232]],R,1.4)}" fill="#6d6b80" ${ln(2)}/><rect x="356" y="140" width="108" height="92" fill="url(#a_brick)" opacity=".5"/>`+stains(356,140,108,92,R,8,'#1d3a2a',.2)+`<path d="${wob([[348,142],[410,104],[472,142]],R,1.2)}" fill="#4a4860" ${ln(2)}/><path d="M410 104 V84 M402 92 H418" stroke="${OL}" stroke-width="4"/><path d="M410 104 V84 M402 92 H418" stroke="#9a98aa" stroke-width="2"/>
    <path d="M390 232 V182 Q390 166 410 166 Q430 166 430 182 V232Z" fill="#1a1622" ${ln(1.8)}/><path d="M395 232 V184 Q395 172 410 172 Q425 172 425 184 V232" fill="none" stroke="#3d3a4c" stroke-width="2"/><path d="M406 196 h8 M410 192 v8" stroke="#c9a227" stroke-width="1.4"/>`;
@@ -238,7 +238,7 @@ window.AV_ART=ART;
 const NIGHT=window.AV_NIGHT=['piazza','porto','cimitero','faro','beach','park','garden','woods'];
 window.AV_KIT={S,OL,ln,wob,box,F_,it,defs,stars,moon,clouds,glow,win,stains,cobbles,planks,lamp,shadowE,roofTiles,laundry,cat,fog};
 function nightTint(on){ try{ const v=on?'brightness(.82) saturate(.85) hue-rotate(-6deg)':''; holG.style.filter=v; const L=document.getElementById('npcs'); if (L) L.style.filter=v; }catch(e){} }
-const useArt=r=>window.ADV && ART[r] && typeof CHN==='function' && CHN()===1;
-const wrap=()=>{ const old=window.drawRoom; window.drawRoom=function(r){ const out=old.apply(this,arguments); try{ if (useArt(r)){ backL.innerHTML=ART[r](); frontL.innerHTML=''; } nightTint(useArt(r) && NIGHT.includes(r)); }catch(e){ console.warn('art',e); } return out; }; try{ if (window.ADV && typeof H!=='undefined' && H.room && useArt(H.room)) drawRoom(H.room); }catch(e){} };
+const useArt=r=>window.ADV && ART[r] && typeof CHN==='function' && (CHN()===1 || window.AV_ART_ALLCH);
+const wrap=()=>{ const ow=window.drawWeather; if (ow) window.drawWeather=function(){ if (window.ADV){ const L=document.getElementById('wx'); if (L) L.innerHTML=''; return; } return ow.apply(this,arguments); }; try{ const L=document.getElementById('wx'); if (L) L.innerHTML=''; }catch(e){} const old=window.drawRoom; window.drawRoom=function(r){ const out=old.apply(this,arguments); try{ if (useArt(r)){ backL.innerHTML=ART[r](); frontL.innerHTML=''; } nightTint(useArt(r) && NIGHT.includes(r)); }catch(e){ console.warn('art',e); } return out; }; try{ if (window.ADV && typeof H!=='undefined' && H.room && useArt(H.room)) drawRoom(H.room); }catch(e){} };
 if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',wrap); else wrap();
 })();
