@@ -221,6 +221,7 @@
   body.adv .cam .caption { display:none; } #advMusic { display:none !important; } body.adv .mini { display:none !important; } body.adv.land .advrow { margin-right:0 !important; } body.island .mini { display:none !important; } body.adv #stats, body.adv #clock { display:none !important; }
   body.adv .info { flex:none !important; }
   body.adv.land .advverbs { grid-template-columns:repeat(8,1fr); } body.adv.land .advinv { grid-template-columns:repeat(8,1fr); } body.adv.land .advverbs button { padding:5px 2px; font-size:13px; } body.adv.land .advline { font-size:12px; min-height:14px; margin-bottom:2px; }
+  body.adv .cam::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:4; background:radial-gradient(ellipse 75% 70% at 50% 42%, rgba(0,0,0,0) 55%, rgba(20,8,0,.42) 100%), linear-gradient(180deg, rgba(255,190,110,.06), rgba(40,10,60,.10)); }
   body.adv.split .cam { align-self:flex-start !important; margin-left:0 !important; margin-right:auto !important; } body.adv.split .advverbs { grid-template-columns:repeat(4,1fr) !important; } body.adv.split .advinv { grid-template-columns:repeat(4,1fr) !important; overflow-y:auto; } body.adv.split .advverbs button { padding:9px 2px !important; font-size:14px !important; } body.adv.split .advrow { display:flex; flex-direction:column; gap:6px; margin-right:0 !important; overflow:hidden; } body.adv.split .advinv { flex:1 1 auto; min-height:0; } body.adv.split .advline { font-size:13px; }
   .outfit { fill:var(--outfit); }
   .sleeveU { fill:var(--sleeveU, var(--outfit)); } .sleeveF { fill:var(--sleeveF, var(--outfit)); } .cuff { display:var(--cuff, inline); } .legs { fill:var(--legs, var(--pants)); } .shin { fill:var(--shin, var(--pants)); } .skirtc { fill:var(--skirt, var(--pants)); } .iris { fill:var(--iris, #3b2a20); }
@@ -405,108 +406,110 @@ if (cfg && cfg.apiKey){
 }
 </script>
 
-<script src="presence.js?v=125"></script>
-<script src="adv/ui-icons.js?v=125"></script>
-<script src="adv/music.js?v=125"></script>
-<script src="adv/icons.js?v=125"></script>
-<script src="adv/engine.js?v=125"></script>
-<script src="adv/defaults.js?v=125"></script>
-<script src="adv/defaults2.js?v=125"></script>
-<script src="adv/minigames.js?v=125"></script>
-<script src="adv/c1-data.js?v=125"></script>
-<script src="adv/c1-story-a.js?v=125"></script>
-<script src="adv/c1-story-b.js?v=125"></script>
-<script src="adv/c1-story-c.js?v=125"></script>
-<script src="adv/c1-story-d.js?v=125"></script>
-<script src="adv/c1-story-e.js?v=125"></script>
-<script src="adv/c1-story-f.js?v=125"></script>
-<script src="adv/c1-ballo.js?v=125"></script>
-<script src="adv/c1-mozzarella.js?v=125"></script>
-<script src="adv/c1-puntina.js?v=125"></script>
-<script src="adv/c1-sigaro.js?v=125"></script>
-<script src="adv/c1-tazzina.js?v=125"></script>
-<script src="adv/c1-sardine.js?v=125"></script>
-<script src="adv/c1-morra.js?v=125"></script>
-<script src="adv/c1-cravatta.js?v=125"></script>
-<script src="adv/c1-lumino.js?v=125"></script>
-<script src="adv/c1-rasatura.js?v=125"></script>
-<script src="adv/c1-dadi.js?v=125"></script>
-<script src="adv/c1-cane.js?v=125"></script>
-<script src="adv/c1-impronta.js?v=125"></script>
-<script src="adv/c1-radio.js?v=125"></script>
-<script src="adv/c1-armadio.js?v=125"></script>
-<script src="adv/c1-monete.js?v=125"></script>
-<script src="adv/c1-avvocato.js?v=125"></script>
-<script src="adv/c2.js?v=125"></script>
-<script src="adv/c2-extra.js?v=125"></script>
-<script src="adv/c2-tessere.js?v=125"></script>
-<script src="adv/c2-pacco.js?v=125"></script>
-<script src="adv/c2-torcia.js?v=125"></script>
-<script src="adv/c2-barca.js?v=125"></script>
-<script src="adv/c2-tombola.js?v=125"></script>
-<script src="adv/c2-carrello.js?v=125"></script>
-<script src="adv/c2-allarme.js?v=125"></script>
-<script src="adv/c2-fiammiferi.js?v=125"></script>
-<script src="adv/c2-piccioni.js?v=125"></script>
-<script src="adv/c2-sveglia.js?v=125"></script>
-<script src="adv/c2-strappo.js?v=125"></script>
-<script src="adv/c2-urna.js?v=125"></script>
-<script src="adv/c2-topi.js?v=125"></script>
-<script src="adv/c2-pisello.js?v=125"></script>
-<script src="adv/c2-dialetto.js?v=125"></script>
-<script src="adv/c2-ruggine.js?v=125"></script>
-<script src="adv/c3.js?v=125"></script>
-<script src="adv/c3-extra.js?v=125"></script>
-<script src="adv/c3-totem.js?v=125"></script>
-<script src="adv/c3-bussola.js?v=125"></script>
-<script src="adv/c3-sabbie.js?v=125"></script>
-<script src="adv/c3-pescedoro.js?v=125"></script>
-<script src="adv/c3-cocco.js?v=125"></script>
-<script src="adv/c3-sale.js?v=125"></script>
-<script src="adv/c3-tribu.js?v=125"></script>
-<script src="adv/c3-prove.js?v=125"></script>
-<script src="adv/c3-barzelletta.js?v=125"></script>
-<script src="adv/c3-cassa.js?v=125"></script>
-<script src="adv/c3-banana.js?v=125"></script>
-<script src="adv/c3-stelle.js?v=125"></script>
-<script src="adv/c4.js?v=125"></script>
-<script src="adv/c4-extra.js?v=125"></script>
-<script src="adv/c4-sandali.js?v=125"></script>
-<script src="adv/c4-lanterna.js?v=125"></script>
-<script src="adv/c4-labirinto.js?v=125"></script>
-<script src="adv/c4-ragu.js?v=125"></script>
-<script src="adv/c4-percentuali.js?v=125"></script>
-<script src="adv/c4-occhiali.js?v=125"></script>
-<script src="adv/c4-porte.js?v=125"></script>
-<script src="adv/c4-grotta.js?v=125"></script>
-<script src="adv/c4-ricordi.js?v=125"></script>
-<script src="adv/c4-baffi.js?v=125"></script>
-<script src="adv/c4-semi.js?v=125"></script>
-<script src="adv/c4-memory.js?v=125"></script>
-<script src="adv/c4-pipistrelli.js?v=125"></script>
-<script src="adv/c5.js?v=125"></script>
-<script src="adv/c5-extra.js?v=125"></script>
-<script src="adv/c5-processo.js?v=125"></script>
-<script src="adv/c5-acquasanta.js?v=125"></script>
-<script src="adv/c5-mescola.js?v=125"></script>
-<script src="adv/c5-ultima.js?v=125"></script>
-<script src="adv/c5-giornale.js?v=125"></script>
-<script src="adv/c5-baffo.js?v=125"></script>
-<script src="adv/c5-ingredienti.js?v=125"></script>
-<script src="adv/c5-forno.js?v=125"></script>
-<script src="adv/c5-ricettario.js?v=125"></script>
-<script src="adv/c5-processo2.js?v=125"></script>
-<script src="adv/c5-trappola.js?v=125"></script>
-<script src="adv/c6.js?v=125"></script>
-<script src="adv/hints-ui.js?v=125"></script>
-<script src="adv/nextch.js?v=125"></script>
-<script src="adv/invclean.js?v=125"></script>
-<script src="adv/bully.js?v=125"></script>
+<script src="presence.js?v=126"></script>
+<script src="adv/ui-icons.js?v=126"></script>
+<script src="adv/music.js?v=126"></script>
+<script src="adv/icons.js?v=126"></script>
+<script src="adv/engine.js?v=126"></script>
+<script src="adv/defaults.js?v=126"></script>
+<script src="adv/defaults2.js?v=126"></script>
+<script src="adv/minigames.js?v=126"></script>
+<script src="adv/c1-data.js?v=126"></script>
+<script src="adv/c1-story-a.js?v=126"></script>
+<script src="adv/c1-story-b.js?v=126"></script>
+<script src="adv/c1-story-c.js?v=126"></script>
+<script src="adv/c1-story-d.js?v=126"></script>
+<script src="adv/c1-story-e.js?v=126"></script>
+<script src="adv/c1-story-f.js?v=126"></script>
+<script src="adv/c1-ballo.js?v=126"></script>
+<script src="adv/c1-mozzarella.js?v=126"></script>
+<script src="adv/c1-puntina.js?v=126"></script>
+<script src="adv/c1-sigaro.js?v=126"></script>
+<script src="adv/c1-tazzina.js?v=126"></script>
+<script src="adv/c1-sardine.js?v=126"></script>
+<script src="adv/c1-morra.js?v=126"></script>
+<script src="adv/c1-cravatta.js?v=126"></script>
+<script src="adv/c1-lumino.js?v=126"></script>
+<script src="adv/c1-rasatura.js?v=126"></script>
+<script src="adv/c1-dadi.js?v=126"></script>
+<script src="adv/c1-berretto.js?v=126"></script>
+<script src="adv/c1-cane.js?v=126"></script>
+<script src="adv/c1-impronta.js?v=126"></script>
+<script src="adv/c1-radio.js?v=126"></script>
+<script src="adv/c1-armadio.js?v=126"></script>
+<script src="adv/c1-monete.js?v=126"></script>
+<script src="adv/c1-avvocato.js?v=126"></script>
+<script src="adv/c2.js?v=126"></script>
+<script src="adv/c2-extra.js?v=126"></script>
+<script src="adv/c2-tessere.js?v=126"></script>
+<script src="adv/c2-pacco.js?v=126"></script>
+<script src="adv/c2-torcia.js?v=126"></script>
+<script src="adv/c2-barca.js?v=126"></script>
+<script src="adv/c2-tombola.js?v=126"></script>
+<script src="adv/c2-carrello.js?v=126"></script>
+<script src="adv/c2-allarme.js?v=126"></script>
+<script src="adv/c2-fiammiferi.js?v=126"></script>
+<script src="adv/c2-piccioni.js?v=126"></script>
+<script src="adv/c2-sveglia.js?v=126"></script>
+<script src="adv/c2-strappo.js?v=126"></script>
+<script src="adv/c2-urna.js?v=126"></script>
+<script src="adv/c2-topi.js?v=126"></script>
+<script src="adv/c2-pisello.js?v=126"></script>
+<script src="adv/c2-dialetto.js?v=126"></script>
+<script src="adv/c2-ruggine.js?v=126"></script>
+<script src="adv/c3.js?v=126"></script>
+<script src="adv/c3-extra.js?v=126"></script>
+<script src="adv/c3-totem.js?v=126"></script>
+<script src="adv/c3-bussola.js?v=126"></script>
+<script src="adv/c3-sabbie.js?v=126"></script>
+<script src="adv/c3-pescedoro.js?v=126"></script>
+<script src="adv/c3-cocco.js?v=126"></script>
+<script src="adv/c3-sale.js?v=126"></script>
+<script src="adv/c3-tribu.js?v=126"></script>
+<script src="adv/c3-prove.js?v=126"></script>
+<script src="adv/c3-barzelletta.js?v=126"></script>
+<script src="adv/c3-cassa.js?v=126"></script>
+<script src="adv/c3-banana.js?v=126"></script>
+<script src="adv/c3-stelle.js?v=126"></script>
+<script src="adv/c4.js?v=126"></script>
+<script src="adv/c4-extra.js?v=126"></script>
+<script src="adv/c4-sandali.js?v=126"></script>
+<script src="adv/c4-lanterna.js?v=126"></script>
+<script src="adv/c4-labirinto.js?v=126"></script>
+<script src="adv/c4-ragu.js?v=126"></script>
+<script src="adv/c4-percentuali.js?v=126"></script>
+<script src="adv/c4-occhiali.js?v=126"></script>
+<script src="adv/c4-porte.js?v=126"></script>
+<script src="adv/c4-grotta.js?v=126"></script>
+<script src="adv/c4-ricordi.js?v=126"></script>
+<script src="adv/c4-baffi.js?v=126"></script>
+<script src="adv/c4-semi.js?v=126"></script>
+<script src="adv/c4-memory.js?v=126"></script>
+<script src="adv/c4-pipistrelli.js?v=126"></script>
+<script src="adv/c5.js?v=126"></script>
+<script src="adv/c5-extra.js?v=126"></script>
+<script src="adv/c5-processo.js?v=126"></script>
+<script src="adv/c5-acquasanta.js?v=126"></script>
+<script src="adv/c5-mescola.js?v=126"></script>
+<script src="adv/c5-ultima.js?v=126"></script>
+<script src="adv/c5-giornale.js?v=126"></script>
+<script src="adv/c5-baffo.js?v=126"></script>
+<script src="adv/c5-ingredienti.js?v=126"></script>
+<script src="adv/c5-forno.js?v=126"></script>
+<script src="adv/c5-ricettario.js?v=126"></script>
+<script src="adv/c5-processo2.js?v=126"></script>
+<script src="adv/c5-trappola.js?v=126"></script>
+<script src="adv/c6.js?v=126"></script>
+<script src="adv/hints-ui.js?v=126"></script>
+<script src="adv/pippi-ui.js?v=126"></script>
+<script src="adv/nextch.js?v=126"></script>
+<script src="adv/invclean.js?v=126"></script>
+<script src="adv/bully.js?v=126"></script>
 <script>
 const $=id=>document.getElementById(id);
 const NS='http://www.w3.org/2000/svg';
 const scene=$('scene'), holG=$('hol'), backL=$('back'), frontL=$('front'), fxL=$('fx'), darkOv=$('darkOv'), shadowEl=$('shadow'), bubble=$('bubble'), caption=$('caption'), cam=$('cam'), spawnB=$('spawnB'), spawnF=$('spawnF');
-const STAND=258, LANE=276, HIP=52, BASE=1.45;
+const STAND=258, LANE=276, HIP=52, BASE=window.ADV?1.08:1.45;
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -4186,7 +4189,7 @@ setInterval(()=>{ if(caption.textContent.startsWith('>')) return; if(H.pose==='i
 requestAnimationFrame(frame);
 
 /* auto-update: when a new version is published, reload by itself (only if the player isn't typing) */
-const BUILD='125';
+const BUILD='126';
 try{ document.getElementById('ver').textContent='Versione '+BUILD; }catch(e){}
 async function checkUpdate(){
   try { const r=await fetch('./?u='+Date.now(),{cache:'no-store'}); const t=await r.text(); const m=t.match(/const BUILD='([^']+)'/);
