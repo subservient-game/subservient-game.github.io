@@ -7,7 +7,7 @@ const OL='#1e1410';             // colore del contorno
 const ln=(w=1.6)=>`stroke="${OL}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
 const wob=(pts,rnd,a=1.2,close=true)=>{ return 'M'+pts.map(([x,y],i)=>`${(x+(rnd()-.5)*a).toFixed(1)} ${(y+(rnd()-.5)*a).toFixed(1)}`).join(' L')+(close?'Z':''); };
 const box=(x,y,w,h,rnd,a)=>wob([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],rnd,a);
-const F_=()=>(window.AV&&AV.st&&AV.st.f)||{};
+const F_=()=>{ const st=((typeof AV!=='undefined')&&AV.st)||null; if (!st) return {}; const m={}; for (let k=1;k<=6;k++){ const c=st['ch'+k]; if (c&&c.f&&k<(st.ch||1)) Object.assign(m,c.f); } return Object.assign(m,st.f||{}); };
 const it=()=>LANG==='it';
 
 /* ---- kit ---- */

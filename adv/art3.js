@@ -2,7 +2,7 @@
 (()=>{ if (!window.ADV || !window.AV_KIT || !window.AV_ART) return;
 const {S,OL,ln,wob,box,F_,it,defs,stars,moon,clouds,glow,win,stains,cobbles,planks,lamp,shadowE,fog}=AV_KIT; const ART=AV_ART;
 const vign=`<rect width="480" height="300" fill="url(#a_vign)"/>`;
-const ch=()=>(window.AV&&AV.st&&AV.st.ch)||1;
+const ch=()=>((typeof AV!=='undefined')&&AV.st&&AV.st.ch)||1;
 const ddefs=()=>`<defs><linearGradient id="a_dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a7fc4"/><stop offset=".55" stop-color="#f4a79a"/><stop offset="1" stop-color="#ffd59a"/></linearGradient>
  <linearGradient id="a_lagoon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fb8c9"/><stop offset="1" stop-color="#1b6f8a"/></linearGradient>
  <radialGradient id="a_sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c9"/><stop offset=".35" stop-color="#ffd27a" stop-opacity=".9"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>
