@@ -21,22 +21,29 @@ function build(look, female){
   const glasses=!(look&&look.glasses===false);
   const beard=look&&look.beard&&look.beard!=='none';
   const legs=(id)=>`<g data-s="${id}"><path d="M-5 0 Q-6 13 -4.5 26 L4.5 26 Q6 13 5 0Z" class="pants"/><g data-s="${id}k" transform="translate(0 25)"><path d="M-4.5 -1 L4.5 -1 Q4.4 11 3.6 22 L-3.6 22 Q-4.4 11 -4.5 -1Z" class="pants"/><path d="M-5 21 Q-5 26 0 27 L14 27 Q16 22 9 20 L-4 19Z" class="shoe" fill="#4a2a14" ${S(1.1)}/></g></g>`;
-  const arm=(id)=>`<g data-s="${id}"><path d="M-4.5 -1 Q-5 9 -4 19 L4 19 Q5 9 4.5 -1 Q0 -4 -4.5 -1Z" class="outfit"/><g data-s="${id}e" transform="translate(0 18)"><path d="M-4 -1.5 L4 -1.5 Q4 8 3.4 16 L-3.4 16 Q-4 8 -4 -1.5Z" class="outfit"/><circle cy="19" r="4.6" class="skin" ${S(1)}/></g></g>`;
+  const arm=(id)=>`<g data-s="${id}"><path d="M-3.8 -1 Q-4.2 9 -3.4 18.5 L3.4 18.5 Q4.2 9 3.8 -1 Q0 -3.6 -3.8 -1Z" class="outfit"/><g data-s="${id}e" transform="translate(0 18)"><path d="M-3.4 -1.5 L3.4 -1.5 Q3.4 8 3 15.5 L-3 15.5 Q-3.4 8 -3.4 -1.5Z" class="outfit"/><path d="M-3.2 13 h6.4 v3 h-6.4z" fill="#000" opacity=".2"/><ellipse cx=".6" cy="18.6" rx="3.6" ry="4" class="skin" ${S(1)}/><path d="M3 17 q2 1 1.4 3" stroke="#1e1410" stroke-width=".8" fill="none"/></g></g>`;
   return `<g data-s="root">
-   <g data-s="back">${arm('aB')}${legs('lB')}</g>
-   <path d="M-11 0 Q-14 -22 -10 -38 Q-6 -45 2 -45 Q11 -44 13 -36 Q16 -20 12 0 Q0 4 -11 0Z" class="outfit"/>
-   <path d="M2 -45 Q11 -44 13 -36 Q16 -20 12 0 Q8 2 5 1.5 Q9 -20 2 -45Z" fill="#000" opacity=".12"/>
-   <path d="M-11 -2 H12 L12 3 H-11Z" class="pants"/>
-   <path d="M-3 -46 h7 l1 -6 h-8z" class="skin"/>
-   <g data-s="head"><path d="M-14 -62 Q-15 -81 1 -81 Q16 -81 16 -66 Q17 -62 20 -60 Q21 -57 17 -56 Q15 -48 6 -47 Q-6 -46 -12 -52 Q-15 -56 -14 -62Z" class="skin" ${S(1.3)}/>
-    <path d="M14 -64 Q22 -60 20 -55 Q17 -53 14 -55" class="skin" ${S(1.1)}/>
-    <circle cx="-4" cy="-62" r="4" class="skinD" ${S(1)}/><path d="M-5 -64 q2 2 0 4" stroke="#000" stroke-opacity=".3" fill="none"/>
-    <ellipse cx="8" cy="-66" rx="3" ry="3.4" fill="#fff" ${S(.9)}/><circle cx="9.6" cy="-65.6" r="1.8" class="iris" fill="#3a2a1a"/><circle cx="10.2" cy="-66.4" r=".6" fill="#fff"/>
-    <path d="M4 -72 q4 -2 8 0" stroke="${OL}" stroke-width="1.6" fill="none"/>
-    <path d="M9 -52 q4 1 6 -1" stroke="#6b3020" stroke-width="1.4" fill="none"/>
-    ${beard?`<path d="M8 -55 q5 3 10 0 q-4 4 -10 0z" fill="${(look&&look.hairColor)||'#333'}" ${S(.7)}/>`:''}
+   <g data-s="back" style="filter:brightness(.72)">${arm('aB')}${legs('lB')}</g>
+   <path d="M-10 1 Q-13 -20 -10 -36 Q-7 -44 1 -45 Q10 -45 12.5 -37 Q15 -22 12 1 Q1 4 -10 1Z" class="outfit"/>
+   <path d="M3 -44 Q11 -43 12.5 -36 Q15 -20 12 1 Q9 2.5 6 2 Q9.5 -20 3 -44Z" fill="#000" opacity=".14"/>
+   <path d="M-8 -36 Q-9 -20 -8 -4" stroke="#fff" stroke-opacity=".18" stroke-width="2.4" fill="none"/>
+   <path d="M6 -42 Q9 -24 8 0" stroke="#000" stroke-opacity=".3" stroke-width="1.2" fill="none"/>
+   <path d="M-10 -1 H12 L12.5 4 H-10.5Z" class="pants"/><path d="M-2 0 h6 v3 h-6z" fill="#c9a227" opacity=".8"/>
+   <path d="M-3 -51 h8 l.5 7 h-9z" class="skin"/>
+   <path d="M-4 -45 L4 -45 L9 -40 L5 -38 L1 -42 L-3 -38Z" fill="#eef1f5" stroke="#1e1410" stroke-width=".8"/>
+   <g data-s="head">
+    <ellipse cx="1.5" cy="-65" rx="14.5" ry="16" class="skin" ${S(1.3)}/>
+    <path d="M8 -53 Q12 -50 9.5 -48 Q4 -47 0 -49.5" class="skin" ${S(1.1)}/>
+    <path d="M7 -55.5 Q14 -56.5 15.2 -59" stroke="#000" stroke-opacity=".12" stroke-width="3" fill="none"/>
+    <circle cx="16.3" cy="-62.5" r="3.4" class="skin" ${S(1.1)}/><path d="M15 -60.4 q1.6 .6 2.8 -.2" stroke="#000" stroke-opacity=".35" stroke-width=".7" fill="none"/>
+    <path d="M-4.5 -67.5 Q-9 -63 -4.5 -58.5 Q-1.5 -59 -1.5 -63 Q-1.5 -67 -4.5 -67.5Z" class="skin" ${S(1)}/><path d="M-4.2 -65.5 q-2 2 0 4" stroke="#000" stroke-opacity=".3" fill="none"/>
+    <ellipse cx="6" cy="-57.5" rx="3" ry="1.8" fill="#e8705a" opacity=".35"/>
+    <ellipse cx="9.5" cy="-67" rx="2.7" ry="3.2" fill="#fff" ${S(.8)}/><circle cx="10.6" cy="-66.6" r="1.7" fill="#3a2a1a"/><circle cx="11.1" cy="-67.4" r=".55" fill="#fff"/>
+    <path d="M6.5 -72.2 q3.5 -1.8 7 -.2" stroke="${OL}" stroke-width="1.5" fill="none"/>
+    <path d="M10 -55.3 q2.6 1 4.4 -.6" stroke="#6b3020" stroke-width="1.3" fill="none"/>
+    ${beard?`<path d="M9.5 -58 q4 2.6 8 .2 q-3 3.4 -8 -.2z" fill="${(look&&look.hairColor)||'#333'}" ${S(.6)}/>`:''}
     ${hairFor(look)}
-    ${glasses?`<circle cx="8.5" cy="-66" r="5.4" fill="rgba(255,255,255,.18)" stroke="#2b2b2b" stroke-width="1.3"/><path d="M3 -66.5 L-3 -65" stroke="#2b2b2b" stroke-width="1.1"/>`:''}
+    ${glasses?`<circle cx="10" cy="-66.8" r="5" fill="rgba(255,255,255,.16)" stroke="#2b2b2b" stroke-width="1.3"/><path d="M5 -67 L-2.5 -65.5" stroke="#2b2b2b" stroke-width="1.1"/>`:''}
    </g>
    <g data-s="front">${legs('lF')}${arm('aF')}</g>
   </g>`; }
@@ -52,7 +59,7 @@ function pose(sg, ph, run){ const p=sg.__p; const A=run?34:26, K=run?50:34, ARM=
   p.lB.setAttribute('transform',`translate(-2 0) rotate(${-lB})`); p.lBk.setAttribute('transform',`translate(0 25) rotate(${kB})`);
   p.aF.setAttribute('transform',`translate(1 -38) rotate(${lF*ARM/A*0.9})`); p.aFe.setAttribute('transform',`translate(0 18) rotate(${-(run?70:18)-Math.max(0,s)*10})`);
   p.aB.setAttribute('transform',`translate(-3 -38) rotate(${lB*ARM/A*0.9})`); p.aBe.setAttribute('transform',`translate(0 18) rotate(${-(run?70:18)-Math.max(0,-s)*10})`);
-  p.back.setAttribute('opacity','.92');
+  
   p.head.setAttribute('transform',`translate(0 ${Math.abs(c)*-1.2}) rotate(${run?4:1.5})`);
   p.root.setAttribute('transform',`translate(0 ${-Math.abs(c)*(run?3:1.8)}) rotate(${run?6:2})`); }
 let t0=performance.now();
