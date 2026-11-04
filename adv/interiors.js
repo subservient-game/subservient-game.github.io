@@ -8,6 +8,8 @@ const it=()=>LANG==='it';
 const ALL=[1,2,3,4,5,6];
 /* from: stanza esterna, hs: hotspot esterno, into: interno, ch: capitoli, when: si può entrare, door: x della porta fuori */
 const DOORS=[
+  {from:'porto', hs:'warehouse', into:'magazzino', ch:[1], when:()=>F().doorOpen},
+  {from:'faro', hs:'lhdoor', into:'faroin', ch:[1], when:()=>F().nestDone||F().gaveCoffee},
   {from:'cimitero', hs:'crypt', into:'cripta', ch:[1,2,5,6]},
   {from:'faro', hs:'hut', into:'casetta', ch:[1,2,5,6]},
   {from:'porto', hs:'boat', into:'barca', ch:[1,2,5,6]},
@@ -81,21 +83,25 @@ say('look:lettonon use:lettonon','Il letto del nonno. Sotto c\'è un mazzo di as
 /* ---------- entrare, inoltrare, uscire ---------- */
 const prefKey=(v,id)=>{ const n=CHN(); return (n>1&&AV_S['c'+n+'|'+v+':'+id])||AV_S[v+':'+id]; };
 const DOOR_BY={}; for (const r in PL) DOOR_BY[r]=DOORS.filter(d=>d.into===r);
+window.avWalkTo=(t,sp)=>{ if (AV.busy || AV.dlg) return; const isDoor=x=>x && x.type==='hs' && (['esci','exitw','exitf'].includes(x.id) || DOORS.some(d=>d.from===H.room && d.hs===x.id && d.ch.includes(CHN())));
+  if (!isDoor(t) && sp){ const h=avHsList().find(h=>Math.abs(sp.x-h.x)<=h.w/2+6 && Math.abs(sp.y-h.y)<=h.h/2+6 && isDoor({type:'hs',id:h.id})); if (h) t={type:'hs',id:h.id,n:h.n,x:h.x}; }
+  if (isDoor(t)) avDo('walk',t,null); };
+window.avDoorAt=(sp)=>{ const isD=id=>['esci','exitw','exitf'].includes(id) || DOORS.some(d=>d.from===H.room && d.hs===id && d.ch.includes(CHN())); const h=avHsList().find(h=>Math.abs(sp.x-h.x)<=h.w/2+6 && Math.abs(sp.y-h.y)<=h.h/2+6 && isD(h.id)); return h?{type:'hs',id:h.id,n:h.n,x:h.x}:null; };
 async function leave(){ const d=DOOR_BY[H.room].find(x=>x.ch.includes(CHN()))||DOOR_BY[H.room][0]; const back=d.from;
   const t=setInterval(async()=>{ if (AV.busy||AV.dlg) return; clearInterval(t); await avGo(back); const h=avHsList().find(x=>x.id===d.hs); if (h){ H.X=clamp(h.x+(h.x>240?-40:40),40,440); camX=H.X; avRender(); } },80); }
 const oDo=window.avDo;
 window.avDo=async function(verb,t,item){
   if (t && t.type==='hs'){
     if (PL[H.room]){
+      if (t.id==='esci' && verb==='look') return me('Da lì si esce.','That\'s the way out.');
       if (t.id==='esci') return leave();
       const fw=FWD[H.room]&&FWD[H.room][t.id]; if (fw) return oDo.call(this,verb,{...t,id:fw},item);
     }
-    if ((verb==='open' || verb==='walk') && !item){ const d=DOORS.find(d=>d.from===H.room && d.hs===t.id && d.ch.includes(CHN()));
-      if (d){ const ok=!d.when||d.when(); const h=prefKey('open',t.id);
-        if (h && verb==='open') await oDo.call(this,verb,t,item);
-        if (!ok){ if (!h) await me(...(d.no||['Non si entra. Per ora.','Can\'t go in. Not yet.'])); return; }
-        if (!h || verb==='walk') await me('Entro.','I go in.');
-        return avGoLater(d.into); } }
+    if ((verb==='open' || verb==='walk' || verb==='use') && !item){ const d=DOORS.find(d=>d.from===H.room && d.hs===t.id && d.ch.includes(CHN()));
+      if (d){ if (!d.when||d.when()) return avGoLater(d.into);
+        if (verb==='walk') return;
+        if (prefKey(verb,t.id)) return oDo.call(this,verb,t,item);
+        return me(...(d.no||['Non si entra. Per ora.','Can\'t go in. Not yet.'])); } }
   }
   return oDo.apply(this,arguments); };
 function hook(){ try{ for (const r in PL) ROOMS[r]={ name:PL[r][1].toUpperCase(), cam:38, mx:82, my:48, mw:20, mh:20, out:1, locked:1, secret:1 }; }catch(e){ console.warn(e); } }

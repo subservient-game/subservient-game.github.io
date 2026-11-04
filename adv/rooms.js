@@ -6,8 +6,8 @@ Object.assign(AV_HS,{
   faroin:[hs('stairs',250,140,120,200,'scala a chiocciola','spiral staircase'), hs('oillamp',90,120,30,40,'lampada a olio','oil lamp'), hs('porthole',380,90,50,50,'oblò','porthole'), hs('logbook',400,200,50,30,'diario di bordo','logbook'), hs('exitf',30,180,50,120,'uscita','exit')]
 });
 const back=(r)=>()=>avGoLater(r);
-avOn('use:exitw open:exitw look:exitw', back('porto'));
-avOn('use:exitf open:exitf look:exitf', back('faro'));
+avOn('use:exitw open:exitw walk:exitw', back('porto'));
+avOn('use:exitf open:exitf walk:exitf', back('faro'));
 avOn('look:crate',()=>me(F().receipt?'La cassa sfasciata. Dentro c\'era la ricevuta. Ora ci sono solo trucioli e un ragno offeso.':'Una cassa inchiodata con scritto "G. — RISERVATO". Inchiodata da uno che odia il mondo intero.', F().receipt?'The smashed crate. The receipt was inside. Now just splinters and an offended spider.':'A crate nailed shut, marked "G. — PRIVATE". Nailed by someone who hates the whole world.'));
 avOn('open:crate use:crate take:crate',()=>me(F().receipt?'Già aperta. Più aperta di così si chiama legna.':'A mani nude? Mi rompo le unghie e poi il morale. Serve qualcosa per sfasciarla.', F().receipt?'Already open. Any more open and it\'s firewood.':'Barehanded? I\'d break my nails and then my spirit. I need something to smash it.'));
 avOn('talk:brutus',()=>me(F().dogFed?'Brutus russa. Gli dico "bravo". Fa una scoreggia nel sonno. La prendo come un sì.':'«Buono, Brutus... cuccia...». Brutus mi mostra tutti i denti. Ne ha più di me.', F().dogFed?'Brutus snores. I say "good boy". He farts in his sleep. I\'ll take it as a yes.':'"Easy, Brutus... sit...". Brutus shows me all his teeth. He has more than me.'));

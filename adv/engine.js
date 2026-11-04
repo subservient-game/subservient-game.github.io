@@ -170,9 +170,10 @@ async function avTap(e){
   else if (holG.contains(e.target)) t={type:'self', id:'me', x:H.X};
   else { const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
   const verb=AV.verb;
+  if (t && t.type!=='hs' && !AV.item && (!verb || ['walk','use','open'].includes(verb)) && window.avDoorAt){ const d=avDoorAt(sp); if (d && (t.type==='self' || verb==='walk' || (t.type==='npc' && verb && !AV_S['c'+CHN()+'|'+verb+':'+t.id] && !AV_S[verb+':'+t.id]))) t=d; }
   if (!verb && t && AV.sel && AV.sel.type===t.type && AV.sel.id===t.id && !AV.isel){ AV.sel=null; avClearMarks(); return avRun(t.type==='npc'?'talk':'look', t, null); }
   if (!verb){ if (t){ AV.sel=t; AV.isel=null; avRender(); avHighlight(t, true); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase())+' — '+T('scegli un\'azione','pick an action'); } else { AV.sel=null; avRevealAll(); $('advLine').textContent=T('Scegli un\'azione','Pick an action'); } return; }
-  if (verb==='walk'){ AV.item=null; AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t?t.x:sp.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
+  if (verb==='walk'){ AV.item=null; AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t?t.x:sp.x,30,450), id).then(()=>{ if (alive(id)){ setPose('idle'); if (window.avWalkTo) avWalkTo(t, sp); } }); return; }
   if (!t){ avRevealAll(); return; }
   if (verb==='give' && !AV.item){ avSentence(avName(t)); return me('Dare cosa? Scegli prima un oggetto.','Give what? Pick an item first.'); }
   avSentence(avName(t)); avRun(verb, t, AV.item);
@@ -181,7 +182,7 @@ function avBar(){
   $('advVerbs').addEventListener('click', e=>{ const b=e.target.closest('[data-v]'); if(!b) return; const v=b.dataset.v; if (AV.busy) { avAdvance(); return; }
     if (v==='map') return avMap();
     if (AV.sel){ const t=AV.sel; AV.sel=null; avClearMarks();
-      if (v==='walk'){ AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t.x,30,450), id).then(()=>{ if (alive(id)) setPose('idle'); }); return; }
+      if (v==='walk'){ AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t.x,30,450), id).then(()=>{ if (alive(id)){ setPose('idle'); if (window.avWalkTo) avWalkTo(t); } }); return; }
       if (v==='give'){ AV.verb='give'; AV.item=null; AV.pendT=t; avRender(); $('advLine').textContent=T('Dai... cosa? Tocca un oggetto dell\'inventario','Give... what? Tap an inventory item'); return; }
       AV.verb=v; avSentence(avName(t)); avRun(v, t, null); return; }
     if (AV.isel){ const i=AV.isel; AV.isel=null;
