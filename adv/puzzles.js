@@ -163,7 +163,6 @@ function boot(){
   const ch1=()=>!(AV.st.ch>1);
   const oP=window.avPushups; window.avPushups=async function(goal,secs){ if (ch1()){ if (H.room==='gym' && goal===25) return PUZ.rocky(); if (H.room==='gym' && goal===30) return PUZ.treadmill(); if (goal===20) return PUZ.toto(); if (goal===15) return PUZ.milk(); if (goal===22) return PUZ.goat(); } return oP?oP.apply(this,arguments):true; };
   const oF=window.avFishing; window.avFishing=async function(){ const c=AV.st.ch||1; if (c<=2) return PUZ.fish(); if (c===3) return PUZ.spear(); return oF?oF.apply(this,arguments):true; };
-  window.avBingoGame=async function(){ return PUZ.tombola(); };
   window.avSwimGame=async function(){ return PUZ.swim(); };
   window.avPairsGame=async function(){ return PUZ.memory(); };
   window.avLavaGame=async function(){ return PUZ.lava(); };
@@ -171,9 +170,7 @@ function boot(){
   const oC=window.avCrows; window.avCrows=async function(){ if (ch1()) return PUZ.crows(); return oC?oC.apply(this,arguments):true; };
   const oS=window.avShaveGame; window.avShaveGame=async function(){ if (ch1()) return PUZ.shave(); return oS?oS.apply(this,arguments):true; };
   const oD=window.avDanceGame; window.avDanceGame=async function(){ if (ch1()) return PUZ.dance(); return oD?oD.apply(this,arguments):true; };
-  window.avBriscola=async function(opp,level){ return sfida(opp||'?', level||1); };
-  window.avDiceGame=async function(){ return sfida(T('Ercole','Ercole'),2); };
-  window.avMorraGame=async function(){ return sfida('Gina',2); };
+  /* i giochi d'azzardo restano quelli veri: briscola, dadi, morra, tombola */
   // suggerimenti per i trucchi
   try{ const H1=[
     [()=>F().tr_rocky && !F().pushups && !avHas('grappa'),'Rocky sviene all\'odore dell\'alcol. In cantina, a casa, le botti del nonno sono piene di grappa.','Rocky faints at the smell of alcohol. Back home, Grandpa\'s cellar barrels are full of grappa.'],
