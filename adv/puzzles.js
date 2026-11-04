@@ -6,7 +6,7 @@
 const L=(it,en)=>[it,en];
 const T2=l=>(typeof LANG!=='undefined'&&LANG!=='it')?l[1]:l[0];
 const ff=()=>F();
-const know=k=>!!ff()['k_'+k];
+const know=k=>{ if (ff()['k_'+k]) return true; const st=AV.st; for (let c=1;c<=6;c++){ const x=st['ch'+c]; if (x&&x.f&&x.f['k_'+k]) return true; } return false; };
 const learn=(k)=>{ const f=ff(); if (!f['k_'+k]){ f['k_'+k]=1; avSave(); } };
 
 /* ---------- indizi: guardando certe cose si scopre il trucco ---------- */
@@ -19,8 +19,14 @@ const CLUES={
   booth:['song',L('Sulla consolle c\'è la scaletta del DJ. Accanto a "Il valzer di nonna Tina" qualcuno ha scritto: "NON METTERLA MAI QUANDO BALLA TONY: era la canzone di sua madre, si mette a piangere e si siede."','On the DJ booth there\'s the playlist. Next to "Granny Tina\'s Waltz" someone wrote: "NEVER PLAY IT WHILE TONY DANCES: it was his mum\'s song, he cries and sits down."')],
   crates:['bait',L('Sulle casse del pesce, un biglietto di Ciccio: "Esca segreta: mortadella. I pesci di qui sono di bocca buona. Come il sindaco."','On the fish crates, a note from Ciccio: "Secret bait: mortadella. The fish round here aren\'t fussy. Like the mayor."')],
 };
+const CLUES2=[
+  [['c3|look:cascata','c4|look:cascata'],'bubble',L('Dietro la cascata, a metà profondità, c\'è una grotta piena d\'aria: una bolla dove si può riprendere fiato. I pesci ci entrano e ne escono come al bar.','Behind the waterfall, halfway down, there\'s an air pocket: you can catch your breath there. Fish pop in and out like it\'s a bar.')],
+  [['c3|look:sassi'],'spot',L('Tra i sassi della laguna salgono bollicine: i pesci grassi si nascondono lì sotto. Chi colpisce dove ci sono le bollicine mangia.','Bubbles rise between the lagoon stones: the fat fish hide under there. Strike where the bubbles are and you eat.')],
+  [['c2|look:ricettario'],'stir',null],
+];
+function wrapLooks2(){ for (const [keys,k,line] of CLUES2) for (const key of keys){ const old=AV_S[key]; AV_S[key]=async(...a)=>{ if (old) await old(...a); learn(k); if (line) return me(line[0],line[1]); }; } }
 function wrapLooks(){ for (const [hs,[k,line]] of Object.entries(CLUES)){ const key='look:'+hs; const old=AV_S[key];
-  AV_S[key]=async(...a)=>{ if (!(AV.st.ch>1)){ if (old) await old(...a); learn(k); return me(line[0],line[1]); } return old?old(...a):undefined; }; } }
+  AV_S[key]=async(...a)=>{ if (old) await old(...a); learn(k); return me(line[0],line[1]); }; } wrapLooks2(); }
 
 /* ---------- la scelta del trucco ---------- */
 async function trick(opts){ // opts: [{t:[it,en], ok:true|false, show:()=>bool}]
@@ -79,6 +85,39 @@ const PUZ={
       {t:L('Lascio perdere.','Give up.'),ok:false}]); },
 };
 
+PUZ.tombola=async()=>{ mark('tombola');
+  return trick([{t:L('Gioco onestamente e prego.','Play honestly and pray.'),ok:false,say:L('Assunta fa tombola al terzo numero. Mi guarda e sorride. Ha i denti di un piranha in pensione.','Assunta gets bingo on the third number. She smiles at me. Retired piranha teeth.')},
+    {t:L('Grido "TOMBOLA!" a caso.','Shout "BINGO!" at random.'),ok:false,say:L('Dodici vedove si girano insieme. Non ho mai avuto così paura.','Twelve widows turn together. I\'ve never been so scared.')},
+    {t:L('Controllo il sacchetto dei numeri con la lente.','Check the number bag with the magnifying glass.'),ok:true,show:()=>avHas('lente'),say:L('Con la lente guardo i numeri nel sacchetto: alcuni hanno l\'angolo piegato con l\'unghia. Sono quelli di Assunta. Li faccio vedere a Pina. Assunta viene squalificata e io faccio tombola con la sua cartella. Giustizia.','With the lens I check the numbers in the bag: some have a corner bent with a fingernail. Assunta\'s. I show Pina. Assunta is disqualified and I win with her card. Justice.')},
+    {t:L('Lascio perdere.','Give up.'),ok:false}]); };
+PUZ.swim=async()=>{ mark('swim');
+  return trick([{t:L('Mi tuffo e nuoto più forte che posso.','Dive and swim as hard as I can.'),ok:false},
+    {t:L('Prendo un respiro enorme e scendo piano.','Take a huge breath and go down slowly.'),ok:false},
+    {t:L('Scendo a metà, mi fermo nella bolla d\'aria dietro la cascata, respiro e riparto.','Go halfway, stop in the air pocket behind the waterfall, breathe, carry on.'),ok:true,show:()=>know('bubble'),say:L('Giù fino alla bolla d\'aria dietro la cascata. Respiro, saluto un pesce che fa lo stesso, e riparto verso il fondo. Questa volta ci arrivo.','Down to the air pocket behind the waterfall. I breathe, nod to a fish doing the same, and head for the bottom. This time I make it.')},
+    {t:L('Lascio perdere.','Give up.'),ok:false}]); };
+PUZ.spear=async()=>{ mark('spear');
+  return trick([{t:L('Colpisco a caso nell\'acqua.','Stab the water at random.'),ok:false},
+    {t:L('Aspetto che un pesce mi passi vicino.','Wait for a fish to pass by.'),ok:false,say:L('Passa. Mi guarda. Se ne va. Ho visto meno disprezzo negli occhi di mio suocero.','It passes. Looks at me. Leaves. I\'ve seen less contempt in my father-in-law\'s eyes.')},
+    {t:L('Colpisco tra i sassi, dove salgono le bollicine.','Strike between the stones, where the bubbles rise.'),ok:true,show:()=>know('spot'),say:L('Aspetto le bollicine tra i sassi. Zac! Un pesce grasso come un notaio. Lo tiro su con la lancia.','I wait for the bubbles between the stones. Thwack! A fish as fat as a notary. Up it comes on the spear.')},
+    {t:L('Lascio perdere.','Give up.'),ok:false}]); };
+PUZ.stir=async()=>{ mark('stir');
+  return trick([{t:L('Mescolo in senso orario, come tutti.','Stir clockwise, like everyone.'),ok:false},
+    {t:L('Mescolo forte e veloce.','Stir hard and fast.'),ok:false},
+    {t:L('Mescolo sempre in senso antiorario, come scritto nel ricettario della nonna.','Always stir anticlockwise, as Grandma\'s cookbook says.'),ok:true,show:()=>know('stir')||avHas('ricettario'),say:L('Antiorario. Sempre. Lento. Il risotto si fa cremoso come una ninna nanna. Si sente profumo di nonna.','Anticlockwise. Always. Slowly. The risotto turns creamy as a lullaby. It smells of Grandma.')},
+    {t:L('Lascio perdere.','Give up.'),ok:false}]); };
+PUZ.memory=async()=>{ mark('memory'); const st=AV.st;
+  const Q=[[L('Come si chiama la capra di Rino?','What\'s Rino\'s goat called?'),[L('Ernestina','Ernestina'),L('Assunta','Assunta'),L('Ciabatta','Ciabatta')],0],
+   [L('Chi ti ha rubato il Mestolo d\'Oro in piazza?','Who stole the Golden Ladle in the piazza?'),[L('Tonino','Tonino'),L('Un corvo','A crow'),L('Il sindaco','The mayor')],1],
+   [L('Di che anno è il pacco del deposito?','What year is the left-luggage parcel from?'),[L('1979','1979'),L('1987','1987'),L('1998','1998')],1],
+   [L('Dove hai ritrovato il Mestolo rubato dal corvo?','Where did you find the Ladle the crow stole?'),[L('In cantina','In the cellar'),L('Nel nido in cima al faro','In the nest atop the lighthouse'),L('In municipio','In the town hall')],1]];
+  await np('nonno','La Porta della Memoria vuole ricordi veri. Vediamo se la tua testa serve a qualcosa oltre a reggere il cappello.','The Gate of Memory wants real memories. Let\'s see if your head is good for more than holding a hat.');
+  for (const [q,ops,ok] of Q){ await np('nonno',q[0],q[1]); const order=ops.map((o,i)=>i).sort(()=>Math.random()-.5); const c=await avChoose(order.map(i=>ops[i])); if (order[c]!==ok) return false; }
+  return true; };
+PUZ.lava=async()=>{ mark('lava');
+  if (!avHas('pagina')){ await me('Tre pietre che ballano sulla lava. Senza sapere quali reggono, è una lotteria con le chiappe.','Three wobbly stones on the lava. Without knowing which hold, it\'s a lottery with my backside.'); return trick([{t:L('Salto e speriamo bene.','Jump and hope.'),ok:false},{t:L('Torno indietro a cercare indizi.','Go back for clues.'),ok:false}]); }
+  return trick([{t:L('Sinistra, destra, centro.','Left, right, centre.'),ok:false},{t:L('Centro, centro, destra.','Centre, centre, right.'),ok:false},
+    {t:L('Le pietre che si accendono a coppie: salto solo su quelle che brillano insieme.','The stones light up in pairs: jump only on the ones glowing together.'),ok:true,say:L('Aspetto: due pietre si accendono insieme, poi altre due. Salto solo su quelle. Arrivo dall\'altra parte con le chiappe intatte e la dignità quasi.','I wait: two stones glow together, then two more. I only jump on those. I reach the other side bum intact, dignity almost.')},
+    {t:L('Lascio perdere.','Give up.'),ok:false}]); };
 /* ---------- Sfida di Sfottò ---------- */
 const SF=[
  [L('Ho visto vongole con più cervello di te.','I\'ve seen clams with more brains than you.'),L('Le avrai viste allo specchio, mentre ti pettinavi.','You saw them in the mirror, combing your hair.')],
@@ -123,7 +162,12 @@ function boot(){
   wrapLooks();
   const ch1=()=>!(AV.st.ch>1);
   const oP=window.avPushups; window.avPushups=async function(goal,secs){ if (ch1()){ if (H.room==='gym' && goal===25) return PUZ.rocky(); if (H.room==='gym' && goal===30) return PUZ.treadmill(); if (goal===20) return PUZ.toto(); if (goal===15) return PUZ.milk(); if (goal===22) return PUZ.goat(); } return oP?oP.apply(this,arguments):true; };
-  const oF=window.avFishing; window.avFishing=async function(){ if (ch1()) return PUZ.fish(); return oF?oF.apply(this,arguments):true; };
+  const oF=window.avFishing; window.avFishing=async function(){ const c=AV.st.ch||1; if (c<=2) return PUZ.fish(); if (c===3) return PUZ.spear(); return oF?oF.apply(this,arguments):true; };
+  window.avBingoGame=async function(){ return PUZ.tombola(); };
+  window.avSwimGame=async function(){ return PUZ.swim(); };
+  window.avPairsGame=async function(){ return PUZ.memory(); };
+  window.avLavaGame=async function(){ return PUZ.lava(); };
+  window.avStirGame=async function(){ return PUZ.stir(); };
   const oC=window.avCrows; window.avCrows=async function(){ if (ch1()) return PUZ.crows(); return oC?oC.apply(this,arguments):true; };
   const oS=window.avShaveGame; window.avShaveGame=async function(){ if (ch1()) return PUZ.shave(); return oS?oS.apply(this,arguments):true; };
   const oD=window.avDanceGame; window.avDanceGame=async function(){ if (ch1()) return PUZ.dance(); return oD?oD.apply(this,arguments):true; };
@@ -142,7 +186,14 @@ function boot(){
     [()=>F().tr_dance && !F().k_song && !F().danceWon,'Tony ha un punto debole musicale. Il DJ lo sa: dai un\'occhiata alla consolle.','Tony has a musical weak spot. The DJ knows: check the booth.'],
     [()=>F().tr_fish && !F().k_bait && !F().fishDone,'Ciccio ha un\'esca segreta. Guarda le sue casse del pesce.','Ciccio has a secret bait. Look at his fish crates.'],
     [()=>F().tr_crows && !F().nestDone && !avHas('piuma'),'I corvi obbediscono a chi porta la piuma nera.','The crows obey whoever wears the black feather.']];
-    AV_HINTS.unshift(...H1); }catch(e){}
+    AV_HINTS.unshift(...H1);
+    const add=(arr,...h)=>{ if (arr) arr.unshift(...h); };
+    add(typeof AV_HINTS2!=='undefined'?AV_HINTS2:null,[()=>F().tr_tombola && !F().bingoWon,'Pina dice che Assunta bara. Indaga con la lente.','Pina says Assunta cheats. Investigate with the lens.'],[()=>F().tr_fish && !know('bait'),'Ciccio usa un\'esca segreta: è scritto sulle casse del pesce al porto.','Ciccio uses a secret bait: it\'s written on the fish crates at the harbour.']);
+    const C=(typeof AV_CHS!=='undefined'?AV_CHS:{});
+    if (C[3]) add(C[3].HINTS,[()=>F().tr_swim && !know('bubble'),'Prima di tuffarti, guarda bene la cascata.','Before diving, take a good look at the waterfall.'],[()=>F().tr_spear && !know('spot'),'I pesci si nascondono da qualche parte nella laguna. Guarda i sassi.','The fish hide somewhere in the lagoon. Look at the stones.']);
+    if (C[4]) add(C[4].HINTS,[()=>F().tr_swim && !know('bubble'),'Prima di tuffarti, guarda bene la cascata.','Before diving, take a good look at the waterfall.'],[()=>F().tr_lava && !avHas('pagina'),'Per la lava ti serve un\'indicazione scritta: cerca dietro la cascata.','For the lava you need written directions: look behind the waterfall.']);
+    for (const n of [5,6]) if (C[n]) add(C[n].HINTS,[()=>F().tr_stir && !know('stir') && !avHas('ricettario'),'Il ricettario di nonna Gisella diceva come mescolare il risotto. Te lo ricordi?','Grandma Gisella\'s cookbook said how to stir the risotto. Remember?']);
+  }catch(e){}
 }
 if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
