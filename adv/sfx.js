@@ -31,7 +31,7 @@ function ambient(r){ try{ if (amb){ amb.forEach(n=>{ try{ n.stop(); }catch(e){} 
   amb=nodes; }catch(e){} }
 /* dissolvenza e nome del luogo */
 const css=document.createElement('style'); css.textContent=`#advFade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity .28s}
- #advFade.on{opacity:1} #advPlace{position:absolute;left:0;right:0;bottom:14%;text-align:center;z-index:31;pointer-events:none;font:700 clamp(18px,5cqw,30px) Fredoka,sans-serif;color:#ffd166;text-shadow:0 2px 0 #000,0 0 10px #000;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+ #advFade.on{opacity:1} #advPlace{position:absolute;left:0;right:0;top:9%;text-align:center;z-index:31;pointer-events:none;font:700 clamp(18px,5cqw,30px) Fredoka,sans-serif;color:#ffd166;text-shadow:0 2px 0 #000,0 0 10px #000;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
  #advPlace.on{opacity:1;transform:none}`; document.head.appendChild(css);
 function els(){ const cam=document.getElementById('cam'); if (!cam) return {}; let f=document.getElementById('advFade'), p=document.getElementById('advPlace'); if (!f){ f=document.createElement('div'); f.id='advFade'; cam.appendChild(f); } if (!p){ p=document.createElement('div'); p.id='advPlace'; cam.appendChild(p); } return {f,p}; }
 let lastRoom=null;

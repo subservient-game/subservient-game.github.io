@@ -97,7 +97,7 @@ function hook(){
     if (opts.length===2) return table();
     const o=await avChoose(opts.map(x=>x[0])); const f=opts[o][1]; return f?f():undefined; }; };
   const keys=new Set(['use:table']); for (const k of Object.keys(AV_S)) if (/(^|\|)use:table$/.test(k)) keys.add(k);
-  keys.forEach(wrap);
+  keys.forEach(wrap); keys.forEach(k=>AV_ALLCH.add(k)); AV_ALLCH.add('look:table');
   for (const n of [3,4]){ const k='c'+n+'|talk:tonino'; const o=AV_S[k]; if (!o) continue;
     AV_S[k]=async(...a)=>{ const c=await avChoose([['Parla','Talk'],['💰 Giochiamo a Pippi? (ha un mazzo in tasca)','💰 Gamble for Pippi? (he has a deck in his pocket)']]); if (c===1){ await np('tonino','Ho sempre un mazzo in tasca. Anche sotto la doccia. Soprattutto sotto la doccia.','I always carry a deck. Even in the shower. Especially in the shower.'); return table(); } return o(...a); }; }
   const oLook=AV_S['look:table']; AV_S['look:table']=(...a)=>H.room!=='bisca'&&oLook?oLook(...a):me('Il tavolo verde. Panno bruciato di sigaro, macchie di vino e un dente. Si gioca a Pippi: briscola, sette e mezzo, dadi, morra. E a insulti.','The card table. Cigar-burnt felt, wine stains and a tooth. You play for Pippi: briscola, seven and a half, dice, morra. And insults.');

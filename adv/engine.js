@@ -15,7 +15,12 @@ const CHT=()=>CHN()>2?AV_CHS[CHN()]:null;
 const castOf=id=>(CHT()&&CHT().CAST[id])||(CH2()&&AV_CAST2[id])||AV_CAST[id]||null;
 function avOn2(keys, fn){ keys.trim().split(/\s+/).forEach(k=>AV_S['c2|'+k]=fn); }
 let AV_START={room:'living', open:[]};
-function avOn(keys, fn){ keys.trim().split(/\s+/).forEach(k=>AV_S[k]=fn); }
+function avOn(keys, fn){ keys.trim().split(/\s+/).forEach(k=>AV_S[k]=k.includes('|')?fn:avGuard(k,fn)); }
+/* i gestori del capitolo 1 si proteggono da soli: anche se un capitolo successivo li richiama come ripiego, non rimettono in moto la storia vecchia */
+function avGuard(k, fn){ if (fn.__g) return fn; const g=function(t, item, verb){ if (CHN()>1 && typeof avGenOk==='function'){ const c=avGenOk(k, fn);
+    if (c==='no') return avOldDone(verb||k.split(':')[0], t||{type:'hs',id:k.split(':')[1]}, item);
+    if (c==='ro'){ const st=AV.st, own=st.f, m={}; for (let n=1;n<st.ch;n++){ const c2=st['ch'+n]; if (c2&&c2.f) Object.assign(m,c2.f); } Object.assign(m,own); st.f=m; try{ return fn.apply(this,arguments); } finally{ st.f=own; } } }
+  return fn.apply(this,arguments); }; g.__g=1; g.__src=fn.__src||String(fn); return g; }
 /* ---------- state ---------- */
 function avSave(){ try{ localStorage.setItem('vainAdv1', JSON.stringify(AV.st)); }catch(e){} }
 function avLoad(){ try{ AV.st=JSON.parse(localStorage.getItem('vainAdv1')||'null'); }catch(e){} if (!AV.st||AV.st.v!==2) AV.st={v:2, room:AV_START.room, inv:[], f:{}, open:AV_START.open.slice(), coins:[], tro:[], t0:Date.now(), play:0}; }
@@ -135,11 +140,33 @@ function avMenu(){
 function avHint(){ const x=(CHT()?CHT().HINTS:(CH2()?AV_HINTS2:AV_HINTS)).find(h=>h[0]()); return x? T(x[1],x[2]) : T('Non ho idee. Guarda tutto, parla con tutti, prova a combinare le cose.','No ideas. Look at everything, talk to everyone, try combining things.'); }
 const AV_NOPE=[['Non credo funzioni.','I don\'t think that works.'],['Preferirei di no.','I\'d rather not.'],['Non ha senso nemmeno per me.','That makes no sense even to me.'],['Sì, e poi? No.','Sure, and then? No.'],['Mia madre non approverebbe. Mia madre non approva niente, comunque.','My mother wouldn\'t approve. She approves of nothing anyway.'],['Bella idea. Sbagliata, ma bella.','Nice idea. Wrong, but nice.'],['Neanche da ubriaco.','Not even drunk.'],['Il mio cervello dice no. Il mio fegato pure.','My brain says no. So does my liver.']];
 function avNope(){ const x=AV_NOPE[Math.floor(Math.random()*AV_NOPE.length)]; return me(x[0],x[1]); }
+/* nei capitoli dopo il primo, i gestori del capitolo 1 valgono solo se sono pura descrizione:
+   niente che cambi la storia, dia/tolga oggetti o parli di cose del capitolo 1 */
+const AV_ALLCH=window.AV_ALLCH=new Set();
+/* oggetti già sfruttati in un capitolo precedente */
+const AV_OLD_DONE=[['Qui ho già frugato a fondo, l\'altra volta. Adesso c\'è solo polvere e il ricordo della mia dignità.','I already searched here thoroughly last time. Now there\'s only dust and the memory of my dignity.'],
+ ['Già fatto, già visto, già sofferto. Non ripeto gli errori. Ne faccio di nuovi.','Done it, seen it, suffered it. I don\'t repeat mistakes. I make new ones.'],
+ ['Da qui ho già preso tutto quello che serviva. Il resto non lo vuole nessuno, neanche io.','I already took everything useful from here. Nobody wants the rest, not even me.'],
+ ['L\'ultima volta che ci ho messo le mani è finita in una storia lunghissima. Lascio stare.','Last time I put my hands on this it turned into a very long story. I\'ll leave it.'],
+ ['Niente di nuovo. Le cose non cambiano solo perché io ci speri.','Nothing new. Things don\'t change just because I hope they will.'],
+ ['Questo capitolo della mia vita l\'ho già chiuso. Con lo scotch.','I\'ve already closed this chapter of my life. With tape.'],
+ ['Ci ho già cavato fuori quello che c\'era. Adesso è vuoto come le promesse elettorali.','I already got out whatever was in there. Now it\'s empty as election promises.'],
+ ['Rifarlo? No. Ho una regola: ogni stupidaggine una volta sola. Due, se paga qualcuno.','Do it again? No. I have a rule: every stupid thing once. Twice, if someone pays.']];
+let avOldI=Math.floor(Math.random()*8);
+function avOldDone(verb, t, item){ if (verb==='look' || verb==='talk' || verb==='walk' || item) return window.avDefault ? avDefault(verb, t, item) : avNope(); const l=AV_OLD_DONE[avOldI++%AV_OLD_DONE.length]; return me(l[0], l[1]); }
+const AV_GEN_NO=new Set(['look:trunk','look:boxes','look:trapdoor','look:cot','use:cot','look:radar','look:gelato','look:tonino','look:bench','look:tools','look:sink','take:ladles','use:ladles','look:ghost','look:tomb2']);
+function avGenOk(k, fn){ if (AV_ALLCH.has(k)) return 'ok'; if (AV_GEN_NO.has(k)) return 'no'; const s=fn.__src||(fn.__src=String(fn));
+  if (/mestol|ladle|sagra|festival|sindac|mayor|timbr|stamp|detective|corv|crow|indag|investig|pappalardo|gennaro|ricevut|receipt|cesso|toilet fish|mille pippi|thousand pippi|tre di notte|3 a\.m|guanti|gloves|torcia|torch|ascia|\baxe\b|baule|trunk/i.test(s)) return 'no';
+  if (/avAdd|avDel|avSwap|avOpen|avCoin|avTrophy|avGo|avSave|\bnp\(|npcAct|avSay|avTalk|avChoose|avLines|AV_S|\bold\b|\.\.\.a|AV\.st|window\.av|await av[A-Z]|\bf\.\w+\s*=[^=]|F\(\)\.\w+\s*=[^=]|\+\+|avCode|avQuiz|sheet\(/.test(s)) return 'no';
+  if (/F\(\)|\bf\b/.test(s)) return 'ro'; return 'ok'; }
 async function avDo(verb, t, item){
   const id=t.id;
   const keys = item ? [verb+':'+id+':'+item, (t.type==='item'?verb+':'+item+':'+id:null), verb+':'+id+':*', '*:'+id+':'+item] : [verb+':'+id, '*:'+id];
   if (CHN()>1){ const pre='c'+CHN()+'|'; for (const k of keys){ if (k && AV_S[pre+k]) return AV_S[pre+k](t, item, verb); } }
-  for (const k of keys){ if (k && AV_S[k]) return AV_S[k](t, item, verb); }
+  for (const k of keys){ if (k && AV_S[k]){
+    if (CHN()>1){ const c=avGenOk(k, AV_S[k]); if (c==='no') return avOldDone(verb, t, item);
+      if (c==='ro'){ const st=AV.st, own=st.f, m={}; for (let n=1;n<st.ch;n++){ const c2=st['ch'+n]; if (c2&&c2.f) Object.assign(m,c2.f); } Object.assign(m,own); st.f=m; try{ return AV_S[k](t, item, verb); } finally{ st.f=own; } } }
+    return AV_S[k](t, item, verb); } }
   if (window.avDefault) return avDefault(verb, t, item);
   return avNope();
 }
