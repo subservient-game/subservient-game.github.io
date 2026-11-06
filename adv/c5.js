@@ -65,7 +65,7 @@ avOnN(5,'talk:gina',async()=>{ const f=F(); await avTalk('gina',[
   {id:'hi', q:['Come stai?','How are you?'], run:()=>np('gina','Ho mangiato due mazzi di carte. Gli assi sanno di cartone. I re di colla.','I ate two decks of cards. Aces taste of cardboard. Kings of glue.')}
   ]); });
 avOnN(5,'look:tomb1',()=>me('La tomba di Assunta, la moglie di Ugo. Nel vaso, i fiori che le avevo portato sono diventati... crochi viola. Con dei filamenti rossi. Zafferano!','Assunta\'s grave, Ugo\'s wife. In the vase, the flowers I brought have become... purple crocuses. With red threads. Saffron!'));
-avOnN(5,'take:tomb1',async()=>{ if (avHas('zafferano')) return me('Ne ho preso abbastanza. Assunta mi perdonerà. Forse.','I took enough. Assunta will forgive me. Maybe.');
+avOnN(5,'take:tomb1',async()=>{ if (avHas('zafferano')||F().risottoDone) return me('Ne ho preso abbastanza. Assunta mi perdonerà. Forse.','I took enough. Assunta will forgive me. Maybe.');
   await np('ugo','EHI! Rubi i fiori alla mia Assunta?! ...Per un risotto? Per fermare la fame? ...Prendi. Lei odiava cucinare, almeno così cucina da morta.','HEY! Stealing my Assunta\'s flowers?! ...For risotto? To stop the hunger? ...Take them. She hated cooking, at least now she cooks dead.');
   avAdd('zafferano'); return me('Raccolgo i pistilli rossi. Zafferano vero, coltivato su una tomba. Il marketing si scrive da solo.','I pick the red threads. Real saffron, grown on a grave. The marketing writes itself.'); });
 avOnN(5,'talk:ugo',()=>np('ugo','Ho fame. Mi sono mangiato la pala. Il manico era di frassino, buono. La parte di ferro meno.','I\'m hungry. I ate my shovel. The ash handle was nice. The iron part, less so.'));

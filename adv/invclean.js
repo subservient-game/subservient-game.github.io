@@ -10,7 +10,7 @@
  };
  /* oggetti finiti: si tolgono SOLO quando la storia dice che hanno davvero finito il loro lavoro */
  const DONE=window.AV_DONE={
-  1:{guanti:f=>f.keys, retino:f=>f.fished, brillantina:f=>f.slick, baffi:f=>f.disguise, ascia:f=>f.receipt&&f.wood},
+  1:{guanti:f=>f.keys, retino:f=>f.fished, brillantina:f=>f.slick, baffi:f=>f.disguise, ascia:f=>f.receipt&&f.wood, grappa:f=>f.ugoAwake&&(f.baffoTold||f.grappaGiven)&&f.pushups},
   2:{vero:f=>f.archivio&&f.piece1},
   3:{collana:f=>f.necklaceOn, bussola:f=>f.routeFound}
  };

@@ -34,7 +34,7 @@ avOn('use:tomb2:ascia',()=>AV_S['open:tomb2']());
 avOn('use:barrels',async()=>{ const f=F(); if (avHas('enigma2') && !f.barrelKnock){ await meAct('karate',1200); f.barrelKnock=1; avSave(); avDel('enigma2'); avAdd('enigma3');
     await me('Busso alle botti, educato. Toc toc: piena. Toc toc: piena. Toc toc... vuota! Dentro c\'è un foglietto e un odore di risotto allo zafferano.','I knock on the barrels, politely. Knock knock: full. Knock knock: full. Knock knock... hollow! Inside there\'s a note and a smell of saffron risotto.');
     return me('Il Corvo è entrato in casa mia. In cantina. Mentre dormivo sul divano. Domani cambio le serrature. E il divano.','The Crow got into my house. Into my cellar. While I slept on the sofa. Tomorrow I change the locks. And the sofa.'); }
-  if (avHas('grappa')) return me('Una bottiglia basta. Due e finisco al pronto soccorso. Tre e al cimitero.','One bottle\'s enough. Two and I end up in A&E. Three, in the cemetery.');
+  if (window.AV_DONE && AV_DONE[1].grappa(F())) return me('Grappa ne ho già distribuita a mezzo paese. Se ne prendo ancora, l\'unico che resta da ubriacare sono io.','I\'ve already handed grappa to half the town. If I take more, the only one left to get drunk is me.'); if (avHas('grappa')) return me('Una bottiglia basta. Due e finisco al pronto soccorso. Tre e al cimitero.','One bottle\'s enough. Two and I end up in A&E. Three, in the cemetery.');
   await meAct('squat',1500); avAdd('grappa'); return me('Riempio una bottiglia di grappa. Solo i vapori mi hanno sturato il naso e un orecchio.','I fill a bottle with grappa. The fumes alone unblocked my nose and one ear.'); });
 /* indizio 3: il nido sulla lanterna del faro */
 avOn('open:lhdoor use:lhdoor',async()=>{ const f=F();
