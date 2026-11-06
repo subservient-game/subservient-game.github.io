@@ -10,6 +10,8 @@ const ALL=[1,2,3,4,5,6];
 const DOORS=[
   {from:'porto', hs:'warehouse', into:'magazzino', ch:[1], when:()=>F().doorOpen},
   {from:'faro', hs:'lhdoor', into:'faroin', ch:[1], when:()=>F().nestDone||F().gaveCoffee},
+  {from:'porto', hs:'warehouse', into:'magazzino', ch:[2,5,6]},
+  {from:'faro', hs:'lhdoor', into:'faroin', ch:[2,5,6]},
   {from:'cimitero', hs:'crypt', into:'cripta', ch:[1,2,5,6]},
   {from:'faro', hs:'hut', into:'casetta', ch:[1,2,5,6]},
   {from:'porto', hs:'boat', into:'barca', ch:[1,2,5,6]},
@@ -41,6 +43,8 @@ const FWD={ cripta:{altare:'crypt'}, barca:{timone:'boat'}, biglietteria:{sporte
 Object.assign(AV_HS,HSI);
 for (const n of [3,4,5,6]){ const C=avChapter(n); Object.assign(C.HS,HSI); for (const r in PL) C.ENTER[r]=C.ENTER[r]||{x:70}; }
 for (const r in PL){ AV_ENTER[r]=AV_ENTER[r]||{x:70}; AV_ENTER2[r]=AV_ENTER2[r]||{x:70}; }
+for (const r of ['magazzino','faroin']){ AV_ENTER2[r]=AV_ENTER2[r]||{x:70}; for (const n of [5,6]){ const C=avChapter(n); C.ENTER[r]=C.ENTER[r]||{x:70}; } }
+['use:exitw','open:exitw','walk:exitw','use:exitf','open:exitf','walk:exitf','use:stairs','open:stairs','take:stairs'].forEach(k=>AV_ALLCH.add(k));
 window.AV_DOORS=DOORS;
 /* ---------- battute degli oggetti interni ---------- */
 const L=(k,i,e)=>avOn(k,()=>me(i,e));
@@ -96,6 +100,9 @@ window.avDo=async function(verb,t,item){
       if (t.id==='esci' && verb==='look') return me('Da lì si esce.','That\'s the way out.');
       if (t.id==='esci') return leave();
       const fw=FWD[H.room]&&FWD[H.room][t.id]; if (fw) return oDo.call(this,verb,{...t,id:fw},item);
+    }
+    if (H.room==='magazzino' && CHN()>1 && t.id==='ladles' && verb!=='look') return oDo.call(this,verb,{...t,id:'warehouse'},item);
+    if (PL[H.room]){
     }
     if ((verb==='open' || verb==='walk' || verb==='use') && !item){ const d=DOORS.find(d=>d.from===H.room && d.hs===t.id && d.ch.includes(CHN()));
       if (d){ if (!d.when||d.when()) return avGoLater(d.into);

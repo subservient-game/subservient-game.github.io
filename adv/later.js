@@ -41,3 +41,39 @@ for (const n of [2,5,6]){ let i=0;
 /* capitolo 6: la scrivania del municipio finiva dentro la cella */
 (()=>{ if (!window.ADV || !AV_CHS[6]) return; const l=AV_CHS[6].HS.municipio=AV_CHS[6].HS.municipio||[]; const d=(AV_HS.municipio||[]).find(h=>h.id==='desk'); if (d && !l.some(h=>h.id==='desk')) l.push({...d, x:333, w:86}); })();
 (()=>{ if (!window.ADV || !AV_CHS[6]) return; const t=AV_CHS[6].CAST.tonino; if (t && t.room==='bisca') t.x=262; })();
+/* magazzino e faro nei capitoli successivi */
+(()=>{ if (!window.ADV) return; const L={
+  crate:['Quel che resta della cassa che ho sfasciato con l\'ascia. Il ragno che ci viveva ha cambiato casa. E avvocato.','What\'s left of the crate I smashed with the axe. The spider that lived in it moved out. And hired a lawyer.'],
+  ladles:['Mestoli di cioccolato in fila. Dopo tutto questo tempo nessuno li ha mangiati. Sospetto. Molto sospetto.','Chocolate ladles in a row. After all this time nobody has eaten them. Suspicious. Very suspicious.'],
+  logbook:['Il diario di Marisa. Ultima pagina: "Oggi niente di strano. Cioè, le solite cose strane."','Marisa\'s logbook. Last page: "Nothing odd today. I mean, the usual odd things."'],
+  stairs:['La scala a chiocciola. Centoquaranta gradini. Li ho già fatti. Il mio menisco se li ricorda uno per uno.','The spiral stairs. A hundred and forty steps. Done them. My meniscus remembers every single one.']};
+  for (const n of [2,5,6]) for (const [k,l] of Object.entries(L)) avOnN(n,'look:'+k,()=>me(l[0],l[1])); })();
+/* capitolo 2: il Dottor Bisturi dorme davvero sul lettino finché non lo svegli, e la sveglia del nonno si vede sul comodino */
+(()=>{ if (!window.ADV || !AV_CAST2.bisturi) return; const b=AV_CAST2.bisturi, ox=b.x, op=b.pose;
+  const asleep=()=>CHN()===2 && !F().leaveSigned;
+  Object.defineProperty(b,'pose',{get:()=>asleep()?'sleep':op, configurable:true});
+  Object.defineProperty(b,'x',{get:()=>asleep()?322:ox, configurable:true});
+  const clockHere=()=>CHN()===2 && !avHas('sveglia') && !F().leaveSigned;
+  (AV_HS2.bedroom=AV_HS2.bedroom||[]).push({id:'sveglia', x:238, y:164, w:32, h:30, n:['sveglia del nonno','grandpa\'s alarm clock'], when:clockHere});
+  avOn2('look:sveglia',()=>me('La sveglia del nonno: due campane d\'ottone e un martelletto. Nel 1962 ha svegliato mezzo condominio. Nel 1987 il nonno l\'ha lanciata contro la nonna. Funziona ancora.','Grandpa\'s alarm clock: two brass bells and a little hammer. In 1962 it woke half the building. In 1987 grandpa threw it at grandma. Still works.'));
+  avOn2('take:sveglia open:sveglia use:sveglia',async()=>{ if (avHas('sveglia')) return me('Ce l\'ho già.','Already got it.'); avAdd('sveglia'); try{ drawRoom(H.room); }catch(e){} return me('Prendo la sveglia del nonno. Pesa come un mattone e ticchetta come una bomba. Perfetta.','I take grandpa\'s alarm clock. Heavy as a brick, ticks like a bomb. Perfect.'); });
+  const oL=AV_S['c2|look:nightlamp']; avOn2('look:nightlamp',(...a)=>clockHere()?me('Il comodino. Sopra, la lampada e la vecchia sveglia del nonno con le campane d\'ottone.','The bedside table. On it, the lamp and grandpa\'s old alarm clock with brass bells.'):(oL?oL(...a):me('Il comodino. Una lampada e un calzino orfano.','The bedside table. A lamp and an orphaned sock.')));
+  for (const k of ['use:bisturi:sveglia','use:sveglia:bisturi','give:bisturi:sveglia','use:hbed:sveglia']){ const o=AV_S['c2|'+k]; if (o) AV_S['c2|'+k]=async(...a)=>{ const pr=o(...a); for (let i=0;i<40 && !F().leaveSigned;i++) await new Promise(z=>setTimeout(z,25)); try{ avSpawn(H.room); avRender(); }catch(e){} return pr; }; }
+  const oArt=AV_ART && AV_ART.bedroom; if (oArt) AV_ART.bedroom=()=>{ let s=oArt(); if (typeof CHN==='function' && clockHere()) s+=`<g transform="translate(238 166) scale(1.35)"><circle r="9" fill="#c0392b" stroke="#1d1d1d" stroke-width="1.6"/><circle r="6.4" fill="#fffaf0" stroke="#1d1d1d" stroke-width="1"/><path d="M0 0 V-4.5 M0 0 L3 1.5" stroke="#1d1d1d" stroke-width="1.2" stroke-linecap="round"/><circle cx="-7" cy="-9" r="3.4" fill="#e9b949" stroke="#1d1d1d" stroke-width="1.2"/><circle cx="7" cy="-9" r="3.4" fill="#e9b949" stroke="#1d1d1d" stroke-width="1.2"/><path d="M-6 8 l-3 4 M6 8 l3 4" stroke="#1d1d1d" stroke-width="1.6"/></g>`; return s; };
+})();
+/* indizi visibili: quando un oggetto serve, guardando il posto dove si trova lo si vede */
+(()=>{ if (!window.ADV) return;
+  const clue=(n, id, cond, it, en)=>{ const key=(n>1?'c'+n+'|':'')+'look:'+id; const old=AV_S[key]||(n>1?AV_S['look:'+id]:null);
+    const h=(...a)=>{ if (CHN()===n && cond(F())) return me(it,en); return old?old(...a):(window.avDefault?avDefault('look',a[0]||{type:'hs',id},null):avNope()); };
+    if (n>1) avOnN(n,'look:'+id,h); else { h.__src=old?(old.__src||String(old)):String(h); AV_S[key]=h; } };
+  clue(1,'ghost',f=>f.tieAsk&&!f.tieGot,'Un lenzuolo sopra una sedia. Da sotto spunta... un nodo di cravatta? I fantasmi non portano la cravatta. Credo.','A sheet over a chair. Poking out from under it... a tie knot? Ghosts don\'t wear ties. I think.');
+  clue(1,'stove',f=>f.wardrobeStuck&&!f.wardrobeOpen&&!avHas('olio'),'I fornelli. Accanto, la bottiglia d\'olio della nonna. Unge tutto: padelle, cardini, coscienze.','The stove. Next to it, grandma\'s bottle of oil. Greases everything: pans, hinges, consciences.');
+  clue(1,'ktable',f=>f.valveIn&&!f.antenna&&!avHas('forchetta'),'Il tavolo della cucina. C\'è ancora la forchetta della cena di ieri. Di metallo. Lunga. Quasi un\'antenna.','The kitchen table. Last night\'s fork is still there. Metal. Long. Almost an antenna.');
+  clue(1,'bed',f=>!f.notebook&&!avHas('taccuino'),'Il letto, disfatto dal 2019. Sotto il cuscino spunta l\'angolo di un vecchio taccuino.','The bed, unmade since 2019. The corner of an old notebook pokes out from under the pillow.');
+  clue(2,'fridge',f=>f.peaAsk&&!f.peaIn&&!avHas('piselli'),'Il frigo. Nel freezer, dietro un ghiacciolo del 1998, c\'è un sacchetto di piselli surgelati.','The fridge. In the freezer, behind a 1998 ice lolly, there\'s a bag of frozen peas.');
+  clue(2,'stove',f=>f.rustAsk&&!f.rustOk&&!avHas('olio2'),'I fornelli. Accanto c\'è l\'olio della nonna. Scioglie la ruggine e il colesterolo no.','The stove. Grandma\'s oil is next to it. Dissolves rust, not cholesterol.');
+  clue(3,'palma2',f=>!f.eggGot,'Una palma alta. In cima, tra le noci di cocco, c\'è un nido di gabbiano. Il gabbiano mi guarda come un buttafuori.','A tall palm. At the top, among the coconuts, there\'s a seagull nest. The seagull eyes me like a bouncer.');
+  clue(5,'ktable',f=>f.ugoSaffron&&!f.ugoFed&&!avHas('pane'),'Il tavolo di cucina. C\'è un filone di pane di tre giorni fa, duro come una mazza da baseball.','The kitchen table. There\'s a three-day-old loaf, hard as a baseball bat.');
+  clue(5,'crates',f=>f.ovenAsk&&!f.ovenLit&&!avHas('legna5'),'Cassette del pesce vuote, di legno secco. Puzzano di sgombro, ma brucerebbero benissimo.','Empty fish crates, dry wood. They stink of mackerel, but they\'d burn beautifully.');
+  clue(6,'nightlamp',f=>!avHas('taccuino')&&!f.ladleGot,'Il comodino. Dal cassetto spunta il mio vecchio taccuino da investigatore.','The bedside table. My old investigator\'s notebook pokes out of the drawer.');
+})();
