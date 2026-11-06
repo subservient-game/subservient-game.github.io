@@ -21,13 +21,13 @@ const SFX={
   blip(){ if(!ac()) return; const t=ctx.currentTime; tone(660,t,.05,'square',.03); },
 };
 window.avSfx=SFX;
-/* onde, vento e grilli in sottofondo */
+/* onde e vento in sottofondo */
 let amb=null;
 function ambient(r){ try{ if (amb){ amb.forEach(n=>{ try{ n.stop(); }catch(e){} }); amb=null; } if (!ac()) return;
   const sea=['porto','faro','beach','isola','laguna'].includes(r), night=['piazza','cimitero','park','garden','woods','stazione'].includes(r), jungle=['giungla','villaggio'].includes(r);
   const nodes=[];
   if (sea){ const s=noise(4); s.loop=true; const f=filt(s,'lowpass',500,.7); const g=ctx.createGain(); g.gain.value=.05; f.connect(g); g.connect(master); const l=ctx.createOscillator(); l.frequency.value=.12; const lg=ctx.createGain(); lg.gain.value=.04; l.connect(lg); lg.connect(g.gain); s.start(); l.start(); nodes.push(s,l); }
-  if (night||jungle){ const o=ctx.createOscillator(); o.type='square'; o.frequency.value=jungle?3200:4400; const g=ctx.createGain(); g.gain.value=0; const f=filt(o,'bandpass',jungle?3200:4400,8); f.connect(g); g.connect(master); const l=ctx.createOscillator(); l.type='square'; l.frequency.value=jungle?11:7; const lg=ctx.createGain(); lg.gain.value=.006; l.connect(lg); lg.connect(g.gain); o.start(); l.start(); nodes.push(o,l); }
+  if (night||jungle){ /* niente più grilli acuti: solo un vento basso e morbido */ const s=noise(4); s.loop=true; const f=filt(s,'lowpass',jungle?380:260,.5); const g=ctx.createGain(); g.gain.value=jungle?.035:.03; f.connect(g); g.connect(master); const l=ctx.createOscillator(); l.frequency.value=.07; const lg=ctx.createGain(); lg.gain.value=.015; l.connect(lg); lg.connect(g.gain); s.start(); l.start(); nodes.push(s,l); }
   amb=nodes; }catch(e){} }
 /* dissolvenza e nome del luogo */
 const css=document.createElement('style'); css.textContent=`#advFade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity .28s}
