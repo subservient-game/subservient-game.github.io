@@ -31,7 +31,7 @@ function ambient(r){ try{ if (amb){ amb.forEach(n=>{ try{ n.stop(); }catch(e){} 
   amb=nodes; }catch(e){} }
 /* dissolvenza e nome del luogo */
 const css=document.createElement('style'); css.textContent=`#advFade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity .28s}
- #advFade.on{opacity:1} #advPlace{position:absolute;left:0;right:0;top:9%;text-align:center;z-index:31;pointer-events:none;font:700 clamp(18px,5cqw,30px) Fredoka,sans-serif;color:#ffd166;text-shadow:0 2px 0 #000,0 0 10px #000;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+ #advFade.on{opacity:1} #advPlace{position:absolute;left:0;right:0;top:58%;text-align:center;z-index:31;pointer-events:none;font:700 clamp(18px,5cqw,30px) Fredoka,sans-serif;color:#ffd166;text-shadow:0 2px 0 #000,0 0 10px #000;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
  #advPlace.on{opacity:1;transform:none}`; document.head.appendChild(css);
 function els(){ const cam=document.getElementById('cam'); if (!cam) return {}; let f=document.getElementById('advFade'), p=document.getElementById('advPlace'); if (!f){ f=document.createElement('div'); f.id='advFade'; cam.appendChild(f); } if (!p){ p=document.createElement('div'); p.id='advPlace'; cam.appendChild(p); } return {f,p}; }
 let lastRoom=null;
@@ -42,9 +42,10 @@ function boot(){
   const oT=window.avTrophy; if (oT) window.avTrophy=function(id){ const had=AV.st.tro.includes(id); const r=oT.apply(this,arguments); if (!had) setTimeout(()=>SFX.trophy(),1400); return r; };
   const oGo=window.avGo; if (oGo) window.avGo=async function(r, first){ const {f,p}=els(); const change=r!==H.room;
     if (change && f && !first && !AV.busy){ SFX.whoosh(); f.classList.add('on'); AV.busy=true; await new Promise(z=>setTimeout(z,280)); AV.busy=false; }
-    const out=await oGo.apply(this,arguments);
-    if (change && f){ f.classList.remove('on'); ambient(H.room); try{ const nm=(AV_PLACES[r]||[])[LANG==='it'?1:2]; if (nm && p && r!==lastRoom && H.room===r){ p.textContent=nm; p.classList.add('on'); clearTimeout(p.__t); p.__t=setTimeout(()=>p.classList.remove('on'),1600); } }catch(e){} lastRoom=H.room; }
-    return out; };
+    const pr=oGo.apply(this,arguments);
+    /* la dissolvenza si toglie appena la stanza nuova è disegnata, senza aspettare dialoghi o tocchi */
+    if (change && f){ for (let i=0;i<20 && H.room!==r;i++) await new Promise(z=>setTimeout(z,25)); f.classList.remove('on'); ambient(H.room); try{ const nm=(AV_PLACES[r]||[])[LANG==='it'?1:2]; if (nm && p && r!==lastRoom && H.room===r){ p.textContent=nm; p.classList.add('on'); clearTimeout(p.__t); p.__t=setTimeout(()=>p.classList.remove('on'),1600); } }catch(e){} lastRoom=H.room; }
+    return await pr; };
   // suoni legati a parole delle battute
   const oS=window.avSay; if (oS) window.avSay=function(who,text){ try{ const s=String(text||''); if (/CRA+|corvo nero/i.test(s)) SFX.caw(); else if (/DONG|campan[ae] suona|rintocc/i.test(s)) SFX.bell(); else if (/CRAC|BUM|TUNK|SBAM|THUD|CRACK/.test(s)) SFX.thud(); else if (/apre|cigola|porta/i.test(s) && who==='voice') SFX.door(); }catch(e){} return oS.apply(this,arguments); };
   try{ if (H.room) ambient(H.room); }catch(e){}
