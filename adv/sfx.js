@@ -43,7 +43,7 @@ function boot(){
   const oGo=window.avGo; if (oGo) window.avGo=async function(r, first){ const {f,p}=els(); const change=r!==H.room;
     if (change && f && !first && !AV.busy){ SFX.whoosh(); f.classList.add('on'); AV.busy=true; await new Promise(z=>setTimeout(z,280)); AV.busy=false; }
     const out=await oGo.apply(this,arguments);
-    if (change && f){ f.classList.remove('on'); ambient(r); try{ const nm=(AV_PLACES[r]||[])[LANG==='it'?1:2]; if (nm && p && r!==lastRoom){ p.textContent=nm; p.classList.add('on'); clearTimeout(p.__t); p.__t=setTimeout(()=>p.classList.remove('on'),1600); } }catch(e){} lastRoom=r; }
+    if (change && f){ f.classList.remove('on'); ambient(H.room); try{ const nm=(AV_PLACES[r]||[])[LANG==='it'?1:2]; if (nm && p && r!==lastRoom && H.room===r){ p.textContent=nm; p.classList.add('on'); clearTimeout(p.__t); p.__t=setTimeout(()=>p.classList.remove('on'),1600); } }catch(e){} lastRoom=H.room; }
     return out; };
   // suoni legati a parole delle battute
   const oS=window.avSay; if (oS) window.avSay=function(who,text){ try{ const s=String(text||''); if (/CRA+|corvo nero/i.test(s)) SFX.caw(); else if (/DONG|campan[ae] suona|rintocc/i.test(s)) SFX.bell(); else if (/CRAC|BUM|TUNK|SBAM|THUD|CRACK/.test(s)) SFX.thud(); else if (/apre|cigola|porta/i.test(s) && who==='voice') SFX.door(); }catch(e){} return oS.apply(this,arguments); };

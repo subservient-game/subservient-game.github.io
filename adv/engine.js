@@ -171,12 +171,21 @@ async function avDo(verb, t, item){
   return avNope();
 }
 /* ---------- taps ---------- */
-function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${x}" y="${Math.max(14,y-h/2-4)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
+const avLx=(x,l)=>Math.min(476-String(l).length*3.9,Math.max(4+String(l).length*3.9,x));
+const avLy=(x,y,h,l)=>{ let ly=y-h/2-4<42?y-h/2+18:y-h/2-4; if (avLx(x,l)-String(l).length*3.9<112 && ly<54) ly=58; return ly; };
+function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${avLx(x,label)}" y="${avLy(x,y,h,label)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
 function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>e.remove()); }
 function avHsList(){ const ct=CHT(); const base=(ct && !ct.townHs)?[]:(AV_HS[H.room]||[]), extra=ct?(ct.HS[H.room]||[]):(CH2()?(AV_HS2[H.room]||[]):[]); const ids=new Set(extra.map(h=>h.id)); return extra.concat(base.filter(h=>!ids.has(h.id))).filter(h=>!h.when||h.when()); }
 function avHighlight(t, keep){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t)); } else { avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); if (!keep) avHighlight.t=setTimeout(avClearMarks,1800); }
-function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,castOf(n.avId).name[LANG==='it'?0:1])); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
-function avHsAt(x,y){ return avHsList().find(h=>Math.abs(x-h.x)<=h.w/2+6 && Math.abs(y-h.y)<=h.h/2+6); }
+/* etichette che si sovrappongono: le sposto finché non si leggono tutte */
+function avUnclutter(){ const ts=[...scene.querySelectorAll('.avmark text')]; const placed=[];
+  for (const t of ts){ let b; try{ b=t.getBBox(); }catch(e){ continue; } let dy=0;
+    for (let k=0;k<8;k++){ const hit=placed.find(p=>b.x<p.x+p.width+4 && b.x+b.width+4>p.x && b.y+dy<p.y+p.height && b.y+dy+b.height>p.y); if (!hit) break; dy=hit.y+hit.height+1-b.y; }
+    if (dy){ t.setAttribute('y', (+t.getAttribute('y'))+dy); }
+    placed.push({x:b.x,y:b.y+dy,width:b.width,height:b.height}); } }
+function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,castOf(n.avId).name[LANG==='it'?0:1])); avUnclutter(); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
+/* tocco su più oggetti sovrapposti: vince il più piccolo (il più specifico), così un oggetto sopra un mobile si può sempre toccare */
+function avHsAt(x,y){ const pick=m=>avHsList().filter(h=>Math.abs(x-h.x)<=h.w/2+m && Math.abs(y-h.y)<=h.h/2+m).sort((a,b)=>a.w*a.h-b.w*b.h)[0]; return pick(0)||pick(8); }
 async function avRun(v, t, item){
   AV.busy=true;
   try {
@@ -196,6 +205,8 @@ async function avTap(e){
   if (n) t={type:'npc', id:n.avId, x:n.X};
   else if (holG.contains(e.target)) t={type:'self', id:'me', x:H.X};
   else { const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
+  /* il protagonista davanti a un oggetto non lo copre: tocchi l'oggetto (a meno che tu stia usando un oggetto dell'inventario, che può servire su di te) */
+  if (t && t.type==='self' && !AV.item && !AV.isel){ const h=avHsAt(sp.x, sp.y); if (h) t={type:'hs', id:h.id, n:h.n, x:h.x}; }
   const verb=AV.verb;
   if (t && t.type!=='hs' && !AV.item && (!verb || ['walk','use','open'].includes(verb)) && window.avDoorAt){ const d=avDoorAt(sp); if (d && (t.type==='self' || verb==='walk' || (t.type==='npc' && verb && !AV_S['c'+CHN()+'|'+verb+':'+t.id] && !AV_S[verb+':'+t.id]))) t=d; }
   if (!verb && t && AV.sel && AV.sel.type===t.type && AV.sel.id===t.id && !AV.isel){ AV.sel=null; avClearMarks(); return avRun(t.type==='npc'?'talk':'look', t, null); }
