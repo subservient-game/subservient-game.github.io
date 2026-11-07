@@ -7,7 +7,7 @@ const c1v=()=>!(AV.st.ch>1);
 const ugoFioriOrig=AV_S['give:ugo:fiori'];
 AV_S['give:ugo:fiori']=async(...a)=>{ const f=F();
   if (c1v() && f.ugoAsked && !f.stampUgo && !f.luminoGiven){ if (!f.luminoAsk){ f.luminoAsk=1; avSave(); }
-    return np('ugo','Fiori belli, eh. Ma a mia moglie non bastano i fiori: si è spento il suo lumino, un anno fa, e non l\'ho più riacceso. Ho paura del buio, dell\'accendino e di lei. Portami un lumino acceso e poi i fiori, e ti timbro anche la fronte.','Nice flowers. But flowers aren\'t enough for my wife: her grave candle went out a year ago and I never relit it. I\'m scared of the dark, of lighters and of her. Bring me a lit candle and then the flowers, and I\'ll stamp your forehead too.'); }
+    return np('ugo','Fiori belli, eh. Ma a mia moglie non bastano i fiori: si è spento il suo lumino, un anno fa, e non l\'ho più riacceso. Ho paura del buio, dell\'accendino e di lei. Portami un lumino acceso e poi i fiori, e ti timbro anche la fronte. Le candele? Nonna Pina al karaoke ne ha sempre, rosse, per quando canta le lente.','Nice flowers. But flowers aren\'t enough for my wife: her grave candle went out a year ago and I never relit it. I\'m scared of the dark, of lighters and of her. Bring me a lit candle and then the flowers, and I\'ll stamp your forehead too.'); }
   return ugoFioriOrig(...a); };
 AV_S['use:tomb1:fiori']=()=>AV_S['give:ugo:fiori']();
 avOn('give:ugo:lumacceso use:tomb1:lumacceso',async()=>{ const f=F(); avDel('lumacceso'); f.luminoGiven=1; avSave(); avTrophy('lumino','Hai riacceso il lumino della moglie di Ugo coi fornelli di casa. Ti sei bruciato un sopracciglio.','Relit Ugo\'s wife\'s grave candle on your stove. You singed an eyebrow.');

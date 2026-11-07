@@ -79,3 +79,13 @@ for (const n of [2,5,6]){ let i=0;
 })();
 /* capitolo 2: dal barbiere si vede il rasoio elettrico a pile */
 (()=>{ if (!window.ADV) return; avOnN(2,'look:mirror',()=>me(F().darkSeen&&!F().torchOk&&!avHas('pile')?'Lo specchio. Sulla mensola sotto, il rasoio elettrico di Salvatore: quello a pile, che ronza come un calabrone arrabbiato.':'Mi guardo. Lo specchio si gira dall\'altra parte.', F().darkSeen&&!F().torchOk&&!avHas('pile')?'The mirror. On the shelf below, Salvatore\'s electric razor: the battery one, buzzing like an angry hornet.':'I look at myself. The mirror looks away.')); })();
+/* capitolo 2: bersagli ovvi accettati e contraddizioni tolte */
+(()=>{ if (!window.ADV) return;
+  const alias=(keys, target)=>{ const h=(...a)=>{ const f=AV_S['c2|'+target]; return f?f(...a):avNope(); }; avOn2(keys,h); };
+  alias('use:boat:rasoio use:rasoio:boat','use:warehouse:rasoio');
+  alias('use:gatti:lente use:lente:gatti use:hut:lente use:lente:hut use:lente:marisa','use:marisa:lente');
+  avOn2('use:maptable:tessera use:tessera:maptable',()=>me('La mia tessera del nonno non entra nella fessura: è la copia plastificata che teneva nel portafoglio. Ci vuole l\'originale, quella di cartone. Il nonno l\'aveva lasciata a qualcuno al faro.','My grandpa card won\'t fit the slot: it\'s the laminated copy he kept in his wallet. It needs the original, the cardboard one. Grandpa left it with someone at the lighthouse.'));
+  avOn2('look:tessera',()=>me('La tessera del nonno, socio n.7. È una copia plastificata: l\'originale chissà dov\'è.','Grandpa\'s card, member no.7. It\'s a laminated copy: who knows where the original is.'));
+  avOn2('look:jerry',()=>me('La tanica del garage. È benzina, e pure vuota. Una barca a gasolio con questa ci fa solo una brutta fine.','The garage jerry can. It\'s petrol, and empty too. A diesel boat would only come to a sad end with it.'));
+  avOn2('look:hut',()=>me('La casetta di Marisa. Gatti alla finestra, gatti sul tetto, gatti nel camino. Contarli da qui è impossibile: si muovono.','Marisa\'s hut. Cats at the window, cats on the roof, cats in the chimney. Impossible to count them from here: they move.'));
+})();

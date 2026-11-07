@@ -33,8 +33,21 @@ async function trick(opts){ // opts: [{t:[it,en], ok:true|false, show:()=>bool}]
   const list=opts.filter(o=>!o.show||o.show());
   const i=await avChoose(list.map(o=>o.t)); const o=list[i];
   if (o && o.say) await me(o.say[0],o.say[1]);
+  if (!(o && o.ok) && !list.some(x=>x.ok) && POINT[curPuz]) await me(POINT[curPuz][0],POINT[curPuz][1]);
   return !!(o && o.ok); }
-const mark=k=>{ const f=ff(); f['tr_'+k]=1; avSave(); };
+/* se il trucco giusto non è ancora tra le scelte, il protagonista dice dove cercarlo */
+let curPuz=null;
+const POINT={
+  tread:L('Il tapis roulant di Rocky ha qualcosa di strano. Dovrei guardarlo meglio.','There\'s something odd about Rocky\'s treadmill. I should take a closer look.'),
+  toto:L('Totò scrive i suoi segreti dappertutto. Tipo in fondo al menù.','Totò writes his secrets everywhere. Like at the bottom of the menu.'),
+  milk:L('Rino ha inciso qualcosa su Ernestina, sul tronco nel bosco. Forse c\'è il trucco.','Rino carved something about Ernestina on the log in the woods. Maybe that\'s the trick.'),
+  goat:L('Le capre vanno matte per qualcosa... Ugo al cimitero ne parla sempre. Dietro la lapide storta tiene una scorta.','Goats go crazy for something... Ugo at the cemetery is always on about it. He keeps a stash behind the crooked headstone.'),
+  shave:L('Salvatore ha le sue regole scritte in negozio. Sotto il poster, mi pare.','Salvatore has his rules written up in the shop. Under the poster, I think.'),
+  dance:L('Il DJ tiene la scaletta sulla consolle. Lì sopra c\'è scritto qualcosa su Tony.','The DJ keeps his setlist on the console. Something about Tony is written on it.'),
+  fish:L('Ciccio lascia sempre biglietti sulle casse del pesce, al porto. Magari c\'è scritta l\'esca.','Ciccio always leaves notes on the fish crates at the harbour. Maybe the bait\'s written there.'),
+  swim:L('Dovrei guardare bene la cascata prima di tuffarmi di nuovo.','I should take a good look at the waterfall before diving again.'),
+  spear:L('Tra i sassi della laguna si muove qualcosa. Dovrei guardarli meglio.','Something moves among the lagoon stones. I should look closer.')};
+const mark=k=>{ curPuz=k; const f=ff(); f['tr_'+k]=1; avSave(); };
 
 const PUZ={
   rocky: async()=>{ mark('rocky'); await np('rocky','E non pensare di barare: ho il naso più fino del mondo. Sento l\'alcol a un chilometro. Solo l\'odore mi fa girare la testa come una lavatrice.','And don\'t think about cheating: I have the finest nose in the world. I smell alcohol a mile away. Just the smell spins my head like a washing machine.');
@@ -103,7 +116,7 @@ PUZ.spear=async()=>{ mark('spear');
 PUZ.stir=async()=>{ mark('stir');
   return trick([{t:L('Mescolo in senso orario, come tutti.','Stir clockwise, like everyone.'),ok:false},
     {t:L('Mescolo forte e veloce.','Stir hard and fast.'),ok:false},
-    {t:L('Mescolo sempre in senso antiorario, come scritto nel ricettario della nonna.','Always stir anticlockwise, as Grandma\'s cookbook says.'),ok:true,show:()=>know('stir')||avHas('ricettario'),say:L('Antiorario. Sempre. Lento. Il risotto si fa cremoso come una ninna nanna. Si sente profumo di nonna.','Anticlockwise. Always. Slowly. The risotto turns creamy as a lullaby. It smells of Grandma.')},
+    {t:L('Mescolo sempre in senso antiorario, come scritto nel ricettario della nonna.','Always stir anticlockwise, as Grandma\'s cookbook says.'),ok:true,show:()=>know('stir')||avHas('ricettario')||CHN()>=5,say:L('Antiorario. Sempre. Lento. Il risotto si fa cremoso come una ninna nanna. Si sente profumo di nonna.','Anticlockwise. Always. Slowly. The risotto turns creamy as a lullaby. It smells of Grandma.')},
     {t:L('Lascio perdere.','Give up.'),ok:false}]); };
 PUZ.memory=async()=>{ mark('memory'); const st=AV.st;
   const Q=[[L('Come si chiama la capra di Rino?','What\'s Rino\'s goat called?'),[L('Ernestina','Ernestina'),L('Assunta','Assunta'),L('Ciabatta','Ciabatta')],0],

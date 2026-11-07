@@ -6,7 +6,7 @@ AV_TROPHIES.push(['ritratto','Hai fatto il ritratto di Nonna Pina. Gino l\'ha ba
 const c1o=()=>!(AV.st.ch>1);
 (()=>{ const old=AV_S['give:djmax:vinile']; AV_S['give:djmax:vinile']=async(...a)=>{ const f=F();
   if (c1o() && f.vinylClean && !f.needleIn){ f.needleAsk=1; avSave(); await npcAct('djmax','look',1400);
-    return np('djmax','Pulito, bellissimo... e ora che lo metto sul piatto... CRAC. La puntina! S\'è spezzata! Era del 1983, come me. Senza puntina niente musica, e senza musica niente invito. Trovamene una. Una vecchia: quelle nuove non capiscono il liscio.','Clean, gorgeous... and now I put it on the deck... CRACK. The stylus! It snapped! It was from 1983, like me. No stylus, no music, and no music, no invitation. Find me one. An old one: new ones don\'t get ballroom.'); }
+    return np('djmax','Pulito, bellissimo... e ora che lo metto sul piatto... CRAC. La puntina! S\'è spezzata! Era del 1983, come me. Senza puntina niente musica, e senza musica niente invito. Trovamene una. Una vecchia: quelle nuove non capiscono il liscio. Gino il giardiniere al parco ha ancora il grammofono con cui faceva la corte a Pina.','Clean, gorgeous... and now I put it on the deck... CRACK. The stylus! It snapped! It was from 1983, like me. No stylus, no music, and no music, no invitation. Find me one. An old one: new ones don\'t get ballroom.'); }
   return old(...a); }; })();
 avOn('give:djmax:puntina',async()=>{ const f=F(); avDel('puntina'); f.needleIn=1; avSave(); await npcAct('djmax','dance',1400,'happy');
   await np('djmax','Una puntina di grammofono del 1950! Suonerà come un nonno che tossisce. PERFETTO. Ora dammi il vinile.','A 1950 gramophone needle! It\'ll sound like a grandpa coughing. PERFECT. Now give me the record.');
