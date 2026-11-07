@@ -124,7 +124,7 @@ function avMenu(){
   const it=LANG==='it', st=AV.st, mins=Math.round((st.play||0)/60000);
   const nx=CHN()+1, ended=(CHN()===1?AV.st.f.endDone:(CHN()===2?AV.st.f.end2:(AV_CHS[CHN()]&&AV_CHS[CHN()].ended()))), hasNext=nx===2?!!AV_INTRO2:!!(AV_CHS[nx]&&AV_CHS[nx].intro);
   sheet(`<h3 style="margin:0 0 6px">🗺️ ${(CHT()?CHT().title:(CH2()?AV_TITLE2:AV_TITLE))[it?0:1]}</h3>${(ended && hasNext)?`<button type="button" id="avCh2" style="width:100%;margin-bottom:10px;background:#c9a227">▶️ ${it?(nx===6?'Inizia l\'Epilogo':'Inizia il Capitolo '+nx):(nx===6?'Start the Epilogue':'Start Chapter '+nx)}</button>`:''}
-   <p style="opacity:.8;font-size:14px;margin:0 0 8px">${it?'Tocca un\'azione, poi una cosa o una persona. Senza azione, toccando la scena vedi cosa si può usare. Tocca due volte una cosa per guardarla, o una persona per parlarci. Per "Usa" e "Dai" scegli prima un oggetto; "Usa" + oggetto + altro oggetto li combina.':'Tap an action, then a thing or person. With no action, tapping the scene shows what you can use. Double-tap a thing to look at it, or a person to talk. For "Use" and "Give" pick an item first; "Use" + item + another item combines them.'}</p>
+   <p style="opacity:.8;font-size:14px;margin:0 0 8px">${it?'Tocca un\'azione, poi una cosa o una persona. Se sei bloccato, tocca il contatore dei Pippi in alto: si illumina tutto quello con cui puoi interagire. Tocca due volte una cosa per guardarla, o una persona per parlarci. Per "Usa" e "Dai" scegli prima un oggetto; "Usa" + oggetto + altro oggetto li combina.':'Tap an action, then a thing or person. Stuck? Tap the Pippi counter at the top: everything you can interact with lights up. Double-tap a thing to look at it, or a person to talk. For "Use" and "Give" pick an item first; "Use" + item + another item combines them.'}</p>
    <p style="font-size:13px;margin:0 0 10px">⏱️ ${mins} min · ${UI_IC('coin',16)} ${st.coins.length}/${Object.keys(AV_COINS).length} · ${UI_IC('trophy',16)} ${st.tro.length}</p>
    <button type="button" id="avHint" style="width:100%;margin-bottom:8px">${UI_IC('hint',20)} ${it?'Suggerimento':'Hint'}</button>
    <button type="button" id="avTro" class="ghost" style="width:100%;margin-bottom:8px">${UI_IC('trophy',20)} ${it?'Trofei':'Trophies'}</button>
@@ -173,17 +173,43 @@ async function avDo(verb, t, item){
 /* ---------- taps ---------- */
 const avLx=(x,l)=>Math.min(476-String(l).length*3.9,Math.max(4+String(l).length*3.9,x));
 const avLy=(x,y,h,l)=>{ let ly=y-h/2-4<42?y-h/2+18:y-h/2-4; if (avLx(x,l)-String(l).length*3.9<112 && ly<54) ly=58; return ly; };
-function avMark(x,y,w,h,label){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.innerHTML=`<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="8" fill="#ffd166" fill-opacity=".12" stroke="#ffd166" stroke-width="2" stroke-dasharray="5 4"/>`+(label?`<text x="${avLx(x,label)}" y="${avLy(x,y,h,label)}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd166" stroke="#000" stroke-width="3" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text>`:''); scene.appendChild(g); return g; }
-function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>e.remove()); }
+/* evidenziazione: niente rettangoli. Sull'oggetto si accendono i contorni del disegno (bordi dorati che pulsano, sfumati),
+   sui personaggi si accende la sagoma. Il nome sta in una piccola etichetta. */
+let avMarkN=0;
+function avMark(x,y,w,h,label,who){ const g=document.createElementNS(NS,'g'); g.setAttribute('class','avmark'); g.style.pointerEvents='none'; const k='avm'+(++avMarkN);
+  const x0=x-w/2-8, y0=y-h/2-8, W=w+16, Hh=h+16;
+  let body='';
+  if (!who){ body=`<defs><radialGradient id="${k}g"><stop offset=".62" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>
+    <mask id="${k}m" maskUnits="userSpaceOnUse" x="${x0}" y="${y0}" width="${W}" height="${Hh}"><ellipse cx="${x}" cy="${y}" rx="${W/2}" ry="${Hh/2}" fill="url(#${k}g)"/></mask>
+    <filter id="${k}f" filterUnits="userSpaceOnUse" x="${x0}" y="${y0}" width="${W}" height="${Hh}" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0" result="gray"/>
+      <feConvolveMatrix in="gray" order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" preserveAlpha="true" result="edge"/>
+      <feComponentTransfer in="edge" result="e2"><feFuncR type="linear" slope="5" intercept="-.25"/><feFuncG type="linear" slope="5" intercept="-.25"/><feFuncB type="linear" slope="5" intercept="-.25"/></feComponentTransfer>
+      <feColorMatrix in="e2" type="luminanceToAlpha" result="a"/>
+      <feFlood flood-color="#ffd166"/><feComposite in2="a" operator="in" result="gold"/>
+      <feGaussianBlur in="gold" stdDeviation="2.2" result="glow"/>
+      <feComponentTransfer in="SourceGraphic" result="lit"><feFuncR type="linear" slope="1.18" intercept=".04"/><feFuncG type="linear" slope="1.15" intercept=".03"/><feFuncB type="linear" slope="1.05"/></feComponentTransfer>
+      <feMerge><feMergeNode in="lit"/><feMergeNode in="glow"/><feMergeNode in="glow"/><feMergeNode in="gold"/></feMerge></filter></defs>
+    <g class="avpulse" mask="url(#${k}m)"><g filter="url(#${k}f)"><use href="#back"/></g></g>`; }
+  const lab=label?`<g class="avlab"><text x="${avLx(x,label)}" y="${avLy(x,y,h,label)}" text-anchor="middle" font-size="13" font-weight="700" fill="#ffe6a6" stroke="#1a1208" stroke-width="3.2" stroke-linejoin="round" paint-order="stroke" font-family="Fredoka, sans-serif">${esc(label)}</text></g>`:'';
+  g.innerHTML=lab; scene.appendChild(g);
+  if (body){ /* il bagliore sta subito sopra lo sfondo: sotto il protagonista e i personaggi */ const gl=document.createElementNS(NS,'g'); gl.setAttribute('class','avmark'); gl.style.pointerEvents='none'; gl.innerHTML=body; const bk=scene.querySelector('#back'); if (bk && bk.parentNode) bk.parentNode.insertBefore(gl, bk.nextSibling); else scene.insertBefore(gl, scene.firstChild); }
+  if (who && who.style!==undefined){ who.classList.add('avglow'); g.__who=who; }
+  return g; }
+(()=>{ const c=document.createElement('style'); c.textContent=`@keyframes avPulse{0%,100%{opacity:.78}50%{opacity:1}} .avpulse{animation:avPulse 1.4s ease-in-out infinite}
+ .avglow{filter:drop-shadow(0 0 1.6px #ffd166) drop-shadow(0 0 1.6px #ffd166) drop-shadow(0 0 5px rgba(255,209,102,.8)) !important}
+ .avlab{animation:avLabIn .22s ease-out} @keyframes avLabIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}`; document.head.appendChild(c); })();
+function avClearMarks(){ scene.querySelectorAll('.avmark').forEach(e=>{ if (e.__who) e.__who.classList.remove('avglow'); e.remove(); }); document.querySelectorAll('.avglow').forEach(e=>e.classList.remove('avglow')); }
 function avHsList(){ const ct=CHT(); const base=(ct && !ct.townHs)?[]:(AV_HS[H.room]||[]), extra=ct?(ct.HS[H.room]||[]):(CH2()?(AV_HS2[H.room]||[]):[]); const ids=new Set(extra.map(h=>h.id)); return extra.concat(base.filter(h=>!ids.has(h.id))).filter(h=>!h.when||h.when()); }
-function avHighlight(t, keep){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t)); } else { avMark(H.X,STAND-60,56,130,avName(t)); } clearTimeout(avHighlight.t); if (!keep) avHighlight.t=setTimeout(avClearMarks,1800); }
+function avHighlight(t, keep){ avClearMarks(); if (t.type==='hs'){ const h=avHsList().find(x=>x.id===t.id); avMark(h.x,h.y,h.w,h.h,avName(t)); } else if (t.type==='npc'){ const n=npcOf(t.id); avMark(n.X,STAND-60,56,130,avName(t),n.g||n.el||true); } else { avMark(H.X,STAND-60,56,130,avName(t),typeof holG!=='undefined'?holG:true); } clearTimeout(avHighlight.t); if (!keep) avHighlight.t=setTimeout(avClearMarks,1800); }
 /* etichette che si sovrappongono: le sposto finché non si leggono tutte */
 function avUnclutter(){ const ts=[...scene.querySelectorAll('.avmark text')]; const placed=[];
   for (const t of ts){ let b; try{ b=t.getBBox(); }catch(e){ continue; } let dy=0;
     for (let k=0;k<8;k++){ const hit=placed.find(p=>b.x<p.x+p.width+4 && b.x+b.width+4>p.x && b.y+dy<p.y+p.height && b.y+dy+b.height>p.y); if (!hit) break; dy=hit.y+hit.height+1-b.y; }
     if (dy){ t.setAttribute('y', (+t.getAttribute('y'))+dy); }
     placed.push({x:b.x,y:b.y+dy,width:b.width,height:b.height}); } }
-function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,castOf(n.avId).name[LANG==='it'?0:1])); avUnclutter(); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
+function avVerbName(v){ const m={look:['guardare','look at'],take:['prendere','take'],use:['usare','use'],give:['dare','give'],talk:['parlare','talk to'],open:['aprire','open']}; return (m[v]||['fare','do'])[LANG==='it'?0:1]; }
+function avRevealAll(){ avClearMarks(); avHsList().forEach(h=>avMark(h.x,h.y,h.w,h.h,h.n[LANG==='it'?0:1])); AV.npcs.filter(n=>n.room===H.room).forEach(n=>avMark(n.X,STAND-60,56,130,castOf(n.avId).name[LANG==='it'?0:1],n.g)); avUnclutter(); clearTimeout(avHighlight.t); avHighlight.t=setTimeout(avClearMarks,2500); }
 /* tocco su più oggetti sovrapposti: vince il più piccolo (il più specifico), così un oggetto sopra un mobile si può sempre toccare */
 function avHsAt(x,y){ const pick=m=>avHsList().filter(h=>Math.abs(x-h.x)<=h.w/2+m && Math.abs(y-h.y)<=h.h/2+m).sort((a,b)=>a.w*a.h-b.w*b.h)[0]; return pick(0)||pick(8); }
 async function avRun(v, t, item){
@@ -210,9 +236,10 @@ async function avTap(e){
   const verb=AV.verb;
   if (t && t.type!=='hs' && !AV.item && (!verb || ['walk','use','open'].includes(verb)) && window.avDoorAt){ const d=avDoorAt(sp); if (d && (t.type==='self' || verb==='walk' || (t.type==='npc' && verb && !AV_S['c'+CHN()+'|'+verb+':'+t.id] && !AV_S[verb+':'+t.id]))) t=d; }
   if (!verb && t && AV.sel && AV.sel.type===t.type && AV.sel.id===t.id && !AV.isel){ AV.sel=null; avClearMarks(); return avRun(t.type==='npc'?'talk':'look', t, null); }
-  if (!verb){ if (t){ AV.sel=t; AV.isel=null; avRender(); avHighlight(t, true); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase())+' — '+T('scegli un\'azione','pick an action'); } else { AV.sel=null; avRevealAll(); $('advLine').textContent=T('Scegli un\'azione','Pick an action'); } return; }
+  if (!verb){ if (t){ AV.sel=t; AV.isel=null; avRender(); avHighlight(t, true); $('advLine').textContent=avName(t).replace(/^./,c=>c.toUpperCase())+' — '+T('scegli un\'azione','pick an action'); } else { AV.sel=null; avClearMarks(); avRender(); $('advLine').textContent=T('Scegli un\'azione','Pick an action'); } return; }
   if (verb==='walk'){ AV.item=null; AV.verb=null; avRender(); const id=++runId; walkTo(clamp(t?t.x:sp.x,30,450), id).then(()=>{ if (alive(id)){ setPose('idle'); if (window.avWalkTo) avWalkTo(t, sp); } }); return; }
-  if (!t){ avRevealAll(); return; }
+  if (!t){ avClearMarks(); $('advLine').textContent=T('Lì non c\'è niente da '+avVerbName(verb)+'. Tocca un oggetto o una persona.','Nothing there to '+avVerbName(verb)+'. Tap an object or a person.'); return; }
+
   if (verb==='give' && !AV.item){ avSentence(avName(t)); return me('Dare cosa? Scegli prima un oggetto.','Give what? Pick an item first.'); }
   avSentence(avName(t)); avRun(verb, t, AV.item);
 }
