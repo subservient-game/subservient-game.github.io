@@ -19,8 +19,20 @@ window.avDo=async function(v,t,item){ const top=!AV.__hd; AV.__hd=(AV.__hd||0)+1
 const oAdd=window.avAdd;
 window.avAdd=function(id){ const r=oAdd.apply(this,arguments); if (AV.busy && AV.__hd) showItem(id); return r; };
 /* attrezzi */
+/* mangiare: un morso lento e poi si mastica con la bocca, le mani giù. La gomma non si tiene in mano: è in bocca */
+document.addEventListener('DOMContentLoaded',()=>{ try{
+  POSES.bite=P([{aR:-18,eR:150,head:-3},{aR:-16,eR:112,head:0}], 720, {usesR:1,face:'chewB'});
+  FACES.chewA=['normal','flat','none']; FACES.chewB=['normal','wavy','none'];
+  POSES.chew=P([{head:-.6,aR:-4,eR:12,aL:4,eL:-12},{head:.8,aR:-4,eR:12,aL:4,eL:-12}], 900, {face:'chewA'});
+  setInterval(()=>{ try{ if (H.pose==='chew') setFace((Math.floor(performance.now()/240)%2)?'chewA':'chewB'); }catch(e){} },120);
+}catch(e){} });
 const oAct=window.meAct;
-window.meAct=async function(pose,ms){ let set=null; if (!held){ const pr=POSE_PROP[pose]; if (pr){ setProp(pr); set=pr; if (pr==='guitar') redraw(); } }
+window.meAct=async function(pose,ms){
+  if (pose==='eat' && typeof POSES!=='undefined' && POSES.chew){ ms=ms||1500; const gum=held==='gomma';
+    if (gum) clearHand();
+    else { setPose('bite'); await avWait(Math.min(800,ms*.4)); if (held) clearHand(); }
+    await oAct('chew', gum?ms:ms*.6); return; }
+  let set=null; if (!held){ const pr=POSE_PROP[pose]; if (pr){ setProp(pr); set=pr; if (pr==='guitar') redraw(); } }
   try{ return await oAct.apply(this,arguments); } finally{ if (set && (H.prop===set || H.bodyProp===set)){ setProp(null); if (set==='guitar') redraw(); } } };
 /* guardare non è usare */
 avOn('look:guitar',()=>me('La mia chitarra, sul suo supporto. Tre corde su sei. Le altre tre le ho vendute in un momento difficile.','My guitar, on its stand. Three strings out of six. I sold the other three in a hard moment.'));
